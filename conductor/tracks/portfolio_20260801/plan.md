@@ -37,18 +37,18 @@ Track ID: `portfolio_20260801`
 
 ## Phase 3: Visual Design System
 
-- [ ] Task: Finalize the visual style
-  - [ ] Confirm the selected visual style among the proposals (recommended: Option A "Dark & Modern")
-  - [ ] Document the selected palette, typography, and component look in the design system
-- [ ] Task: Create shared UI components
-  - [ ] Write tests for shared UI components
-  - [ ] Implement `Button`, `Section`, `SectionHeading`, and `Container` components
-  - [ ] Implement `ProjectCard` and `SkillBadge` components
-- [ ] Task: Implement animations
-  - [ ] Create a reusable scroll-reveal hook/component
-  - [ ] Write tests for the scroll-reveal behavior
-  - [ ] Apply reveal animations and hover transitions to shared components
-- [ ] Task: Conductor - User Manual Verification 'Visual Design System' (Protocol in workflow.md)
+- [x] Task: Finalize the visual style
+  - [x] Confirm the selected visual style among the proposals (recommended: Option A "Dark & Modern")
+  - [x] Document the selected palette, typography, and component look in the design system
+- [x] Task: Create shared UI components
+  - [x] Write tests for shared UI components
+  - [x] Implement `Button`, `Section`, `SectionHeading`, and `Container` components
+  - [x] Implement `ProjectCard` and `SkillBadge` components
+- [x] Task: Implement animations
+  - [x] Create a reusable scroll-reveal hook/component
+  - [x] Write tests for the scroll-reveal behavior
+  - [x] Apply reveal animations and hover transitions to shared components
+- [x] Task: Conductor - User Manual Verification 'Visual Design System' (Protocol in workflow.md)
 
 ## Phase 4: Core Sections
 
