@@ -23,17 +23,17 @@ Track ID: `portfolio_20260801`
 
 ## Phase 2: Content Questionnaire & Data Model
 
-- [ ] Task: Design the content questionnaire
-  - [ ] Write the questionnaire covering personal info, social links, projects, skills, experience/education, and visual preferences (see spec.md)
-  - [ ] Create a `content/questionnaire.md` file documenting the questions and their purpose
-- [ ] Task: Define the typed data model
-  - [ ] Create TypeScript interfaces for `Profile`, `Project`, `Skill`, `Experience`, and `SocialLink`
-  - [ ] Create typed data files (`profile.ts`, `projects.ts`, `skills.ts`, `experience.ts`) with placeholder data
-- [ ] Task: Collect and validate content
-  - [ ] Have the developer answer the questionnaire
-  - [ ] Fill the data files with the real answers
-  - [ ] Verify all required fields are populated and links/images are valid
-- [ ] Task: Conductor - User Manual Verification 'Content Questionnaire & Data Model' (Protocol in workflow.md)
+- [x] Task: Design the content questionnaire
+  - [x] Write the questionnaire covering personal info, social links, projects, skills, experience/education, and visual preferences (see spec.md)
+  - [x] Create a `content/questionnaire.md` file documenting the questions and their purpose
+- [x] Task: Define the typed data model
+  - [x] Create TypeScript interfaces for `Profile`, `Project`, `Skill`, `Experience`, and `SocialLink`
+  - [x] Create typed data files (`profile.ts`, `projects.ts`, `skills.ts`, `experience.ts`) with placeholder data
+- [x] Task: Collect and validate content
+  - [x] Have the developer answer the questionnaire
+  - [x] Fill the data files with the real answers
+  - [x] Verify all required fields are populated and links/images are valid
+- [x] Task: Conductor - User Manual Verification 'Content Questionnaire & Data Model' (Protocol in workflow.md)
 
 ## Phase 3: Visual Design System
 
