@@ -4,12 +4,15 @@ import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { SkillBadge } from '../components/SkillBadge'
 import { skills } from '../data/skills'
+import { useLanguage } from '../i18n/LanguageContext'
 
 export function Skills() {
+  const { t } = useLanguage()
+
   return (
     <Section id="habilidades">
       <Container>
-        <SectionHeading eyebrow="Habilidades" title="Tecnologías y herramientas" />
+        <SectionHeading eyebrow={t.skills.eyebrow} title={t.skills.title} />
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {skills.map((category) => (
             <Reveal key={category.category}>

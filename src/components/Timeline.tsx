@@ -1,4 +1,5 @@
 import type { ExperienceItem } from '../data/types'
+import { useLanguage } from '../i18n/LanguageContext'
 
 interface TimelineProps {
   title: string
@@ -6,6 +7,8 @@ interface TimelineProps {
 }
 
 export function Timeline({ title, items }: TimelineProps) {
+  const { t } = useLanguage()
+
   if (items.length === 0) return null
 
   return (
@@ -21,7 +24,7 @@ export function Timeline({ title, items }: TimelineProps) {
             <h4 className="font-display text-lg font-semibold text-text">{item.title}</h4>
             <p className="text-sm font-medium text-accent">{item.organization}</p>
             <p className="mt-1 text-sm text-text-muted">
-              {item.startDate} — {item.endDate ?? 'Presente'}
+              {item.startDate} — {item.endDate ?? t.about.present}
             </p>
             {item.achievements.length > 0 ? (
               <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-text-muted">

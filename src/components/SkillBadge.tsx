@@ -1,17 +1,20 @@
 import type { SkillLevel } from '../data/types'
+import { useLanguage } from '../i18n/LanguageContext'
 
 interface SkillBadgeProps {
   name: string
   level?: SkillLevel
 }
 
-const levelMeta = {
-  beginner: { label: 'Nivel principiante', dotClass: 'bg-text-muted' },
-  intermediate: { label: 'Nivel intermedio', dotClass: 'bg-accent' },
-  advanced: { label: 'Nivel avanzado', dotClass: 'bg-accent-violet' },
-} as const
-
 export function SkillBadge({ name, level }: SkillBadgeProps) {
+  const { t } = useLanguage()
+
+  const levelMeta = {
+    beginner: { label: t.skillLevels.beginner, dotClass: 'bg-text-muted' },
+    intermediate: { label: t.skillLevels.intermediate, dotClass: 'bg-accent' },
+    advanced: { label: t.skillLevels.advanced, dotClass: 'bg-accent-violet' },
+  } as const
+
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-light/60 px-3 py-1 text-sm text-text-muted transition-colors duration-200 hover:border-accent/50 hover:text-text">
       {level ? (

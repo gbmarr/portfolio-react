@@ -3,20 +3,22 @@ import { Container } from '../components/Container'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { profile } from '../data/profile'
+import { useLanguage } from '../i18n/LanguageContext'
 
 export function Contact() {
   const { email, socialLinks } = profile
+  const { t } = useLanguage()
 
   return (
     <Section id="contacto">
       <Container>
         <SectionHeading
-          eyebrow="Contacto"
-          title="¿Hablamos?"
-          subtitle="Si tienes una oportunidad o proyecto en mente, escríbeme."
+          eyebrow={t.contact.eyebrow}
+          title={t.contact.title}
+          subtitle={t.contact.subtitle}
         />
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button href={`mailto:${email}`}>Enviar email</Button>
+          <Button href={`mailto:${email}`}>{t.contact.sendEmail}</Button>
           <Button href={socialLinks.github} variant="secondary">
             GitHub
           </Button>

@@ -1,4 +1,5 @@
 import type { Project } from '../data/types'
+import { useLanguage } from '../i18n/LanguageContext'
 import { Reveal } from './Reveal'
 import { SkillBadge } from './SkillBadge'
 
@@ -17,6 +18,8 @@ function getInitials(name: string): string {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const { t } = useLanguage()
+
   return (
     <Reveal>
       <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow">
@@ -24,7 +27,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           {project.screenshot ? (
             <img
               src={project.screenshot}
-              alt={`Captura de ${project.name}`}
+              alt={`${t.projects.screenshot} ${project.name}`}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -38,7 +41,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <h3 className="font-display text-xl font-semibold text-text">{project.name}</h3>
           <p className="text-text-muted">{project.description}</p>
 
-          <ul className="flex flex-wrap gap-2" aria-label="Tecnologías">
+          <ul className="flex flex-wrap gap-2" aria-label={t.projects.technologies}>
             {project.technologies.map((tech) => (
               <li key={tech}>
                 <SkillBadge name={tech} />
@@ -49,11 +52,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="mt-auto flex gap-4 pt-2">
             {project.demoUrl ? (
               <a href={project.demoUrl} className="text-sm font-medium text-accent hover:underline">
-                Demo ↗
+                {t.projects.demo} ↗
               </a>
             ) : null}
             <a href={project.repoUrl} className="text-sm font-medium text-text hover:text-accent hover:underline">
-              Código ↗
+              {t.projects.code} ↗
             </a>
           </div>
         </div>
