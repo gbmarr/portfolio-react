@@ -36,7 +36,7 @@ describe('LanguageContext', () => {
     render(
       <LanguageProvider>
         <LanguageProbe />
-      </LanguageProvider>,
+      </LanguageProvider>
     )
 
     expect(screen.getByTestId('language')).toHaveTextContent('es')
@@ -52,7 +52,7 @@ describe('LanguageContext', () => {
     render(
       <LanguageProvider>
         <LanguageProbe />
-      </LanguageProvider>,
+      </LanguageProvider>
     )
 
     await user.click(screen.getByText('Set EN'))
@@ -69,7 +69,7 @@ describe('LanguageContext', () => {
     render(
       <LanguageProvider>
         <LanguageProbe />
-      </LanguageProvider>,
+      </LanguageProvider>
     )
 
     await user.click(screen.getByText('Set EN'))

@@ -20,7 +20,10 @@ export function Timeline({ title, items }: TimelineProps) {
             key={`${item.title}-${item.organization}`}
             className="relative border-l border-border pb-8 pl-6 last:pb-0"
           >
-            <span aria-hidden="true" className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-accent" />
+            <span
+              aria-hidden="true"
+              className="absolute -left-1.5 top-1.5 h-3 w-3 rounded-full bg-accent"
+            />
             <h4 className="font-display text-lg font-semibold text-text">{item.title}</h4>
             <p className="text-sm font-medium text-accent">{item.organization}</p>
             <p className="mt-1 text-sm text-text-muted">

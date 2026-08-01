@@ -7,7 +7,7 @@ describe('Section', () => {
     const { container } = render(
       <Section>
         <p>Contenido</p>
-      </Section>,
+      </Section>
     )
     const section = container.querySelector('section')
     expect(section).not.toBeNull()
@@ -18,7 +18,7 @@ describe('Section', () => {
     const { container } = render(
       <Section id="proyectos">
         <p>Contenido</p>
-      </Section>,
+      </Section>
     )
     const section = container.querySelector('section')
     expect(section).toHaveAttribute('id', 'proyectos')
@@ -28,7 +28,7 @@ describe('Section', () => {
     const { container } = render(
       <Section>
         <p>Contenido</p>
-      </Section>,
+      </Section>
     )
     const section = container.querySelector('section')
     expect(section).toHaveClass('py-20')

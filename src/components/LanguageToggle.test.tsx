@@ -8,7 +8,7 @@ function renderToggle() {
   return render(
     <LanguageProvider>
       <LanguageToggle />
-    </LanguageProvider>,
+    </LanguageProvider>
   )
 }
 

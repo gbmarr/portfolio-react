@@ -7,7 +7,7 @@ describe('Container', () => {
     render(
       <Container>
         <p>Contenido del contenedor</p>
-      </Container>,
+      </Container>
     )
     expect(screen.getByText('Contenido del contenedor')).toBeInTheDocument()
   })
@@ -16,7 +16,7 @@ describe('Container', () => {
     render(
       <Container className="custom-class">
         <p>Contenido</p>
-      </Container>,
+      </Container>
     )
     const container = screen.getByText('Contenido').parentElement
     expect(container).toHaveClass('max-w-5xl')

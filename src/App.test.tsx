@@ -33,8 +33,12 @@ describe('App', () => {
   it('renders all core sections', () => {
     render(<App />)
     expect(screen.getByRole('heading', { level: 2, name: 'Mi trayectoria' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Tecnologías y herramientas' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Algunos de mis proyectos' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Tecnologías y herramientas' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Algunos de mis proyectos' })
+    ).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: '¿Hablamos?' })).toBeInTheDocument()
   })
 

@@ -21,10 +21,7 @@ function installMockObserver() {
   vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
   return (isIntersecting: boolean) =>
     act(() => {
-      callback(
-        [{ isIntersecting } as IntersectionObserverEntry],
-        {} as IntersectionObserver,
-      )
+      callback([{ isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver)
     })
 }
 
@@ -60,7 +57,9 @@ describe('Reveal', () => {
   it('applies a transition delay when delay is provided', () => {
     vi.stubGlobal(
       'matchMedia',
-      vi.fn().mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
+      vi
+        .fn()
+        .mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })
     )
 
     const { container } = render(<Reveal delay={200}>Hola</Reveal>)

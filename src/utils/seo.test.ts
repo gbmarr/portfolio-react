@@ -30,9 +30,11 @@ describe('applySeoMeta', () => {
   it('creates Open Graph tags for title and description', () => {
     applySeoMeta({ title: 'Título OG', description: 'Descripción OG' })
 
-    expect(document.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe('Título OG')
+    expect(document.querySelector('meta[property="og:title"]')?.getAttribute('content')).toBe(
+      'Título OG'
+    )
     expect(document.querySelector('meta[property="og:description"]')?.getAttribute('content')).toBe(
-      'Descripción OG',
+      'Descripción OG'
     )
   })
 })

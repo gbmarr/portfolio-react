@@ -37,7 +37,7 @@ export function useScrollReveal<T extends HTMLElement>(threshold = 0.15): Scroll
           }
         }
       },
-      { threshold },
+      { threshold }
     )
 
     observer.observe(element)

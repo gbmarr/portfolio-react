@@ -32,10 +32,7 @@ function installMockObserver() {
   return {
     trigger: (isIntersecting: boolean) =>
       act(() => {
-        callback(
-          [{ isIntersecting } as IntersectionObserverEntry],
-          {} as IntersectionObserver,
-        )
+        callback([{ isIntersecting } as IntersectionObserverEntry], {} as IntersectionObserver)
       }),
     disconnect,
   }
@@ -75,7 +72,9 @@ describe('useScrollReveal', () => {
   it('reveals immediately when prefers-reduced-motion is set', () => {
     vi.stubGlobal(
       'matchMedia',
-      vi.fn().mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }),
+      vi
+        .fn()
+        .mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })
     )
 
     render(<Probe />)

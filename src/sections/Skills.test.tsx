@@ -28,7 +28,9 @@ describe('Skills', () => {
       intermediate: 'Nivel intermedio',
       advanced: 'Nivel avanzado',
     }
-    const levelsUsed = new Set(skills.flatMap((category) => category.skills.map((skill) => skill.level)))
+    const levelsUsed = new Set(
+      skills.flatMap((category) => category.skills.map((skill) => skill.level))
+    )
     for (const level of levelsUsed) {
       expect(screen.getAllByLabelText(levelLabels[level]).length).toBeGreaterThan(0)
     }
