@@ -74,17 +74,17 @@ Track ID: `portfolio_20260801`
 
 ## Phase 5: Bilingual Support & SEO
 
-- [ ] Task: Implement bilingual support (ES/EN)
-  - [ ] Write tests for the language toggle and translation helper
-  - [ ] Implement a lightweight i18n solution with a language toggle
-  - [ ] Extract all section copy into translation files (ES and EN)
-  - [ ] Set the default language based on the browser language (fallback: Spanish)
-- [ ] Task: Implement SEO & accessibility
-  - [ ] Write tests for the SEO helper
-  - [ ] Add meta description, Open Graph tags, and a semantic heading hierarchy
-  - [ ] Add a document title per page and a favicon
-  - [ ] Perform an accessibility pass (alt text, aria labels, keyboard navigation)
-- [ ] Task: Conductor - User Manual Verification 'Bilingual Support & SEO' (Protocol in workflow.md)
+- [x] Task: Implement bilingual support (ES/EN)
+  - [x] Write tests for the language toggle and translation helper
+  - [x] Implement a lightweight i18n solution with a language toggle
+  - [x] Extract all section copy into translation files (ES and EN)
+  - [x] Set the default language based on the browser language (fallback: Spanish)
+- [x] Task: Implement SEO & accessibility
+  - [x] Write tests for the SEO helper
+  - [x] Add meta description, Open Graph tags, and a semantic heading hierarchy
+  - [x] Add a document title per page and a favicon
+  - [x] Perform an accessibility pass (alt text, aria labels, keyboard navigation)
+- [x] Task: Conductor - User Manual Verification 'Bilingual Support & SEO' (Protocol in workflow.md)
 
 ## Phase 6: Testing, QA & Deployment
 
