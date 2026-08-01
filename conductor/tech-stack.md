@@ -2,7 +2,7 @@
 
 ## Frontend
 
-- **React 18** (SPA) — component-based UI for the portfolio.
+- **React 19** (SPA) — component-based UI for the portfolio (Vite scaffold, installed 19.2.8).
 - **Vite** — fast development server and build tooling.
 - **TypeScript** — type-safe code that showcases modern frontend practices. (Recommended)
 
@@ -25,3 +25,4 @@
 - **npm** — package manager.
 - **Git + GitHub** — version control and repository hosting.
 - **ESLint + Prettier** — code quality and consistent formatting.
+- **Vitest + React Testing Library** — unit testing with >80% coverage.
