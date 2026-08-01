@@ -1,7 +1,23 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import App from './App'
 import { profile } from './data/profile'
+
+const originalLanguage = window.navigator.language
+
+beforeEach(() => {
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: 'es-ES',
+  })
+})
+
+afterEach(() => {
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: originalLanguage,
+  })
+})
 
 describe('App', () => {
   it('renders the hero with the profile name as main heading', () => {
