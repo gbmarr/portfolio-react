@@ -15,6 +15,7 @@ export interface Translation {
     greeting: string
     viewProjects: string
     contactMe: string
+    photo: string
   }
   about: {
     eyebrow: string
@@ -70,6 +71,7 @@ export const translations: Record<Language, Translation> = {
       greeting: 'Hola, soy',
       viewProjects: 'Ver proyectos',
       contactMe: 'Contáctame',
+      photo: 'Foto de perfil',
     },
     about: {
       eyebrow: 'Sobre mí',
@@ -124,6 +126,7 @@ export const translations: Record<Language, Translation> = {
       greeting: "Hi, I'm",
       viewProjects: 'View projects',
       contactMe: 'Contact me',
+      photo: 'Profile photo',
     },
     about: {
       eyebrow: 'About me',

@@ -19,6 +19,13 @@ describe('Hero', () => {
     expect(screen.getByText(profile.bio)).toBeInTheDocument()
   })
 
+  it('renders the profile photo when available', () => {
+    render(<Hero />)
+    const photo = screen.getByRole('img', { name: 'Foto de perfil' })
+    expect(photo).toHaveAttribute('src', profile.photo)
+    expect(photo).toHaveAttribute('alt', 'Foto de perfil')
+  })
+
   it('renders call-to-action buttons linking to projects and contact', () => {
     render(<Hero />)
     const projectsLink = screen.getByRole('link', { name: 'Ver proyectos' })

@@ -9,6 +9,13 @@ export function Hero() {
   return (
     <section id="inicio" className="flex min-h-screen items-center py-20 sm:py-24">
       <Container>
+        {profile.photo && (
+          <img
+            src={profile.photo}
+            alt={t.hero.photo}
+            className="mb-8 h-32 w-32 rounded-full border-2 border-accent/40 object-cover shadow-glow"
+          />
+        )}
         <p className="mb-3 text-sm font-medium uppercase tracking-widest text-accent">
           {t.hero.greeting}
         </p>
