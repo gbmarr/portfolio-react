@@ -38,6 +38,11 @@ export interface Translation {
     code: string
     screenshot: string
     technologies: string
+    roles: {
+      own: string
+      partnership: string
+      collaboration: string
+    }
   }
   contact: {
     eyebrow: string
@@ -95,6 +100,11 @@ export const translations: Record<Language, Translation> = {
       code: 'Código',
       screenshot: 'Captura de',
       technologies: 'Tecnologías',
+      roles: {
+        own: 'Proyecto propio',
+        partnership: 'Proyecto en sociedad',
+        collaboration: 'Colaboración en equipo',
+      },
     },
     contact: {
       eyebrow: 'Contacto',
@@ -151,6 +161,11 @@ export const translations: Record<Language, Translation> = {
       code: 'Code',
       screenshot: 'Screenshot of',
       technologies: 'Technologies',
+      roles: {
+        own: 'Personal project',
+        partnership: 'Partnership',
+        collaboration: 'Team collaboration',
+      },
     },
     contact: {
       eyebrow: 'Contact',

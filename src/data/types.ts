@@ -13,17 +13,21 @@ export interface Profile {
   name: string
   role: string
   bio: string
+  tagline?: string
   photo?: string
   location: string
   email: string
   socialLinks: SocialLink
 }
 
+export type ProjectRole = 'own' | 'partnership' | 'collaboration'
+
 export interface Project {
   id: string
   name: string
   description: string
   technologies: string[]
+  role?: ProjectRole
   demoUrl?: string
   repoUrl?: string
   screenshot?: string

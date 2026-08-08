@@ -5,9 +5,27 @@ export const experience: Experience = {
     {
       title: 'Desarrollo de MVP',
       organization: 'Emprendimiento propio (Dranes)',
-      startDate: '2026',
+      startDate: '2024',
       achievements: [
         'Sistema de gestión para personal training con React, Node.js, Prisma, Supabase y Clerk.',
+      ],
+    },
+    {
+      title: 'Desarrollador Fullstack',
+      organization: 'Pasión Mundialista (sociedad con equipo de desarrollo)',
+      startDate: '2026-06',
+      endDate: '2026-07',
+      achievements: [
+        'Desarrollo de la app web de predicciones de la Copa del Mundo 2026 con PHP, JavaScript, PostgreSQL, Docker y Mercado Pago.',
+      ],
+    },
+    {
+      title: 'Desarrollador Fullstack',
+      organization: 'SimpleHC (equipo de desarrollo)',
+      startDate: '2026-03',
+      endDate: '2026-06',
+      achievements: [
+        'Colaboración en la resolución de issues, ajustes de funcionamiento e integración de Google Login.',
       ],
     },
   ],
