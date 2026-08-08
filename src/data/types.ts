@@ -25,7 +25,7 @@ export interface Project {
   description: string
   technologies: string[]
   demoUrl?: string
-  repoUrl: string
+  repoUrl?: string
   screenshot?: string
 }
 
@@ -42,7 +42,7 @@ export interface SkillCategory {
 export interface ExperienceItem {
   title: string
   organization: string
-  startDate: string
+  startDate?: string
   endDate?: string
   achievements: string[]
 }

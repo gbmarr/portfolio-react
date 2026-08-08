@@ -31,10 +31,12 @@ describe('projects data', () => {
       expect(project.id).toBeTruthy()
       expect(project.name).toBeTruthy()
       expect(project.description).toBeTruthy()
-      expect(project.repoUrl).toMatch(urlPattern)
       expect(project.technologies.length).toBeGreaterThan(0)
       if (project.demoUrl) {
         expect(project.demoUrl).toMatch(urlPattern)
+      }
+      if (project.repoUrl) {
+        expect(project.repoUrl).toMatch(urlPattern)
       }
     }
   })
@@ -58,6 +60,14 @@ describe('experience data', () => {
       expect(item.title).toBeTruthy()
       expect(item.organization).toBeTruthy()
       expect(item.startDate).toBeTruthy()
+    }
+  })
+
+  it('has certifications with titles and organizations', () => {
+    expect(experience.certifications.length).toBeGreaterThan(0)
+    for (const item of experience.certifications) {
+      expect(item.title).toBeTruthy()
+      expect(item.organization).toBeTruthy()
     }
   })
 })
