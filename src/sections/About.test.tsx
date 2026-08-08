@@ -19,8 +19,8 @@ describe('About', () => {
     render(<About />)
     expect(screen.getByRole('heading', { name: 'Experiencia' })).toBeInTheDocument()
     for (const item of experience.work) {
-      expect(screen.getByText(item.title)).toBeInTheDocument()
-      expect(screen.getByText(item.organization)).toBeInTheDocument()
+      expect(screen.getAllByText(item.title).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(item.organization).length).toBeGreaterThan(0)
     }
   })
 

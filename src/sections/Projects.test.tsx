@@ -29,4 +29,13 @@ describe('Projects', () => {
     const demoLinks = screen.getAllByRole('link', { name: /Demo/ })
     expect(demoLinks).toHaveLength(projectsWithDemo.length)
   })
+
+  it('renders a role badge for every project that has a role', () => {
+    render(<Projects />)
+    const projectsWithRole = projects.filter((project) => project.role)
+    const roleBadges = screen.getAllByText(
+      /Proyecto propio|Proyecto en sociedad|Colaboración en equipo/
+    )
+    expect(roleBadges).toHaveLength(projectsWithRole.length)
+  })
 })

@@ -45,4 +45,17 @@ describe('ProjectCard', () => {
     render(<ProjectCard project={project} />)
     expect(screen.getByText('MA')).toBeInTheDocument()
   })
+
+  it('renders the role badge when the project has a role', () => {
+    const projectWithRole = { ...project, role: 'own' as const }
+    render(<ProjectCard project={projectWithRole} />)
+    expect(screen.getByText('Proyecto propio')).toBeInTheDocument()
+  })
+
+  it('omits the role badge when the project has no role', () => {
+    render(<ProjectCard project={project} />)
+    expect(screen.queryByText('Proyecto propio')).not.toBeInTheDocument()
+    expect(screen.queryByText('Proyecto en sociedad')).not.toBeInTheDocument()
+    expect(screen.queryByText('Colaboración en equipo')).not.toBeInTheDocument()
+  })
 })

@@ -38,6 +38,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
+          {project.role ? (
+            <span className="w-fit rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+              {t.projects.roles[project.role]}
+            </span>
+          ) : null}
           <h3 className="font-display text-xl font-semibold text-text">{project.name}</h3>
           <p className="text-text-muted">{project.description}</p>
 

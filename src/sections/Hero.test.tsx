@@ -14,9 +14,9 @@ describe('Hero', () => {
     expect(screen.getByText(profile.role)).toBeInTheDocument()
   })
 
-  it('renders the bio as the tagline', () => {
+  it('renders the tagline as the hero intro', () => {
     render(<Hero />)
-    expect(screen.getByText(profile.bio)).toBeInTheDocument()
+    expect(screen.getByText(profile.tagline!)).toBeInTheDocument()
   })
 
   it('renders the profile photo when available', () => {
