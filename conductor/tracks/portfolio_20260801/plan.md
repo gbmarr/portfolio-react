@@ -99,5 +99,5 @@ Track ID: `portfolio_20260801`
 - [x] Task: Configure and execute deployment
   - [x] Create the production build and verify it works locally
   - [x] Configure the repository for Vercel/Netlify deployment (build command and output directory)
-  - [ ] Deploy the site and verify the live URL works
+  - [x] Deploy the site and verify the live URL works
 - [x] Task: Conductor - User Manual Verification 'Testing, QA & Deployment' (Protocol in workflow.md)

@@ -42,4 +42,4 @@ A modern, polished personal portfolio website for a Junior Fullstack Developer. 
 
 - All 6 implementation phases complete (scaffolding, content model, design system, core sections, bilingual + SEO, QA).
 - Lighthouse scores: Performance 99, Accessibility 100, Best Practices 100, SEO 100.
-- Deployment configuration ready (Vercel/Netlify); live deployment pending.
+- Deployed to Vercel: https://portfolio-blond-beta-46.vercel.app (repo: https://github.com/gbmarr/portfolio-react).

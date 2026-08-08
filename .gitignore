@@ -26,3 +26,5 @@ coverage
 
 # Certificate files
 certificaciones/
+.vercel
+.env*
