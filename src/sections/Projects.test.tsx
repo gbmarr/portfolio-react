@@ -16,10 +16,11 @@ describe('Projects', () => {
     }
   })
 
-  it('renders a repository link for every project', () => {
+  it('renders a repository link only for projects that have one', () => {
     render(<Projects />)
-    const repoLinks = screen.getAllByRole('link', { name: /Código/ })
-    expect(repoLinks).toHaveLength(projects.length)
+    const projectsWithRepo = projects.filter((project) => project.repoUrl)
+    const repoLinks = screen.queryAllByRole('link', { name: /Código/ })
+    expect(repoLinks).toHaveLength(projectsWithRepo.length)
   })
 
   it('renders a demo link only for projects that have one', () => {

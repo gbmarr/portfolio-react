@@ -23,6 +23,7 @@ export interface Translation {
     subtitle: string
     experience: string
     education: string
+    certifications: string
     present: string
   }
   skills: {
@@ -79,6 +80,7 @@ export const translations: Record<Language, Translation> = {
       subtitle: 'Mi perfil, experiencia y formación',
       experience: 'Experiencia',
       education: 'Educación',
+      certifications: 'Certificaciones',
       present: 'Presente',
     },
     skills: {
@@ -134,6 +136,7 @@ export const translations: Record<Language, Translation> = {
       subtitle: 'My profile, experience and education',
       experience: 'Experience',
       education: 'Education',
+      certifications: 'Certifications',
       present: 'Present',
     },
     skills: {

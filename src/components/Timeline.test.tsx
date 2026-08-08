@@ -39,6 +39,17 @@ describe('Timeline', () => {
     expect(screen.getByText('Lancé una aplicación interna con React.')).toBeInTheDocument()
   })
 
+  it('omits the dates line when startDate is absent', () => {
+    const itemWithoutDate: ExperienceItem = {
+      title: 'Formación React',
+      organization: 'Alura',
+      achievements: [],
+    }
+    render(<Timeline title="Certificaciones" items={[itemWithoutDate]} />)
+    expect(screen.getByText('Formación React')).toBeInTheDocument()
+    expect(screen.queryByText(/\d{4}-\d{2} —/)).not.toBeInTheDocument()
+  })
+
   it('does not render a timeline when there are no items', () => {
     render(<Timeline title="Certificaciones" items={[]} />)
     expect(screen.queryByRole('heading', { name: 'Certificaciones' })).not.toBeInTheDocument()

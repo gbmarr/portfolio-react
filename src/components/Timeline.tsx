@@ -4,15 +4,16 @@ import { useLanguage } from '../i18n/LanguageContext'
 interface TimelineProps {
   title: string
   items: ExperienceItem[]
+  className?: string
 }
 
-export function Timeline({ title, items }: TimelineProps) {
+export function Timeline({ title, items, className }: TimelineProps) {
   const { t } = useLanguage()
 
   if (items.length === 0) return null
 
   return (
-    <div>
+    <div className={className}>
       <h3 className="mb-6 font-display text-xl font-semibold text-text">{title}</h3>
       <ol>
         {items.map((item) => (
@@ -26,9 +27,11 @@ export function Timeline({ title, items }: TimelineProps) {
             />
             <h4 className="font-display text-lg font-semibold text-text">{item.title}</h4>
             <p className="text-sm font-medium text-accent">{item.organization}</p>
-            <p className="mt-1 text-sm text-text-muted">
-              {item.startDate} — {item.endDate ?? t.about.present}
-            </p>
+            {item.startDate ? (
+              <p className="mt-1 text-sm text-text-muted">
+                {item.startDate} — {item.endDate ?? t.about.present}
+              </p>
+            ) : null}
             {item.achievements.length > 0 ? (
               <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-text-muted">
                 {item.achievements.map((achievement) => (

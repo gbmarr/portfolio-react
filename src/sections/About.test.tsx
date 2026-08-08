@@ -32,4 +32,18 @@ describe('About', () => {
       expect(screen.getByText(item.organization)).toBeInTheDocument()
     }
   })
+
+  it('renders certifications in a timeline', () => {
+    render(<About />)
+    expect(screen.getByRole('heading', { name: 'Certificaciones' })).toBeInTheDocument()
+    for (const item of experience.certifications) {
+      expect(screen.getByText(item.title)).toBeInTheDocument()
+    }
+    const aluraCount = experience.certifications.filter(
+      (item) => item.organization === 'Alura'
+    ).length
+    expect(screen.getAllByText('Alura')).toHaveLength(aluraCount)
+    expect(screen.getByText('Oracle Next Education + Alura')).toBeInTheDocument()
+    expect(screen.getByText('Certificación C#')).toBeInTheDocument()
+  })
 })

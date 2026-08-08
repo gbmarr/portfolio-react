@@ -35,6 +35,12 @@ describe('ProjectCard', () => {
     expect(screen.queryByRole('link', { name: /Demo/i })).not.toBeInTheDocument()
   })
 
+  it('omits the repository link when repoUrl is absent', () => {
+    const projectWithoutRepo = { ...project, repoUrl: undefined }
+    render(<ProjectCard project={projectWithoutRepo} />)
+    expect(screen.queryByRole('link', { name: /Código/i })).not.toBeInTheDocument()
+  })
+
   it('renders a placeholder with the project initials when there is no screenshot', () => {
     render(<ProjectCard project={project} />)
     expect(screen.getByText('MA')).toBeInTheDocument()

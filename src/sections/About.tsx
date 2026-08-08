@@ -29,6 +29,13 @@ export function About() {
             <Timeline title={t.about.education} items={experience.education} />
           </Reveal>
         </div>
+        <Reveal delay={300}>
+          <Timeline
+            title={t.about.certifications}
+            items={experience.certifications}
+            className="mt-12"
+          />
+        </Reveal>
       </Container>
     </Section>
   )

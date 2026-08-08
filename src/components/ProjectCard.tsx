@@ -55,12 +55,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {t.projects.demo} ↗
               </a>
             ) : null}
-            <a
-              href={project.repoUrl}
-              className="text-sm font-medium text-text hover:text-accent hover:underline"
-            >
-              {t.projects.code} ↗
-            </a>
+            {project.repoUrl ? (
+              <a
+                href={project.repoUrl}
+                className="text-sm font-medium text-text hover:text-accent hover:underline"
+              >
+                {t.projects.code} ↗
+              </a>
+            ) : null}
           </div>
         </div>
       </article>
