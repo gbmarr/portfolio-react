@@ -1,7 +1,22 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Projects } from './Projects'
 import { projects } from '../data/projects'
+import { content } from '../data/content'
+import { LanguageProvider } from '../i18n/LanguageContext'
+
+const originalLanguage = window.navigator.language
+
+function setBrowserLanguage(language: string) {
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: language,
+  })
+}
+
+afterEach(() => {
+  setBrowserLanguage(originalLanguage)
+})
 
 describe('Projects', () => {
   it('renders the section heading', () => {
@@ -37,5 +52,17 @@ describe('Projects', () => {
       /Proyecto propio|Proyecto en sociedad|Colaboración en equipo/
     )
     expect(roleBadges).toHaveLength(projectsWithRole.length)
+  })
+
+  it('renders English descriptions when the language is English', () => {
+    setBrowserLanguage('en-US')
+    render(
+      <LanguageProvider>
+        <Projects />
+      </LanguageProvider>
+    )
+    for (const project of projects) {
+      expect(screen.getByText(content.en.projects[project.id])).toBeInTheDocument()
+    }
   })
 })

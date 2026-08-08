@@ -1,7 +1,22 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Hero } from './Hero'
 import { profile } from '../data/profile'
+import { content } from '../data/content'
+import { LanguageProvider } from '../i18n/LanguageContext'
+
+const originalLanguage = window.navigator.language
+
+function setBrowserLanguage(language: string) {
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: language,
+  })
+}
+
+afterEach(() => {
+  setBrowserLanguage(originalLanguage)
+})
 
 describe('Hero', () => {
   it('renders the name as the main heading', () => {
@@ -32,5 +47,16 @@ describe('Hero', () => {
     const contactLink = screen.getByRole('link', { name: 'Contáctame' })
     expect(projectsLink).toHaveAttribute('href', '#proyectos')
     expect(contactLink).toHaveAttribute('href', '#contacto')
+  })
+
+  it('renders the English role and tagline when the language is English', () => {
+    setBrowserLanguage('en-US')
+    render(
+      <LanguageProvider>
+        <Hero />
+      </LanguageProvider>
+    )
+    expect(screen.getByText(content.en.profile.role)).toBeInTheDocument()
+    expect(screen.getByText(content.en.profile.tagline)).toBeInTheDocument()
   })
 })

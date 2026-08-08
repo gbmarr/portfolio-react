@@ -3,6 +3,7 @@ import type { Experience } from './types'
 export const experience: Experience = {
   work: [
     {
+      id: 'dranes-mvp',
       title: 'Desarrollo de MVP',
       organization: 'Emprendimiento propio (Dranes)',
       startDate: '2024',
@@ -11,6 +12,7 @@ export const experience: Experience = {
       ],
     },
     {
+      id: 'pasion-mundialista',
       title: 'Desarrollador Fullstack',
       organization: 'Pasión Mundialista (sociedad con equipo de desarrollo)',
       startDate: '2026-06',
@@ -20,6 +22,7 @@ export const experience: Experience = {
       ],
     },
     {
+      id: 'simplehc',
       title: 'Desarrollador Fullstack',
       organization: 'SimpleHC (equipo de desarrollo)',
       startDate: '2026-03',
@@ -31,6 +34,7 @@ export const experience: Experience = {
   ],
   education: [
     {
+      id: 'tecnicatura-unicen',
       title: 'Tecnicatura Universitaria en Desarrollo de Aplicaciones Informáticas',
       organization: 'UNICEN',
       startDate: '2023-08',
@@ -39,46 +43,55 @@ export const experience: Experience = {
   ],
   certifications: [
     {
+      id: 'programa-frontend-developer',
       title: 'Programa Frontend Developer',
       organization: 'Oracle Next Education + Alura',
       achievements: [],
     },
     {
+      id: 'formacion-front-end-g6',
       title: 'Formación Front End G6',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-react',
       title: 'Formación React y Explora React con JavaScript',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-sql-mysql',
       title: 'Formación SQL con MySQL',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-logica-js',
       title: 'Formación Lógica de Programación con JavaScript',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-principiante',
       title: 'Formación Principiante en Programación',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-ia-generativa',
       title: 'Formación IA Generativa',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'formacion-oci',
       title: 'Formación Oracle Cloud Infrastructure',
       organization: 'Alura',
       achievements: [],
     },
     {
+      id: 'certificados-csharp',
       title: 'Certificados C# Nivel 2 y 3',
       organization: 'Certificación C#',
       achievements: [],

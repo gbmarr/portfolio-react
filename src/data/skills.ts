@@ -2,6 +2,7 @@ import type { SkillCategory } from './types'
 
 export const skills: SkillCategory[] = [
   {
+    id: 'frontend',
     category: 'Frontend',
     skills: [
       { name: 'HTML', level: 'intermediate' },
@@ -14,6 +15,7 @@ export const skills: SkillCategory[] = [
     ],
   },
   {
+    id: 'backend',
     category: 'Backend',
     skills: [
       { name: 'Node.js', level: 'intermediate' },
@@ -28,6 +30,7 @@ export const skills: SkillCategory[] = [
     ],
   },
   {
+    id: 'tools',
     category: 'Herramientas',
     skills: [
       { name: 'Git', level: 'intermediate' },

@@ -5,6 +5,7 @@ import type { ExperienceItem } from '../data/types'
 
 const sampleItems: ExperienceItem[] = [
   {
+    id: 'frontend-dev',
     title: 'Desarrollador Frontend',
     organization: 'TechCorp',
     startDate: '2025-01',
@@ -12,6 +13,7 @@ const sampleItems: ExperienceItem[] = [
     achievements: ['Lancé una aplicación interna con React.'],
   },
   {
+    id: 'computer-science-degree',
     title: 'Grado en Ingeniería Informática',
     organization: 'Universidad X',
     startDate: '2020-09',
@@ -41,6 +43,7 @@ describe('Timeline', () => {
 
   it('omits the dates line when startDate is absent', () => {
     const itemWithoutDate: ExperienceItem = {
+      id: 'react-training',
       title: 'Formación React',
       organization: 'Alura',
       achievements: [],

@@ -1,4 +1,5 @@
 import type { Project } from '../data/types'
+import { useContent } from '../data/content'
 import { useLanguage } from '../i18n/LanguageContext'
 import { Reveal } from './Reveal'
 import { SkillBadge } from './SkillBadge'
@@ -19,6 +20,7 @@ function getInitials(name: string): string {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const { t } = useLanguage()
+  const localized = useContent()
 
   return (
     <Reveal>
@@ -44,7 +46,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             </span>
           ) : null}
           <h3 className="font-display text-xl font-semibold text-text">{project.name}</h3>
-          <p className="text-text-muted">{project.description}</p>
+          <p className="text-text-muted">{localized.projects[project.id] ?? project.description}</p>
 
           <ul className="flex flex-wrap gap-2" aria-label={t.projects.technologies}>
             {project.technologies.map((tech) => (

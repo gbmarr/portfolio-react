@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import App from './App'
 import { profile } from './data/profile'
+import { content } from './data/content'
 
 const originalLanguage = window.navigator.language
 
@@ -45,5 +47,23 @@ describe('App', () => {
   it('renders the footer', () => {
     render(<App />)
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+  })
+
+  it('switches all visible content to English with the language toggle', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: 'EN' }))
+
+    expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(profile.name)
+    expect(screen.getByText(content.en.profile.role)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'My journey' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Technologies and tools' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Some of my projects' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: "Let's talk?" })).toBeInTheDocument()
   })
 })

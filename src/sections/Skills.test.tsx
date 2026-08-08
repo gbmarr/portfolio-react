@@ -1,7 +1,21 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Skills } from './Skills'
 import { skills } from '../data/skills'
+import { LanguageProvider } from '../i18n/LanguageContext'
+
+const originalLanguage = window.navigator.language
+
+function setBrowserLanguage(language: string) {
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: language,
+  })
+}
+
+afterEach(() => {
+  setBrowserLanguage(originalLanguage)
+})
 
 describe('Skills', () => {
   it('renders the section heading', () => {
@@ -34,5 +48,17 @@ describe('Skills', () => {
     for (const level of levelsUsed) {
       expect(screen.getAllByLabelText(levelLabels[level]).length).toBeGreaterThan(0)
     }
+  })
+
+  it('renders English category labels when the language is English', () => {
+    setBrowserLanguage('en-US')
+    render(
+      <LanguageProvider>
+        <Skills />
+      </LanguageProvider>
+    )
+    expect(screen.getByRole('heading', { name: 'Tools' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Frontend' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Backend' })).toBeInTheDocument()
   })
 })

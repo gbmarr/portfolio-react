@@ -39,11 +39,13 @@ export interface Skill {
 }
 
 export interface SkillCategory {
+  id: string
   category: string
   skills: Skill[]
 }
 
 export interface ExperienceItem {
+  id: string
   title: string
   organization: string
   startDate?: string
