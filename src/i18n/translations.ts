@@ -58,6 +58,7 @@ export interface Translation {
   seo: {
     title: string
     description: string
+    locale: string
   }
 }
 
@@ -121,6 +122,7 @@ export const translations: Record<Language, Translation> = {
       title: 'Gabriel Marrero | Desarrollador Fullstack Junior',
       description:
         'Portfolio de Gabriel Marrero, desarrollador fullstack junior. Proyectos, habilidades y experiencia.',
+      locale: 'es_ES',
     },
   },
   en: {
@@ -182,6 +184,7 @@ export const translations: Record<Language, Translation> = {
       title: 'Gabriel Marrero | Junior Fullstack Developer',
       description:
         'Portfolio of Gabriel Marrero, junior fullstack developer. Projects, skills and experience.',
+      locale: 'en_US',
     },
   },
 }

@@ -1,6 +1,7 @@
 export interface SeoMeta {
   title: string
   description: string
+  locale: string
 }
 
 function setMeta(attr: 'name' | 'property', key: string, content: string): void {
@@ -18,4 +19,5 @@ export function applySeoMeta(meta: SeoMeta): void {
   setMeta('name', 'description', meta.description)
   setMeta('property', 'og:title', meta.title)
   setMeta('property', 'og:description', meta.description)
+  setMeta('property', 'og:locale', meta.locale)
 }
