@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { Hero } from './sections/Hero'
 import { Problem } from './sections/Problem'
+import { Benefits } from './sections/Benefits'
 import { Services } from './sections/Services'
 import { HowItWorks } from './sections/HowItWorks'
 import { Cases } from './sections/Cases'
@@ -24,6 +25,7 @@ function App() {
       <main className="flex-1">
         <Hero />
         <Problem />
+        <Benefits />
         <Services />
         <HowItWorks />
         <Cases />

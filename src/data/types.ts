@@ -87,3 +87,20 @@ export interface FAQ {
   question: string
   answer: string
 }
+
+export type BenefitIcon = 'search' | 'clock' | 'shield' | 'briefcase' | 'chat' | 'users'
+
+export interface Benefit {
+  id: string
+  icon: BenefitIcon
+  title: string
+  description: string
+}
+
+export interface IndustryGroup {
+  id: string
+  /** Nombre del grupo, p. ej. "Oficios y reparaciones". */
+  label: string
+  /** Rubros dentro del grupo, p. ej. "Plomeros". */
+  items: string[]
+}

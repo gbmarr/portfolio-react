@@ -33,6 +33,17 @@ export const copy = {
     ctaLabel: 'Pedir presupuesto',
     unsureText: '¿No sabés cuál necesitás? Escribime y te lo digo sin vueltas.',
   },
+  benefits: {
+    eyebrow: 'Por qué un sitio web',
+    title: 'Lo que un sitio web hace por tu negocio',
+    subtitle:
+      'No es solo "tener presencia": es la forma en que los clientes te encuentran, te eligen y confían en vos.',
+  },
+  industries: {
+    eyebrow: '¿Es para tu rubro?',
+    title: 'Estos rubros ya consiguen clientes por internet',
+    subtitle: 'Si el tuyo está acá, hoy mismo alguien te está buscando.',
+  },
   process: {
     eyebrow: 'Cómo trabajo',
     title: 'Simple, y vos no tenés que hacer nada raro',

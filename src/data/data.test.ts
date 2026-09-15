@@ -4,6 +4,8 @@ import { buildWhatsAppUrl, services } from './services'
 import { cases } from './cases'
 import { processSteps } from './process'
 import { faqs } from './faq'
+import { benefits } from './benefits'
+import { industries } from './industries'
 
 const urlPattern = /^https?:\/\/.+/
 const whatsappUrlPattern = /^https:\/\/wa\.me\/\d+\?text=.+/
@@ -89,5 +91,33 @@ describe('faq data', () => {
       expect(faq.answer).toBeTruthy()
       expect(faq.question.endsWith('?')).toBe(true)
     }
+  })
+})
+
+describe('benefits data', () => {
+  it('has at least 5 benefits with title and description', () => {
+    expect(benefits.length).toBeGreaterThanOrEqual(5)
+    for (const benefit of benefits) {
+      expect(benefit.id).toBeTruthy()
+      expect(benefit.icon).toBeTruthy()
+      expect(benefit.title).toBeTruthy()
+      expect(benefit.description).toBeTruthy()
+    }
+  })
+})
+
+describe('industries data', () => {
+  it('has at least 4 groups with non-empty items', () => {
+    expect(industries.length).toBeGreaterThanOrEqual(4)
+    for (const group of industries) {
+      expect(group.id).toBeTruthy()
+      expect(group.label).toBeTruthy()
+      expect(group.items.length).toBeGreaterThanOrEqual(4)
+    }
+  })
+
+  it('does not list "médicos" as an industry', () => {
+    const allItems = industries.flatMap((group) => group.items)
+    expect(allItems.some((item) => item.toLowerCase().includes('médic'))).toBe(false)
   })
 })
