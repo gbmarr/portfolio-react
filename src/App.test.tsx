@@ -14,18 +14,18 @@ describe('App', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
-  it('renders the home page sections (resumen + detalle)', () => {
+  it('renders the home page sections without duplication', () => {
     render(<App />)
     expect(
       screen.getByRole('heading', { level: 2, name: copy.problem.title })
     ).toBeInTheDocument()
-    // Los títulos de servicios y casos aparecen dos veces: resumen y detalle.
+    // Servicios y casos aparecen una sola vez (sin resumen + detalle duplicados).
     expect(
       screen.getAllByRole('heading', { level: 2, name: copy.services.title })
-    ).toHaveLength(2)
+    ).toHaveLength(1)
     expect(
       screen.getAllByRole('heading', { level: 2, name: copy.cases.title })
-    ).toHaveLength(2)
+    ).toHaveLength(1)
     expect(
       screen.getByRole('heading', { level: 2, name: copy.about.title })
     ).toBeInTheDocument()

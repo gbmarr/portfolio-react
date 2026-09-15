@@ -212,6 +212,22 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 ---
 
+## Revisión posterior (2026-09-15)
+
+**Problema detectado por el usuario:** las secciones de Servicios y Trabajos aparecían duplicadas en el sitio.
+
+**Causa:** el diseño original asumía páginas separadas (resumen en home + página interior de detalle), pero con SPA de secciones-ancla el "resumen" y el "detalle" renderizaban las mismas tarjetas dos veces en la misma página (2 servicios y 3 casos → duplicación visual total).
+
+**Corrección aplicada:**
+- `ServicesPreview` + `ServicesDetail` → **`Services.tsx`** (sección única completa, id `servicios`, con unsureText + CTA de WhatsApp).
+- `FeaturedCases` + `CasesDetail` → **`Cases.tsx`** (sección única completa, id `trabajos`, con todos los casos + nota de honestidad).
+- Eliminadas las 4 secciones duplicadas y sus tests; `App.tsx` renderiza cada sección una sola vez: Hero → Problem → Services → HowItWorks → Cases → AboutShort → FAQ → CTAFinal → Contact.
+- Eliminadas claves de copy sin uso: `services.detailLabel` y `cases.viewAll`.
+- `App.test.tsx` ahora verifica que Servicios y Trabajos aparecen **una sola vez** (`toHaveLength(1)`).
+- Verificado: 29 test files / 94 tests ✅, lint ✅, typecheck ✅, build ✅.
+
+---
+
 ## Fase 10 — QA y checklist previo a publicar
 
 **Objetivo:** Validar contra el checklist del spec (Sección 11).

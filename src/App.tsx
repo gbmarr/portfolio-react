@@ -3,11 +3,9 @@ import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
 import { Hero } from './sections/Hero'
 import { Problem } from './sections/Problem'
-import { ServicesPreview } from './sections/ServicesPreview'
+import { Services } from './sections/Services'
 import { HowItWorks } from './sections/HowItWorks'
-import { FeaturedCases } from './sections/FeaturedCases'
-import { ServicesDetail } from './sections/ServicesDetail'
-import { CasesDetail } from './sections/CasesDetail'
+import { Cases } from './sections/Cases'
 import { AboutShort } from './sections/AboutShort'
 import { FAQSection } from './sections/FAQSection'
 import { CTAFinal } from './sections/CTAFinal'
@@ -26,11 +24,9 @@ function App() {
       <main className="flex-1">
         <Hero />
         <Problem />
-        <ServicesPreview />
+        <Services />
         <HowItWorks />
-        <FeaturedCases />
-        <ServicesDetail />
-        <CasesDetail />
+        <Cases />
         <AboutShort />
         <FAQSection />
         <CTAFinal />

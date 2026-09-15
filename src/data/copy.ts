@@ -32,7 +32,6 @@ export const copy = {
     timelineLabel: 'Plazo',
     priceFromLabel: 'Desde',
     ctaLabel: 'Pedir presupuesto',
-    detailLabel: 'Ver detalle completo',
     unsureText: '¿No sabés cuál necesitás? Escribime y te lo digo sin vueltas.',
   },
   process: {
@@ -44,7 +43,6 @@ export const copy = {
     eyebrow: 'Trabajos',
     title: 'Casos reales, con contexto',
     subtitle: 'No capturas sueltas: qué necesitaba cada cliente y qué resolvimos.',
-    viewAll: 'Ver todos los casos',
     visitSite: 'Ver el sitio',
     needLabel: 'Qué necesitaba',
     workLabel: 'Qué hice',
