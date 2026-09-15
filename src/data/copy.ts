@@ -1,9 +1,5 @@
 // Fuente única de texto del sitio (solo español).
 // El copy debe coincidir exactamente con los contratos que firma el cliente.
-//
-// Nota: algunas claves marcadas como [legacy] se conservan para los
-// componentes del portfolio original; se eliminarán cuando esos componentes
-// se reescriban (Fases 4-6).
 
 export const copy = {
   nav: {
@@ -14,8 +10,6 @@ export const copy = {
     services: 'Servicios',
     cases: 'Trabajos',
     contact: 'Contacto',
-    // [legacy] sección Proyectos del portfolio original
-    projects: 'Proyectos',
   },
   hero: {
     title: 'Sitios web para negocios que necesitan verse profesionales',
@@ -24,11 +18,6 @@ export const copy = {
     ctaPrimary: 'Pedí tu presupuesto',
     ctaSecondary: 'Ver trabajos',
     proofAlt: 'Captura de un sitio desarrollado',
-    // [legacy] portfolio original
-    greeting: 'Hola, soy',
-    viewProjects: 'Ver proyectos',
-    contactMe: 'Contáctame',
-    photo: 'Foto de perfil',
   },
   problem: {
     title: '¿Te suena esto?',
@@ -68,21 +57,6 @@ export const copy = {
       collaboration: 'Colaboración en equipo',
     },
   },
-  // [legacy] sección Proyectos del portfolio original (en uso hasta Fase 5)
-  projects: {
-    eyebrow: 'Proyectos',
-    title: 'Algunos de mis proyectos',
-    subtitle: 'Una muestra de mi trabajo',
-    demo: 'Demo',
-    code: 'Código',
-    screenshot: 'Captura de',
-    technologies: 'Tecnologías',
-    roles: {
-      own: 'Proyecto propio',
-      partnership: 'Proyecto en sociedad',
-      collaboration: 'Colaboración en equipo',
-    },
-  },
   about: {
     eyebrow: 'Sobre mí',
     title: 'Tu sitio lo hace una persona, no una agencia',
@@ -115,7 +89,7 @@ export const copy = {
       error:
         'Algo salió mal al enviar. Escribime por WhatsApp y lo resolvemos al toque.',
     },
-    // [legacy] portfolio original
+    // [en uso] enlace mailto en la sección Contacto
     sendEmail: 'Enviar email',
   },
   footer: {

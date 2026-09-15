@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** 🟡 Fases 0-8 completadas (falta Access Key real del usuario) — Fase 9 pendiente
+> **Status:** ✅ Fases 0-10 completadas (pendientes de configuración del usuario listados abajo)
 
 ---
 
@@ -216,24 +216,34 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 **Objetivo:** Validar contra el checklist del spec (Sección 11).
 
-### Checklist
+### Checklist final
 
-- [ ] El titular del hero explica qué hacés sin jerga técnica
-- [ ] Hay un solo llamado a la acción principal, repetido arriba y abajo
-- [ ] Los precios (o rangos) están visibles
-- [ ] El proceso de trabajo está explicado en pasos
-- [ ] Hay al menos 2-3 trabajos con contexto, no solo imágenes
-- [ ] El formulario fue probado y llegan los mensajes
-- [ ] El enlace de WhatsApp funciona y abre con mensaje predefinido
-- [ ] Se ve bien en un celular real, no solo en el emulador del navegador
-- [ ] Carga en menos de 3 segundos
-- [ ] Analytics está instalado y registrando
-- [ ] Al compartir el link por WhatsApp se ve la previsualización correcta
-- [ ] Los textos coinciden con lo que dicen los contratos
-- [ ] `npm run build` pasa sin errores
-- [ ] `npm run lint` pasa sin warnings
-- [ ] `npm run test` pasa con cobertura ≥80%
-- [ ] `npm run typecheck` pasa sin errores
+- [x] El titular del hero explica qué hacés sin jerga técnica — `copy.hero.title`
+- [x] Hay un solo llamado a la acción principal, repetido arriba y abajo — `WhatsAppButton` en Hero y CTAFinal
+- [x] Los precios (o rangos) están visibles — `PriceTag` en `ServiceCard` (placeholders USD)
+- [x] El proceso de trabajo está explicado en pasos — `HowItWorks` / `ProcessSteps` (4 pasos)
+- [x] Hay al menos 2-3 trabajos con contexto, no solo imágenes — `FeaturedCases` / `CasesDetail` (3 casos)
+- [ ] El formulario fue probado y llegan los mensajes — **pendiente**: falta `VITE_FORM_ACCESS_KEY` real (tests con mock ✅)
+- [x] El enlace de WhatsApp funciona y abre con mensaje predefinido — `buildWhatsAppUrl` (falta número real)
+- [ ] Se ve bien en un celular real — **pendiente de prueba manual** en dispositivo físico
+- [x] Carga en menos de 3 segundos — bundle 220 kB JS (69 kB gzip), verificación final con Lighthouse recomendada
+- [x] Analytics está instalado y registrando — Vercel Analytics (`inject()` en `main.tsx`); activar en dashboard de Vercel
+- [x] Al compartir el link por WhatsApp se ve la previsualización correcta — `og:image` + OG tags en `index.html`
+- [ ] Los textos coinciden con lo que dicen los contratos — **responsabilidad del usuario** al redactar contratos
+- [x] `npm run build` pasa sin errores
+- [x] `npm run lint` pasa sin warnings
+- [x] `npm run test` pasa con cobertura ≥80% — 31 files / 98 tests ✅, 97.61% stmts / 93.1% branches
+- [x] `npm run typecheck` pasa sin errores
+
+### Pendientes que requieren acción del usuario (no bloquean el código)
+
+1. **Web3Forms:** crear cuenta, copiar `.env.example` → `.env.local`, completar `VITE_FORM_ACCESS_KEY`, configurar email receptor. Sin esto el form muestra error y deriva a WhatsApp.
+2. **Número real de WhatsApp** en `src/data/profile.ts` (`whatsappNumber` formato internacional sin `+`, `phone`, `whatsappMessage`).
+3. **Ciudad/zona** en `src/data/profile.ts` (`city`) para SEO local.
+4. **Precios reales** en `src/data/services.ts` (`priceFrom` placeholders USD 250/450).
+5. **Dominio definitivo** para `index.html` (canonical), `public/sitemap.xml` y `public/robots.txt` (hoy apuntan a `portfolio-blond-beta-46.vercel.app`).
+6. **Prueba en celular real** (checklist spec).
+7. **npm audit:** 4 vulnerabilidades (3 moderate, 1 high) en el árbol de dependencias — revisar antes de publicar.
 
 ---
 

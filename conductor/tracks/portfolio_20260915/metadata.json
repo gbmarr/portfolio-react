@@ -1,8 +1,15 @@
 {
   "track_id": "portfolio_20260915",
   "type": "refactor",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-09-15T00:00:00Z",
-  "updated_at": "2026-09-15T00:00:00Z",
-  "description": "Refactor the portfolio website into a web development services site (landing pages + institutional sites for Argentine SMEs)"
+  "updated_at": "2026-09-15T12:15:00Z",
+  "description": "Refactor the portfolio website into a web development services site (landing pages + institutional sites for Argentine SMEs). Implementation complete; pending user config: Web3Forms key, real WhatsApp number, city, prices, and final domain.",
+  "pending_user_config": [
+    "VITE_FORM_ACCESS_KEY (Web3Forms)",
+    "profile.whatsappNumber / phone reales",
+    "profile.city (SEO local)",
+    "services.priceFrom reales",
+    "Dominio definitivo (canonical, sitemap, robots)"
+  ]
 }
