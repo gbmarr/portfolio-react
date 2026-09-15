@@ -81,37 +81,45 @@ describe('ContactForm', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
   })
 
-  it('blocks rapid repeated submissions (anti-spam throttle)', async () => {
-    const nowSpy = vi.spyOn(Date, 'now')
-    const baseTime = 1_700_000_000_000
-    nowSpy.mockReturnValue(baseTime)
-    try {
-      const user = userEvent.setup()
-      const onSubmit = vi.fn()
-      render(<ContactForm onSubmit={onSubmit} />)
+  it(
+    'blocks rapid repeated submissions (anti-spam throttle)',
+    async () => {
+      const nowSpy = vi.spyOn(Date, 'now')
+      const baseTime = 1_700_000_000_000
+      nowSpy.mockReturnValue(baseTime)
+      try {
+        // delay: null acelera el tipeo (el throttle usa Date.now mockeado, no tiempo real).
+        const user = userEvent.setup({ delay: null })
+        const onSubmit = vi.fn()
+        render(<ContactForm onSubmit={onSubmit} />)
 
-      const fill = async () => {
-        await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
-        await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
-        await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+        const fill = async () => {
+          await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
+          await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
+          await user.type(
+            screen.getByLabelText('Contame qué necesitás'),
+            'Necesito una landing page'
+          )
+        }
+
+        await fill()
+        await user.click(screen.getByRole('button', { name: 'Enviar' }))
+        expect(onSubmit).toHaveBeenCalledTimes(1)
+
+        // Segundo envío "inmediato" (misma hora simulada): bloqueado por el throttle.
+        await fill()
+        await user.click(screen.getByRole('button', { name: 'Enviar' }))
+        expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
+        expect(onSubmit).toHaveBeenCalledTimes(1)
+
+        // Pasado el intervalo mínimo, el envío vuelve a funcionar.
+        nowSpy.mockReturnValue(baseTime + MIN_SUBMIT_INTERVAL_MS + 1)
+        await user.click(screen.getByRole('button', { name: 'Enviar' }))
+        expect(onSubmit).toHaveBeenCalledTimes(2)
+      } finally {
+        nowSpy.mockRestore()
       }
-
-      await fill()
-      await user.click(screen.getByRole('button', { name: 'Enviar' }))
-      expect(onSubmit).toHaveBeenCalledTimes(1)
-
-      // Segundo envío "inmediato" (misma hora simulada): bloqueado por el throttle.
-      await fill()
-      await user.click(screen.getByRole('button', { name: 'Enviar' }))
-      expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
-      expect(onSubmit).toHaveBeenCalledTimes(1)
-
-      // Pasado el intervalo mínimo, el envío vuelve a funcionar.
-      nowSpy.mockReturnValue(baseTime + MIN_SUBMIT_INTERVAL_MS + 1)
-      await user.click(screen.getByRole('button', { name: 'Enviar' }))
-      expect(onSubmit).toHaveBeenCalledTimes(2)
-    } finally {
-      nowSpy.mockRestore()
-    }
-  })
+    },
+    15000
+  )
 })

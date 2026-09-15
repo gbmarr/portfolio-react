@@ -22,7 +22,9 @@ describe('App', () => {
     expect(
       screen.getAllByRole('heading', { level: 2, name: copy.benefits.title })
     ).toHaveLength(1)
-    // Servicios y casos aparecen una sola vez (sin resumen + detalle duplicados).
+    expect(
+      screen.getAllByRole('heading', { level: 2, name: copy.industries.title })
+    ).toHaveLength(1)
     expect(
       screen.getAllByRole('heading', { level: 2, name: copy.services.title })
     ).toHaveLength(1)

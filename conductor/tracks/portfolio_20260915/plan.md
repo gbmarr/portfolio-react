@@ -226,6 +226,23 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 - `App.test.tsx` ahora verifica que Servicios y Trabajos aparecen **una sola vez** (`toHaveLength(1)`).
 - Verificado: 29 test files / 94 tests ✅, lint ✅, typecheck ✅, build ✅.
 
+### Revisión de orden y peso visual del home (2026-09-15)
+
+**Problema detectado por el usuario:** revisar el orden y el peso visual del home luego de agregar la sección de Beneficios + Rubros.
+
+**Diagnóstico:**
+- `Benefits` (base) y `Services` (base) quedaban consecutivas → 2 secciones seguidas sin tinte (muro visual continuo de ~2 pantallas).
+- `Benefits` era la sección más alta del sitio: dos bloques completos (6 tarjetas + rubros) con solo `mt-20` entre ambos; la pregunta de calificación "¿Es para tu rubro?" quedaba enterrada.
+
+**Corrección aplicada (aprobada por el usuario):**
+- `Benefits.tsx` → solo beneficios (id `beneficios`, fondo base, 6 tarjetas).
+- **Nueva** `Industries.tsx` (id `rubros`, fondo `bg-surface/40`): rubros en 5 grupos / 32 chips, ubicada entre `Benefits` y `Services`.
+- `App.tsx` orden final: Hero → Problem → Benefits → **Industries** → Services → HowItWorks → Cases → AboutShort → FAQ → CTAFinal → Contact. **Alternancia base/tinte perfecta en 11 secciones.**
+- Sin cambios de copy ni de navegación (4 ítems del menú intactos).
+- Tests: `Industries.test.tsx` nuevo; `Benefits.test.tsx` recortado; `App.test.tsx` verifica `copy.industries.title` (`toHaveLength(1)`).
+- Fix de flake: test de throttle de `ContactForm.test.tsx` excedía 5000 ms bajo coverage → `userEvent.setup({ delay: null })` + timeout 15000 ms.
+- Verificado: 33 test files / 112 tests ✅, lint ✅, typecheck ✅, build ✅ (228.58 kB js / 71.48 kB gzip), coverage 97.48% stmts / 93.16% branches.
+
 ---
 
 ## Fase 10 — QA y checklist previo a publicar
@@ -248,7 +265,7 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 - [ ] Los textos coinciden con lo que dicen los contratos — **responsabilidad del usuario** al redactar contratos
 - [x] `npm run build` pasa sin errores
 - [x] `npm run lint` pasa sin warnings
-- [x] `npm run test` pasa con cobertura ≥80% — 29 files / 94 tests ✅, 97.52% stmts / 93.1% branches / 98.11% funcs / 98.24% lines (Vitest 5)
+- [x] `npm run test` pasa con cobertura ≥80% — 33 files / 112 tests ✅, 97.48% stmts / 93.16% branches / 96.87% funcs / 98.67% lines (Vitest 5)
 - [x] `npm run typecheck` pasa sin errores
 
 ### Pendientes que requieren acción del usuario (no bloquean el código)
