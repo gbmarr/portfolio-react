@@ -6,6 +6,7 @@ interface ButtonProps {
   href?: string
   type?: 'button' | 'submit' | 'reset'
   className?: string
+  disabled?: boolean
 }
 
 const baseClasses =
@@ -22,8 +23,9 @@ export function Button({
   href,
   type = 'button',
   className = '',
+  disabled = false,
 }: ButtonProps) {
-  const classes = `${baseClasses} ${variantClasses[variant]} ${className}`
+  const classes = `${baseClasses} ${variantClasses[variant]} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${className}`
 
   if (href) {
     return (
@@ -34,7 +36,7 @@ export function Button({
   }
 
   return (
-    <button type={type} className={classes}>
+    <button type={type} disabled={disabled} className={classes}>
       {children}
     </button>
   )

@@ -5,7 +5,9 @@ import { Navbar } from './Navbar'
 import { profile } from '../data/profile'
 
 const navItems = [
-  { name: 'Proyectos', href: '#proyectos' },
+  { name: 'Inicio', href: '#inicio' },
+  { name: 'Servicios', href: '#servicios' },
+  { name: 'Trabajos', href: '#trabajos' },
   { name: 'Contacto', href: '#contacto' },
 ]
 

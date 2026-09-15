@@ -1,36 +1,31 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Hero } from './Hero'
-import { profile } from '../data/profile'
+import { copy } from '../data/copy'
 
 describe('Hero', () => {
-  it('renders the name as the main heading', () => {
+  it('states what I sell in plain language', () => {
     render(<Hero />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(profile.name)
+    expect(
+      screen.getByRole('heading', { level: 1, name: copy.hero.title }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(copy.hero.subtitle)).toBeInTheDocument()
   })
 
-  it('renders the role', () => {
+  it('renders a single WhatsApp-based primary CTA', () => {
     render(<Hero />)
-    expect(screen.getByText(profile.role)).toBeInTheDocument()
+    const primary = screen.getByRole('link', { name: copy.hero.ctaPrimary })
+    expect(primary).toHaveAttribute('href', expect.stringMatching(/^https:\/\/wa\.me\//))
   })
 
-  it('renders the tagline as the hero intro', () => {
+  it('shows a secondary link to the work samples', () => {
     render(<Hero />)
-    expect(screen.getByText(profile.tagline!)).toBeInTheDocument()
+    const secondary = screen.getByRole('link', { name: copy.hero.ctaSecondary })
+    expect(secondary).toHaveAttribute('href', '#trabajos')
   })
 
-  it('renders the profile photo when available', () => {
+  it('shows visual proof with real screenshots', () => {
     render(<Hero />)
-    const photo = screen.getByRole('img', { name: 'Foto de perfil' })
-    expect(photo).toHaveAttribute('src', profile.photo)
-    expect(photo).toHaveAttribute('alt', 'Foto de perfil')
-  })
-
-  it('renders call-to-action buttons linking to projects and contact', () => {
-    render(<Hero />)
-    const projectsLink = screen.getByRole('link', { name: 'Ver proyectos' })
-    const contactLink = screen.getByRole('link', { name: 'Contáctame' })
-    expect(projectsLink).toHaveAttribute('href', '#proyectos')
-    expect(contactLink).toHaveAttribute('href', '#contacto')
+    expect(screen.getAllByAltText('Captura de Pasión Mundialista').length).toBeGreaterThan(0)
   })
 })

@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** 🟡 Fases 0-1 completadas — Fase 2 pendiente
+> **Status:** 🟡 Fases 0-6 completadas — Fase 7 pendiente
 
 ---
 
@@ -138,12 +138,17 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 ### Tareas
 
-| # | Tarea | Archivo |
-|---|-------|---------|
-| 6.1 | Reescribir `Navbar.tsx` — links: Inicio, Servicios, Trabajos, Contacto | `src/components/Navbar.tsx` |
-| 6.2 | Reescribir `Footer.tsx` — info básica, copyright, links a secciones | `src/components/Footer.tsx` |
-| 6.3 | Actualizar `App.tsx` — orden de secciones: Hero → Problem → ServicesPreview → HowItWorks → FeaturedCases → AboutShort → FAQ → CTAFinal → ServicesDetail → CasesDetail → ContactFull | `src/App.tsx` |
-| 6.4 | Crear `src/components/NavAnchor.tsx` o usar scroll para navegación entre "páginas" | — |
+| # | Tarea | Archivo | Estado |
+|---|-------|---------|--------|
+| 6.1 | Reescribir `Navbar.tsx` — links: Inicio, Servicios, Trabajos, Contacto | `src/components/Navbar.tsx` | ✅ |
+| 6.2 | Reescribir `Footer.tsx` — tagline, copyright, derechos | `src/components/Footer.tsx` | ✅ |
+| 6.3 | Actualizar `App.tsx` — orden de secciones: Hero → Problem → ServicesPreview → HowItWorks → FeaturedCases → ServicesDetail → CasesDetail → AboutShort → FAQSection → CTAFinal → Contact | `src/App.tsx` | ✅ |
+| 6.4 | Navegación entre "páginas" | — | ✅ (SPA anclas confirmado; no requiere NavAnchor) |
+
+> **Notas de implementación (Fase 6):**
+> - El orden real de `App.tsx` difiere levemente del original: `ServicesDetail` y `CasesDetail` van antes de `AboutShort`/`FAQ`/`CTAFinal` para fluir resumen → detalle → cierre.
+> - Se eliminaron las secciones legacy que quedaron sin uso: `src/sections/Projects.tsx`, `src/components/ProjectCard.tsx`, `src/data/projects.ts` (+ sus tests y el test de datos de projects). El copy legacy de `copy.ts` (claves `projects`, `hero.greeting`, etc.) queda inerte hasta limpiarse en el QA.
+> - Verificado: typecheck ✅, lint ✅, 30 test files / 94 tests ✅, cobertura 98.21% stmts / 93.5% branches ✅, build ✅.
 
 ---
 
