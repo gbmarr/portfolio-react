@@ -8,6 +8,12 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
+const okResponse = (body: Record<string, unknown> = { success: true }) => ({
+  ok: true,
+  status: 200,
+  json: async () => body,
+})
+
 describe('submitContactForm', () => {
   it('lanzar un error si falta VITE_FORM_ACCESS_KEY', async () => {
     vi.stubEnv('VITE_FORM_ACCESS_KEY', '')
@@ -19,7 +25,7 @@ describe('submitContactForm', () => {
 
   it('envía el mensaje a Web3Forms con la access key', async () => {
     vi.stubEnv('VITE_FORM_ACCESS_KEY', 'clave-de-test')
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true })
+    const fetchMock = vi.fn().mockResolvedValue(okResponse())
     globalThis.fetch = fetchMock
 
     await submitContactForm({ name: 'Ana', email: 'ana@example.com', message: 'Hola' })
@@ -41,6 +47,20 @@ describe('submitContactForm', () => {
     })
   })
 
+  it('incluye el honeypot botcheck en el payload', async () => {
+    vi.stubEnv('VITE_FORM_ACCESS_KEY', 'clave-de-test')
+    const fetchMock = vi.fn().mockResolvedValue(okResponse())
+    globalThis.fetch = fetchMock
+
+    await submitContactForm(
+      { name: 'Ana', email: 'ana@example.com', message: 'Hola' },
+      'valor-que-llena-un-bot',
+    )
+
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string)
+    expect(body).toHaveProperty('botcheck', 'valor-que-llena-un-bot')
+  })
+
   it('lanzar un error si la API responde con error', async () => {
     vi.stubEnv('VITE_FORM_ACCESS_KEY', 'clave-de-test')
     globalThis.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 })
@@ -48,5 +68,14 @@ describe('submitContactForm', () => {
     await expect(
       submitContactForm({ name: 'Ana', email: 'ana@example.com', message: 'Hola' })
     ).rejects.toThrow('500')
+  })
+
+  it('lanzar un error si Web3Forms rechaza con success: false', async () => {
+    vi.stubEnv('VITE_FORM_ACCESS_KEY', 'clave-de-test')
+    globalThis.fetch = vi.fn().mockResolvedValue(okResponse({ success: false }))
+
+    await expect(
+      submitContactForm({ name: 'Ana', email: 'ana@example.com', message: 'Hola' })
+    ).rejects.toThrow('rechazó')
   })
 })

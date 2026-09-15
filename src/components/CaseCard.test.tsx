@@ -28,11 +28,13 @@ describe('CaseCard', () => {
     expect(screen.getByText('Proyecto propio')).toBeInTheDocument()
   })
 
-  it('renders a link to the live site when present', () => {
+  it('renders a safe link to the live site when present', () => {
     const withUrl = cases.find((caseStudy) => caseStudy.id === 'simplehc')!
     render(<CaseCard caseStudy={withUrl} />)
     const link = screen.getByRole('link', { name: /Ver el sitio/ })
     expect(link).toHaveAttribute('href', withUrl.url)
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('omits the site link when there is no url', () => {

@@ -57,6 +57,8 @@ export function CaseCard({ caseStudy }: CaseCardProps) {
       {caseStudy.url && (
         <a
           href={caseStudy.url}
+          target="_blank"
+          rel="noopener noreferrer"
           className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
         >
           {copy.cases.visitSite} ↗

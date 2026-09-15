@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react'
 import { Mockup } from './Mockup'
 
 describe('Mockup', () => {
-  it('renders the image with its alt text', () => {
+  it('renders the image with its alt text and lazy loading', () => {
     render(<Mockup src="/images/site.png" alt="Captura del sitio" />)
     const img = screen.getByRole('img', { name: 'Captura del sitio' })
     expect(img).toHaveAttribute('src', '/images/site.png')
+    expect(img).toHaveAttribute('loading', 'lazy')
   })
 
   it('renders the initials when there is no screenshot', () => {
