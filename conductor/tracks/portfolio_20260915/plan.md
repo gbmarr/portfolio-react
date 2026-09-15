@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** ✅ Fases 0-10 completadas (pendientes de configuración del usuario listados abajo)
+> **Status:** ✅ Fases 0-10 completadas + configuración final (2026-09-15)
 
 ---
 
@@ -236,30 +236,34 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 - [x] El titular del hero explica qué hacés sin jerga técnica — `copy.hero.title`
 - [x] Hay un solo llamado a la acción principal, repetido arriba y abajo — `WhatsAppButton` en Hero y CTAFinal
-- [x] Los precios (o rangos) están visibles — `PriceTag` en `ServiceCard` (placeholders USD)
+- [x] Los precios (o rangos) están visibles — `PriceTag` en `ServiceCard` (**definitivos**: USD 250 / USD 450)
 - [x] El proceso de trabajo está explicado en pasos — `HowItWorks` / `ProcessSteps` (4 pasos)
-- [x] Hay al menos 2-3 trabajos con contexto, no solo imágenes — `FeaturedCases` / `CasesDetail` (3 casos)
-- [ ] El formulario fue probado y llegan los mensajes — **pendiente**: falta `VITE_FORM_ACCESS_KEY` real (tests con mock ✅)
-- [x] El enlace de WhatsApp funciona y abre con mensaje predefinido — `buildWhatsAppUrl` (falta número real)
+- [x] Hay al menos 2-3 trabajos con contexto, no solo imágenes — `Cases` (3 casos)
+- [ ] El formulario fue probado y llegan los mensajes — **pendiente**: falta crear `VITE_FORM_ACCESS_KEY` en Web3Forms (tests con mock ✅)
+- [x] El enlace de WhatsApp funciona y abre con mensaje predefinido — `buildWhatsAppUrl` (**número real configurado** 5492262339680)
 - [ ] Se ve bien en un celular real — **pendiente de prueba manual** en dispositivo físico
-- [x] Carga en menos de 3 segundos — bundle 220 kB JS (69 kB gzip), verificación final con Lighthouse recomendada
+- [x] Carga en menos de 3 segundos — bundle 219 kB JS (69 kB gzip), verificación final con Lighthouse recomendada
 - [x] Analytics está instalado y registrando — Vercel Analytics (`inject()` en `main.tsx`); activar en dashboard de Vercel
-- [x] Al compartir el link por WhatsApp se ve la previsualización correcta — `og:image` + OG tags en `index.html`
+- [x] Al compartir el link por WhatsApp se ve la previsualización correcta — `og:image` (URL absoluta + width/height 1877×894) en `index.html` y `copy.seo`
 - [ ] Los textos coinciden con lo que dicen los contratos — **responsabilidad del usuario** al redactar contratos
 - [x] `npm run build` pasa sin errores
 - [x] `npm run lint` pasa sin warnings
-- [x] `npm run test` pasa con cobertura ≥80% — 31 files / 98 tests ✅, 97.61% stmts / 93.1% branches
+- [x] `npm run test` pasa con cobertura ≥80% — 29 files / 94 tests ✅, 97.52% stmts / 93.1% branches / 98.11% funcs / 98.24% lines (Vitest 5)
 - [x] `npm run typecheck` pasa sin errores
 
 ### Pendientes que requieren acción del usuario (no bloquean el código)
 
-1. **Web3Forms:** crear cuenta, copiar `.env.example` → `.env.local`, completar `VITE_FORM_ACCESS_KEY`, configurar email receptor. Sin esto el form muestra error y deriva a WhatsApp.
-2. **Número real de WhatsApp** en `src/data/profile.ts` (`whatsappNumber` formato internacional sin `+`, `phone`, `whatsappMessage`).
-3. **Ciudad/zona** en `src/data/profile.ts` (`city`) para SEO local.
-4. **Precios reales** en `src/data/services.ts` (`priceFrom` placeholders USD 250/450).
-5. **Dominio definitivo** para `index.html` (canonical), `public/sitemap.xml` y `public/robots.txt` (hoy apuntan a `portfolio-blond-beta-46.vercel.app`).
-6. **Prueba en celular real** (checklist spec).
-7. **npm audit:** 4 vulnerabilidades (3 moderate, 1 high) en el árbol de dependencias — revisar antes de publicar.
+1. **Web3Forms:** crear cuenta, completar `VITE_FORM_ACCESS_KEY` en `.env.local` (ya creado, vacío), configurar email receptor. Sin esto el form muestra error y deriva a WhatsApp.
+2. **Prueba en celular real** (checklist spec) tras el deploy.
+3. **Dominio propio (opcional):** hoy canonical/sitemap/robots apuntan a `portfolio-blond-beta-46.vercel.app`; cuando haya dominio definitivo actualizar `index.html`, `public/sitemap.xml` y `public/robots.txt`.
+
+### Resueltos en la configuración final (2026-09-15)
+
+- WhatsApp real: `whatsappNumber: '5492262339680'`, `phone: '+54 9 2262 339680'` (`src/data/profile.ts`).
+- Ciudad/zona SEO local: decidido mantener `city: 'Argentina'` (área 2262 → Tandil; cambiar a `'Tandil'` es una línea si se quiere afinar).
+- Precios definitivos: USD 250 (landing) / USD 450 (institucional) en `src/data/services.ts`.
+- OG image absoluta: `copy.seo.ogImage` e `index.html` apuntan a `https://portfolio-blond-beta-46.vercel.app/images/pasion-cap-1.png` + `og:image:width/height` (1877×894).
+- npm audit: **0 vulnerabilidades** — `npm audit fix` resolvió la alta (nanoid→3.3.19) y se actualizó Vitest 4.1.10 → 5.0.1 junto a `@vitest/coverage-v8@5` para resolver las 3 moderadas; suite completa (test/lint/typecheck/build/coverage) verificada en verde.
 
 ---
 

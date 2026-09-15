@@ -5,9 +5,6 @@ import { profile } from './profile'
  * Servicios ofrecidos.
  * El contenido de esta sección debe coincidir exactamente con los contratos
  * que firma el cliente.
- *
- * TODO: los precios son placeholders. Reemplazar cuando el usuario provea los
- * rangos reales ("desde $X").
  */
 export const services: Service[] = [
   {

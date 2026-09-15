@@ -3,13 +3,11 @@
   "type": "refactor",
   "status": "completed",
   "created_at": "2026-09-15T00:00:00Z",
-  "updated_at": "2026-09-15T12:15:00Z",
-  "description": "Refactor the portfolio website into a web development services site (landing pages + institutional sites for Argentine SMEs). Implementation complete; pending user config: Web3Forms key, real WhatsApp number, city, prices, and final domain.",
+  "updated_at": "2026-09-15T14:20:00Z",
+  "description": "Portfolio refactored into web dev services site. Implementation + final config (WhatsApp, prices, OG absolute, Vitest 5) complete.",
   "pending_user_config": [
-    "VITE_FORM_ACCESS_KEY (Web3Forms)",
-    "profile.whatsappNumber / phone reales",
-    "profile.city (SEO local)",
-    "services.priceFrom reales",
-    "Dominio definitivo (canonical, sitemap, robots)"
+    "VITE_FORM_ACCESS_KEY (Web3Forms key — user creates at web3forms.com)",
+    "Prueba en celular real tras deploy",
+    "Dominio propio (opcional — reemplazar en index.html, sitemap, robots)"
   ]
 }

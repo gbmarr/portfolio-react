@@ -99,7 +99,7 @@ export const copy = {
     description:
       'Landing pages y sitios institucionales para PyMEs y emprendedores. Diseño a medida, precio claro y listo en semanas. Pedí tu presupuesto.',
     locale: 'es_AR',
-    ogImage: '/images/pasion-cap-1.png',
+    ogImage: 'https://portfolio-blond-beta-46.vercel.app/images/pasion-cap-1.png',
     siteName: 'Gabriel Marrero - Desarrollador Web',
   },
 } as const
