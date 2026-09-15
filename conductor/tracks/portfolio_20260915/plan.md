@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** 🟡 Fases 0-6 completadas — Fase 7 pendiente
+> **Status:** 🟡 Fases 0-7 completadas — Fase 8 pendiente
 
 ---
 
@@ -158,13 +158,20 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 ### Tareas
 
-| # | Tarea | Archivo |
-|---|-------|---------|
-| 7.1 | Actualizar `index.html`: título, descripción, OG tags para sitio de servicios | `index.html` |
-| 7.2 | Actualizar `src/utils/seo.ts`: meta tags dinámicos por sección | `src/utils/seo.ts` |
-| 7.3 | Crear `public/robots.txt` actualizado | `public/robots.txt` |
-| 7.4 | Crear `public/sitemap.xml` | `public/sitemap.xml` |
-| 7.5 | Verificar `og:image` apunte a una imagen representativa | `index.html` |
+| # | Tarea | Archivo | Estado |
+|---|-------|---------|--------|
+| 7.1 | Actualizar `index.html`: título, descripción, OG tags para sitio de servicios | `index.html` | ✅ |
+| 7.2 | Actualizar `src/utils/seo.ts`: og:type, og:image, og:site_name | `src/utils/seo.ts` | ✅ |
+| 7.3 | Actualizar `public/robots.txt` con Sitemap | `public/robots.txt` | ✅ |
+| 7.4 | Crear `public/sitemap.xml` | `public/sitemap.xml` | ✅ |
+| 7.5 | Verificar `og:image` apunte a una imagen representativa | `index.html` | ✅ |
+
+> **Notas de implementación (Fase 7):**
+> - `og:image` apunta a `/images/pasion-cap-1.png` (captura real de proyecto existente).
+> - `canonical` URL usa el dominio Vercel histórico `portfolio-blond-beta-46.vercel.app`; actualizar tras apuntar dominio propio.
+> - `sitemap.xml` y `robots.txt` usan la misma URL base — reemplazar por dominio definitivo al publicar.
+> - `SeoMeta` ampliado con campos opcionales `ogImage` y `siteName`; `applySeoMeta` inyecta `og:type=website` siempre.
+> - Verificado: 30 test files / 95 tests ✅, cobertura 98%+ ✅, lint ✅, typecheck ✅, build ✅.
 
 ---
 

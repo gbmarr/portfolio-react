@@ -1,0 +1,42 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "ask",
+
+    "read": {
+      "*": "ask",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      ".env": "deny",
+      ".env*": "deny",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.crt": "deny",
+      "*.cer": "deny",
+      ".git/**": "ask"
+    },
+    "edit": {
+      "*": "ask"
+    },
+
+    "bash": {
+      "*": "ask",
+
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+
+      "rm *": "deny",
+      "sudo *": "deny",
+      "curl *": "ask",
+      "wget *": "ask",
+
+      "git push*": "deny",
+      "git commit*": "ask"
+    },
+    "webfetch": "ask",
+    "external_directory": "deny"
+  },
+  "plugin": ["opencode-conductor-plugin"]
+}

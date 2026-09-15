@@ -2,6 +2,8 @@ export interface SeoMeta {
   title: string
   description: string
   locale: string
+  ogImage?: string
+  siteName?: string
 }
 
 function setMeta(attr: 'name' | 'property', key: string, content: string): void {
@@ -20,4 +22,7 @@ export function applySeoMeta(meta: SeoMeta): void {
   setMeta('property', 'og:title', meta.title)
   setMeta('property', 'og:description', meta.description)
   setMeta('property', 'og:locale', meta.locale)
+  setMeta('property', 'og:type', 'website')
+  if (meta.ogImage) setMeta('property', 'og:image', meta.ogImage)
+  if (meta.siteName) setMeta('property', 'og:site_name', meta.siteName)
 }
