@@ -31,3 +31,7 @@
     @apply bg-accent/30 text-text;
   }
 }
+
+textarea {
+  resize: none;
+}
