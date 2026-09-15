@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** 🟡 Fase 0 completada — en espera de verificación manual
+> **Status:** 🟡 Fases 0-1 completadas — Fase 2 pendiente
 
 ---
 
@@ -48,15 +48,20 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 ### Tareas
 
-| # | Tarea | Archivos |
-|---|-------|----------|
-| 1.1 | Redefinir tipos en `src/data/types.ts`: `Service`, `CaseStudy`, `ProcessStep`, `FAQ`, `Profile` (simplificado) | `src/data/types.ts` |
-| 1.2 | Crear `src/data/profile.ts` nuevo: nombre, frase, foto, WhatsApp, email, ciudad/zona | `src/data/profile.ts` |
-| 1.3 | Crear `src/data/services.ts`: Landing Page y Sitio Institucional (incluye, no incluye, plazo, precio desde) | `src/data/services.ts` |
-| 1.4 | Crear `src/data/cases.ts`: 2-3 casos de portfolio reestructurados (cliente, rubro, necesidad, hice, resultado) | `src/data/cases.ts` |
-| 1.5 | Crear `src/data/process.ts`: pasos del proceso de trabajo (4 pasos) | `src/data/process.ts` |
-| 1.6 | Crear `src/data/faq.ts`: preguntas frecuentes del spec (6 preguntas) | `src/data/faq.ts` |
-| 1.7 | Actualizar `src/data/projects.ts` → eliminar o integrar en `cases.ts` | `src/data/projects.ts` |
+| # | Tarea | Archivos | Estado |
+|---|-------|----------|--------|
+| 1.1 | Redefinir tipos en `src/data/types.ts`: `Service`, `CaseStudy`, `ProcessStep`, `FAQ`, `Profile` (simplificado) | `src/data/types.ts` | ✅ |
+| 1.2 | Crear `src/data/profile.ts` nuevo: nombre, frase, foto, WhatsApp, email, ciudad/zona | `src/data/profile.ts` | ✅ |
+| 1.3 | Crear `src/data/services.ts`: Landing Page y Sitio Institucional (incluye, no incluye, plazo, precio desde) | `src/data/services.ts` | ✅ |
+| 1.4 | Crear `src/data/cases.ts`: 2-3 casos de portfolio reestructurados (cliente, rubro, necesidad, hice, resultado) | `src/data/cases.ts` | ✅ |
+| 1.5 | Crear `src/data/process.ts`: pasos del proceso de trabajo (4 pasos) | `src/data/process.ts` | ✅ |
+| 1.6 | Crear `src/data/faq.ts`: preguntas frecuentes del spec (6 preguntas) | `src/data/faq.ts` | ✅ |
+| 1.7 | Integrar proyectos en `cases.ts` (`projects.ts` se eliminará cuando se reemplacen las secciones viejas en Fases 4-5) | `src/data/projects.ts` | ⏸️ diferida |
+
+> **Notas de implementación (Fase 1):**
+> - `profile.ts` mantiene campos legacy (`role`, `bio`, `tagline`, `socialLinks`) hasta que Hero/Contact se reescriban en Fases 4-5.
+> - `services.ts` exporta `buildWhatsAppUrl(serviceId?)` que genera el enlace `wa.me` con mensaje predefinido (por servicio o genérico).
+> - `whatsappNumber`, `phone` y `city` en `profile.ts` son **placeholders marcados con `TODO`** — el usuario debe proveer los valores reales.
 
 ---
 

@@ -8,7 +8,14 @@ export const profile: Profile = {
     'Aprendiz continuo autodidacta. Construyo aplicaciones web fullstack para proyectos reales y clientes.',
   photo: '/images/profile-photo.webp',
   location: 'Argentina',
+  // TODO: reemplazar con la ciudad/zona real para el SEO local.
+  city: 'Argentina',
   email: 'gab.bmar.05@email.com',
+  // TODO: reemplazar con el teléfono real.
+  phone: '11 0000-0000',
+  // TODO: reemplazar con el número real (formato internacional sin '+').
+  whatsappNumber: '5490000000000',
+  whatsappMessage: 'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto.',
   socialLinks: {
     github: 'https://github.com/gbmarr',
     linkedin: 'https://www.linkedin.com/in/gabrielmarrerok/',
