@@ -1,15 +1,9 @@
-import { Mockup } from '../components/Mockup'
+import { HeroMockup } from '../components/HeroMockup'
 import { Button } from '../components/Button'
 import { WhatsAppButton } from '../components/WhatsAppButton'
 import { Container } from '../components/Container'
 import { Section } from '../components/Section'
 import { copy } from '../data/copy'
-
-// Prueba visual: capturas reales de un trabajo hecho.
-const heroShots = [
-  { src: '/images/pasion-cap-1.png', label: 'Captura de Pasión Mundialista' },
-  { src: '/images/pasion-cap-2.png', label: 'Captura de Pasión Mundialista' },
-]
 
 export function Hero() {
   return (
@@ -33,10 +27,10 @@ export function Hero() {
 
           <div className="relative flex items-center justify-center gap-6" aria-hidden="true">
             <div className="hidden w-1/2 sm:block">
-              <Mockup src={heroShots[0].src} alt={heroShots[0].label} />
+              <HeroMockup />
             </div>
             <div className="w-1/2 sm:w-1/3">
-              <Mockup src={heroShots[1].src} alt={heroShots[1].label} variant="phone" />
+              <HeroMockup variant="phone" />
             </div>
           </div>
         </div>

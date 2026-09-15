@@ -17,7 +17,6 @@ export const copy = {
       'Landing pages y sitios institucionales, listos en semanas y con precio claro. Hablamos en tu idioma, sin vueltas técnicas.',
     ctaPrimary: 'Pedí tu presupuesto',
     ctaSecondary: 'Ver trabajos',
-    proofAlt: 'Captura de un sitio desarrollado',
   },
   problem: {
     title: '¿Te suena esto?',

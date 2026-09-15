@@ -24,8 +24,9 @@ describe('Hero', () => {
     expect(secondary).toHaveAttribute('href', '#trabajos')
   })
 
-  it('shows visual proof with real screenshots', () => {
-    render(<Hero />)
-    expect(screen.getAllByAltText('Captura de Pasión Mundialista').length).toBeGreaterThan(0)
+  it('shows a decorative mockup illustration instead of heavy screenshots', () => {
+    const { container } = render(<Hero />)
+    expect(container.querySelectorAll('svg[aria-hidden="true"]').length).toBeGreaterThan(0)
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 })
