@@ -28,3 +28,4 @@ coverage
 certificaciones/
 .vercel
 .env*
+!.env.example

@@ -2,7 +2,7 @@
 
 > **Track ID:** `portfolio_20260915`
 > **Spec:** `../spec.md` (provided by user)
-> **Status:** 🟡 Fases 0-7 completadas — Fase 8 pendiente
+> **Status:** 🟡 Fases 0-8 completadas (falta Access Key real del usuario) — Fase 9 pendiente
 
 ---
 
@@ -179,7 +179,19 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 **Objetivo:** Implementar el canal de conversión principal.
 
-### Tareas | # | Tarea | Archivo | |---|-------|---------| | 8.1 | Implementar `ContactForm` con servicio de envío (Web3Forms o Formspree) | `src/components/ContactForm.tsx` | | 8.2 | Configurar variable de entorno para API key del servicio de formularios | `.env.local` | | 8.3 | Implementar `WhatsAppButton` con enlace `wa.me` y mensaje predefinido | `src/components/WhatsAppButton.tsx` | | 8.4 | Agregar validación client-side al formulario | `src/components/ContactForm.tsx` | | 8.5 | Testear envío real del formulario | — |
+| # | Tarea | Archivo | Estado |
+|---|-------|---------|--------|
+| 8.1 | Implementar `ContactForm` con servicio de envío (Web3Forms) | `src/components/ContactForm.tsx`, `src/utils/formSubmission.ts` | ✅ |
+| 8.2 | Configurar variable de entorno para API key del servicio de formularios | `.env.example` (VITE_FORM_ACCESS_KEY) | ✅ |
+| 8.3 | Implementar `WhatsAppButton` con enlace `wa.me` y mensaje predefinido | `src/components/WhatsAppButton.tsx` | ✅ (Fase 3) |
+| 8.4 | Agregar validación client-side al formulario | `src/components/ContactForm.tsx` | ✅ (required + inputMode email) |
+| 8.5 | Testear envío real del formulario | `src/utils/formSubmission.test.ts` | ⏳ (falta Access Key real del usuario) |
+
+> **Notas de implementación (Fase 8):**
+> - **Pendiente del usuario:** crear cuenta en web3forms.com, copiar `.env.example` → `.env.local` y completar `VITE_FORM_ACCESS_KEY` (configurar en Web3Forms el email receptor). Sin la key el form muestra el estado de error y deriva a WhatsApp, pero **no llegará email** — es prioridad antes de publicar.
+> - `ContactForm` acepta `onSubmit` (usado en tests) y por defecto llama `submitContactForm` (Web3Forms vía fetch).
+> - `submitContactForm` lanza error si falta la key o la API falla; el form muestra el mensaje de error con canal WhatsApp.
+> - Verificado: 31 test files / 98 tests ✅, lint ✅, typecheck ✅, build ✅.
 
 ---
 

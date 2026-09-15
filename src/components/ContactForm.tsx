@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
 import { Button } from './Button'
+import { submitContactForm } from '../utils/formSubmission'
 
 export interface ContactFormData {
   name: string
@@ -9,7 +10,7 @@ export interface ContactFormData {
 }
 
 interface ContactFormProps {
-  /** Resolvedor de envío. Se conectará al servicio de email en la Fase 8. */
+  /** Resolvedor de envío. Por defecto usa Web3Forms. */
   onSubmit?: (data: ContactFormData) => Promise<void> | void
 }
 
@@ -30,7 +31,11 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
 
     setStatus('sending')
     try {
-      await onSubmit?.(data)
+      if (onSubmit) {
+        await onSubmit(data)
+      } else {
+        await submitContactForm(data)
+      }
       setStatus('success')
       form.reset()
     } catch {
@@ -67,6 +72,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           type="text"
           required
           autoComplete="email"
+          inputMode="email"
           className={inputClasses}
         />
       </div>
