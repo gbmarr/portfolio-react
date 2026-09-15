@@ -6,7 +6,7 @@
   "updated_at": "2026-09-15T14:20:00Z",
   "description": "Portfolio refactored into web dev services site. Implementation + final config (WhatsApp, prices, OG absolute, Vitest 5) complete.",
   "pending_user_config": [
-    "VITE_FORM_ACCESS_KEY (Web3Forms key — user creates at web3forms.com)",
+    "FORM_ACCESS_KEY (Web3Forms key — user creates at web3forms.com)",
     "Prueba en celular real tras deploy",
     "Dominio propio (opcional — reemplazar en index.html, sitemap, robots)"
   ]

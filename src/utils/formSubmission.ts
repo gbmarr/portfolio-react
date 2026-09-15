@@ -4,7 +4,7 @@ const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit'
 
 /**
  * Envía el mensaje del formulario a Web3Forms.
- * Requiere la variable de entorno `VITE_FORM_ACCESS_KEY` (ver `.env.example`).
+ * Requiere la variable de entorno `FORM_ACCESS_KEY` (ver `.env.example`).
  * Lanza un error si el envío falla o si falta la clave — el formulario lo
  * muestra como estado de error y ofrece WhatsApp como canal alternativo.
  */
@@ -12,9 +12,9 @@ export async function submitContactForm(
   data: ContactFormData,
   botcheck = '',
 ): Promise<void> {
-  const accessKey = import.meta.env.VITE_FORM_ACCESS_KEY
+  const accessKey = import.meta.env.FORM_ACCESS_KEY
   if (!accessKey) {
-    throw new Error('Falta VITE_FORM_ACCESS_KEY en el entorno')
+    throw new Error('Falta FORM_ACCESS_KEY en el entorno')
   }
 
   const response = await fetch(WEB3FORMS_ENDPOINT, {

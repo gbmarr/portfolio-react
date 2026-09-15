@@ -182,13 +182,13 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 | # | Tarea | Archivo | Estado |
 |---|-------|---------|--------|
 | 8.1 | Implementar `ContactForm` con servicio de envío (Web3Forms) | `src/components/ContactForm.tsx`, `src/utils/formSubmission.ts` | ✅ |
-| 8.2 | Configurar variable de entorno para API key del servicio de formularios | `.env.example` (VITE_FORM_ACCESS_KEY) | ✅ |
+| 8.2 | Configurar variable de entorno para API key del servicio de formularios | `.env.example` (FORM_ACCESS_KEY) | ✅ |
 | 8.3 | Implementar `WhatsAppButton` con enlace `wa.me` y mensaje predefinido | `src/components/WhatsAppButton.tsx` | ✅ (Fase 3) |
 | 8.4 | Agregar validación client-side al formulario | `src/components/ContactForm.tsx` | ✅ (required + inputMode email) |
 | 8.5 | Testear envío real del formulario | `src/utils/formSubmission.test.ts` | ⏳ (falta Access Key real del usuario) |
 
 > **Notas de implementación (Fase 8):**
-> - **Pendiente del usuario:** crear cuenta en web3forms.com, copiar `.env.example` → `.env.local` y completar `VITE_FORM_ACCESS_KEY` (configurar en Web3Forms el email receptor). Sin la key el form muestra el estado de error y deriva a WhatsApp, pero **no llegará email** — es prioridad antes de publicar.
+> - **Pendiente del usuario:** crear cuenta en web3forms.com, copiar `.env.example` → `.env.local` y completar `FORM_ACCESS_KEY` (configurar en Web3Forms el email receptor). Sin la key el form muestra el estado de error y deriva a WhatsApp, pero **no llegará email** — es prioridad antes de publicar.
 > - `ContactForm` acepta `onSubmit` (usado en tests) y por defecto llama `submitContactForm` (Web3Forms vía fetch).
 > - `submitContactForm` lanza error si falta la key o la API falla; el form muestra el mensaje de error con canal WhatsApp.
 > - Verificado: 31 test files / 98 tests ✅, lint ✅, typecheck ✅, build ✅.
@@ -256,7 +256,7 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 - [x] Los precios (o rangos) están visibles — `PriceTag` en `ServiceCard` (**definitivos**: USD 250 / USD 450)
 - [x] El proceso de trabajo está explicado en pasos — `HowItWorks` / `ProcessSteps` (4 pasos)
 - [x] Hay al menos 2-3 trabajos con contexto, no solo imágenes — `Cases` (3 casos)
-- [ ] El formulario fue probado y llegan los mensajes — **pendiente**: falta crear `VITE_FORM_ACCESS_KEY` en Web3Forms (tests con mock ✅)
+- [ ] El formulario fue probado y llegan los mensajes — **pendiente**: falta crear `FORM_ACCESS_KEY` en Web3Forms (tests con mock ✅)
 - [x] El enlace de WhatsApp funciona y abre con mensaje predefinido — `buildWhatsAppUrl` (**número real configurado** 5492262339680)
 - [ ] Se ve bien en un celular real — **pendiente de prueba manual** en dispositivo físico
 - [x] Carga en menos de 3 segundos — bundle 219 kB JS (69 kB gzip), verificación final con Lighthouse recomendada
@@ -270,7 +270,7 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 
 ### Pendientes que requieren acción del usuario (no bloquean el código)
 
-1. **Web3Forms:** crear cuenta, completar `VITE_FORM_ACCESS_KEY` en `.env.local` (ya creado, vacío), configurar email receptor. Sin esto el form muestra error y deriva a WhatsApp.
+1. **Web3Forms:** crear cuenta, completar `FORM_ACCESS_KEY` en `.env.local` (ya creado, vacío), configurar email receptor. Sin esto el form muestra error y deriva a WhatsApp.
 2. **Prueba en celular real** (checklist spec) tras el deploy.
 3. **Dominio propio (opcional):** hoy canonical/sitemap/robots apuntan a `portfolio-blond-beta-46.vercel.app`; cuando haya dominio definitivo actualizar `index.html`, `public/sitemap.xml` y `public/robots.txt`.
 

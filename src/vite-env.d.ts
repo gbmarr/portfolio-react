@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_FORM_ACCESS_KEY?: string
+  readonly FORM_ACCESS_KEY?: string
 }
 
 interface ImportMeta {
