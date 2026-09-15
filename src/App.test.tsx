@@ -1,25 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import App from './App'
 import { profile } from './data/profile'
-import { content } from './data/content'
-
-const originalLanguage = window.navigator.language
-
-beforeEach(() => {
-  Object.defineProperty(window.navigator, 'language', {
-    configurable: true,
-    value: 'es-ES',
-  })
-})
-
-afterEach(() => {
-  Object.defineProperty(window.navigator, 'language', {
-    configurable: true,
-    value: originalLanguage,
-  })
-})
 
 describe('App', () => {
   it('renders the hero with the profile name as main heading', () => {
@@ -32,12 +14,8 @@ describe('App', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
-  it('renders all core sections', () => {
+  it('renders the core sections', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { level: 2, name: 'Mi trayectoria' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Tecnologías y herramientas' })
-    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 2, name: 'Algunos de mis proyectos' })
     ).toBeInTheDocument()
@@ -47,23 +25,5 @@ describe('App', () => {
   it('renders the footer', () => {
     render(<App />)
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
-  })
-
-  it('switches all visible content to English with the language toggle', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(screen.getByRole('button', { name: 'EN' }))
-
-    expect(screen.getByRole('link', { name: 'About' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(profile.name)
-    expect(screen.getByText(content.en.profile.role)).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'My journey' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Technologies and tools' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Some of my projects' })
-    ).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: "Let's talk?" })).toBeInTheDocument()
   })
 })

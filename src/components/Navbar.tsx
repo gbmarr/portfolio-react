@@ -1,24 +1,20 @@
 import { useState } from 'react'
 import { Container } from './Container'
-import { LanguageToggle } from './LanguageToggle'
+import { copy } from '../data/copy'
 import { profile } from '../data/profile'
-import { useLanguage } from '../i18n/LanguageContext'
 
 export function Navbar() {
-  const { t } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
 
   const navItems = [
-    { name: t.nav.about, href: '#sobre-mi' },
-    { name: t.nav.skills, href: '#habilidades' },
-    { name: t.nav.projects, href: '#proyectos' },
-    { name: t.nav.contact, href: '#contacto' },
+    { name: copy.nav.projects, href: '#proyectos' },
+    { name: copy.nav.contact, href: '#contacto' },
   ]
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur">
       <Container>
-        <nav className="flex h-16 items-center justify-between" aria-label={t.nav.main}>
+        <nav className="flex h-16 items-center justify-between" aria-label={copy.nav.main}>
           <a
             href="#inicio"
             className="font-display text-lg font-semibold text-text hover:text-accent"
@@ -36,18 +32,17 @@ export function Navbar() {
                 {item.name}
               </a>
             ))}
-            <LanguageToggle />
           </div>
 
           <button
             type="button"
-            aria-label={isOpen ? t.nav.closeMenu : t.nav.openMenu}
+            aria-label={isOpen ? copy.nav.closeMenu : copy.nav.openMenu}
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
             onClick={() => setIsOpen((open) => !open)}
             className="inline-flex items-center justify-center rounded-md p-2 text-text-muted transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 md:hidden"
           >
-            <span className="sr-only">{isOpen ? t.nav.closeMenu : t.nav.openMenu}</span>
+            <span className="sr-only">{isOpen ? copy.nav.closeMenu : copy.nav.openMenu}</span>
             <svg
               className="h-6 w-6"
               fill="none"
@@ -95,9 +90,6 @@ export function Navbar() {
                   </a>
                 </li>
               ))}
-              <li className="pt-2">
-                <LanguageToggle />
-              </li>
             </ul>
           </Container>
         </div>

@@ -1,8 +1,6 @@
 import type { Project } from '../data/types'
-import { useContent } from '../data/content'
-import { useLanguage } from '../i18n/LanguageContext'
+import { copy } from '../data/copy'
 import { Reveal } from './Reveal'
-import { SkillBadge } from './SkillBadge'
 
 interface ProjectCardProps {
   project: Project
@@ -19,9 +17,6 @@ function getInitials(name: string): string {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const { t } = useLanguage()
-  const localized = useContent()
-
   return (
     <Reveal>
       <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-surface transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow">
@@ -29,7 +24,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           {project.screenshot ? (
             <img
               src={project.screenshot}
-              alt={`${t.projects.screenshot} ${project.name}`}
+              alt={`${copy.projects.screenshot} ${project.name}`}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -42,16 +37,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
           {project.role ? (
             <span className="w-fit rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
-              {t.projects.roles[project.role]}
+              {copy.projects.roles[project.role]}
             </span>
           ) : null}
           <h3 className="font-display text-xl font-semibold text-text">{project.name}</h3>
-          <p className="text-text-muted">{localized.projects[project.id] ?? project.description}</p>
+          <p className="text-text-muted">{project.description}</p>
 
-          <ul className="flex flex-wrap gap-2" aria-label={t.projects.technologies}>
+          <ul className="flex flex-wrap gap-2" aria-label={copy.projects.technologies}>
             {project.technologies.map((tech) => (
-              <li key={tech}>
-                <SkillBadge name={tech} />
+              <li key={tech} className="text-sm text-text-muted">
+                {tech}
               </li>
             ))}
           </ul>
@@ -59,7 +54,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="mt-auto flex gap-4 pt-2">
             {project.demoUrl ? (
               <a href={project.demoUrl} className="text-sm font-medium text-accent hover:underline">
-                {t.projects.demo} ↗
+                {copy.projects.demo} ↗
               </a>
             ) : null}
             {project.repoUrl ? (
@@ -67,7 +62,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 href={project.repoUrl}
                 className="text-sm font-medium text-text hover:text-accent hover:underline"
               >
-                {t.projects.code} ↗
+                {copy.projects.code} ↗
               </a>
             ) : null}
           </div>
