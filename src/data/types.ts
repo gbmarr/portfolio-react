@@ -97,10 +97,17 @@ export interface Benefit {
   description: string
 }
 
+export interface IndustryItem {
+  /** Nombre visible del rubro, p. ej. "Plomeros". */
+  name: string
+  /** Beneficio particular de ese rubro para mostrar en el tooltip del chip. */
+  benefit: string
+}
+
 export interface IndustryGroup {
   id: string
   /** Nombre del grupo, p. ej. "Oficios y reparaciones". */
   label: string
-  /** Rubros dentro del grupo, p. ej. "Plomeros". */
-  items: string[]
+  /** Rubros dentro del grupo, con su beneficio particular. */
+  items: IndustryItem[]
 }

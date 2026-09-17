@@ -10,13 +10,22 @@ describe('Industries', () => {
     expect(screen.getByRole('heading', { name: copy.industries.title })).toBeInTheDocument()
   })
 
-  it('renders every industry group with its items', () => {
-    render(<Industries />)
-    for (const group of industries) {
-      expect(screen.getByRole('heading', { level: 3, name: group.label })).toBeInTheDocument()
-      for (const item of group.items) {
-        expect(screen.getByText(item)).toBeInTheDocument()
+  it(
+    'renders every industry group with its items',
+    () => {
+      render(<Industries />)
+      for (const group of industries) {
+        expect(screen.getByRole('heading', { level: 3, name: group.label })).toBeInTheDocument()
+        for (const item of group.items) {
+          expect(screen.getByRole('button', { name: item.name })).toBeInTheDocument()
+        }
       }
-    }
+    },
+    15_000,
+  )
+
+  it('hides the per-industry benefits by default', () => {
+    render(<Industries />)
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 })

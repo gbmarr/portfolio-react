@@ -116,8 +116,22 @@ describe('industries data', () => {
     }
   })
 
+  it('gives every industry item a name and a particular benefit', () => {
+    const allItems = industries.flatMap((group) => group.items)
+    expect(allItems.length).toBeGreaterThanOrEqual(20)
+    for (const item of allItems) {
+      expect(item.name).toBeTruthy()
+      expect(item.benefit.length).toBeGreaterThan(20)
+    }
+  })
+
+  it('does not repeat benefits across items', () => {
+    const allBenefits = industries.flatMap((group) => group.items.map((item) => item.benefit))
+    expect(new Set(allBenefits).size).toBe(allBenefits.length)
+  })
+
   it('does not list "médicos" as an industry', () => {
     const allItems = industries.flatMap((group) => group.items)
-    expect(allItems.some((item) => item.toLowerCase().includes('médic'))).toBe(false)
+    expect(allItems.some((item) => item.name.toLowerCase().includes('médic'))).toBe(false)
   })
 })
