@@ -243,6 +243,16 @@ El sitio actual es un portfolio personal de desarrollador fullstack junior (Reac
 - Fix de flake: test de throttle de `ContactForm.test.tsx` excedía 5000 ms bajo coverage → `userEvent.setup({ delay: null })` + timeout 15000 ms.
 - Verificado: 33 test files / 112 tests ✅, lint ✅, typecheck ✅, build ✅ (228.58 kB js / 71.48 kB gzip), coverage 97.48% stmts / 93.16% branches.
 
+### Tooltips de rubros: interacción móvil y posicionamiento adaptativo (2026-09-17)
+
+**Contexto:** la sección Rubros muestra el beneficio particular de cada rubro en un tooltip al hover/foco. En móvil el patrón dependía del foco del navegador y no permitía cerrar re-tocando el chip; además el tooltip abría siempre hacia arriba (podía recortarse) y podía salirse por los bordes laterales.
+
+**Mejoras aplicadas (aprobadas por el usuario):**
+- **Toggle por click:** modelo `open` + `pinned`. Hover abría/cerraba (desktop); click ahora alterna abrir/cerrar y "fija" el tooltip (deja de cerrarse al salir el puntero). Se quitó el auto-open por foco para evitar el doble disparo táctil (`focus` → `click`): en táctil el tap alterna, un segundo tap cierra, tap afuera (blur) también.
+- **Cerrar al scrollear:** listener `scroll` pasivo en `window` activo solo mientras está abierto → cierra y despinea. Un listener `resize` recalcula la posición (rotación del celular).
+- **Flip + clamp lateral:** la lógica pura vive en `src/utils/tooltipPosition.ts` (`computeTooltipPlacement`): rota a `below` si no hay espacio arriba, elige el lado con más espacio si no entra en ninguno, y clampa el `left` dentro del viewport en chips de borde. La flecha sigue al centro del chip y se oculta si caería fuera del tooltip. Se aplica en `useLayoutEffect` (antes del paint, sin parpadeo).
+- Nuevos tests: `tooltipPosition.test.ts` (7 tests de la matemática) + `IndustryChip.test.tsx` reescrito (9 tests: toggle, pinned, blur, Escape, scroll, wiring de placement). Verificado: **35 test files / 131 tests** ✅, lint ✅, typecheck ✅, build ✅ (235.78 kB js / 74.12 kB gzip), coverage 97.32% stmts / 92.2% branches.
+
 ---
 
 ## Fase 10 — QA y checklist previo a publicar
