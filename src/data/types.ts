@@ -50,8 +50,6 @@ export interface Service {
   excludes: string[]
   /** Plazo estimado. */
   timeline: string
-  /** Precio "desde". */
-  priceFrom: string
   /** Mensaje de WhatsApp predefinido específico del servicio. */
   whatsappMessage: string
 }

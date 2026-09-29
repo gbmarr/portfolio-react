@@ -6,7 +6,7 @@ import { WhatsAppButton } from '../components/WhatsAppButton'
 import { copy } from '../data/copy'
 import { services } from '../data/services'
 
-/** Servicios completos: las dos opciones con incluye/no incluye, plazo, precio y CTA. */
+/** Servicios completos: las dos opciones con incluye/no incluye, plazo y CTA. */
 export function Services() {
   return (
     <Section id="servicios">

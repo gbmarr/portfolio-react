@@ -42,7 +42,6 @@ describe('services data', () => {
       expect(service.includes.length).toBeGreaterThan(0)
       expect(service.excludes.length).toBeGreaterThan(0)
       expect(service.timeline).toBeTruthy()
-      expect(service.priceFrom).toMatch(/USD \d+/)
       expect(service.whatsappMessage).toBeTruthy()
     }
   })

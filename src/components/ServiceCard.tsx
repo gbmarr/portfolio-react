@@ -1,6 +1,5 @@
 import type { Service } from '../data/types'
 import { copy } from '../data/copy'
-import { PriceTag } from './PriceTag'
 import { WhatsAppButton } from './WhatsAppButton'
 
 interface ServiceCardProps {
@@ -41,7 +40,7 @@ function CrossIcon() {
   )
 }
 
-/** Tarjeta de servicio: para quién es, qué incluye, qué no, plazo y precio. */
+/** Tarjeta de servicio: para quién es, qué incluye, qué no, plazo y CTA. */
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow sm:p-8">
@@ -78,12 +77,9 @@ export function ServiceCard({ service }: ServiceCardProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-        <div className="flex flex-col gap-1">
-          <span className="text-sm text-text-muted">
-            {copy.services.timelineLabel}: {service.timeline}
-          </span>
-          <PriceTag label={copy.services.priceFromLabel} price={service.priceFrom} />
-        </div>
+        <span className="text-sm text-text-muted">
+          {copy.services.timelineLabel}: {service.timeline}
+        </span>
       </div>
 
       <div className="mt-auto">

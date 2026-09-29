@@ -14,7 +14,7 @@ export const copy = {
   hero: {
     title: 'Sitios web para negocios que necesitan verse profesionales',
     subtitle:
-      'Landing pages y sitios institucionales, listos en semanas y con precio claro. Hablamos en tu idioma, sin vueltas técnicas.',
+      'Landing pages y sitios institucionales, listos en semanas. Hablamos en tu idioma, sin vueltas técnicas.',
     ctaPrimary: 'Pedí tu presupuesto',
     ctaSecondary: 'Ver trabajos',
   },
@@ -29,7 +29,6 @@ export const copy = {
     includesLabel: 'Incluye',
     excludesLabel: 'No incluye',
     timelineLabel: 'Plazo',
-    priceFromLabel: 'Desde',
     ctaLabel: 'Pedir presupuesto',
     unsureText: '¿No sabés cuál necesitás? Escribime y te lo digo sin vueltas.',
   },
@@ -68,7 +67,7 @@ export const copy = {
   about: {
     eyebrow: 'Sobre mí',
     title: 'Tu sitio lo hace una persona, no una agencia',
-    text: 'Soy Gabriel Marrero, desarrollador web. Trabajo directo con vos: me contás qué necesitás, te digo qué te conviene y te dejo el sitio funcionando con explicaciones claras. Trato directo, precios claros y un solo interlocutor del principio al final.',
+    text: 'Soy Gabriel Marrero, desarrollador web. Trabajo directo con vos: me contás qué necesitás, te digo qué te conviene y te dejo el sitio funcionando con explicaciones claras. Trato directo y un solo interlocutor del principio al final.',
     photoAlt: 'Foto de Gabriel Marrero',
   },
   faq: {
@@ -107,7 +106,7 @@ export const copy = {
   seo: {
     title: 'Gabriel Marrero | Sitios web para negocios en Argentina',
     description:
-      'Landing pages y sitios institucionales para PyMEs y emprendedores. Diseño a medida, precio claro y listo en semanas. Pedí tu presupuesto.',
+      'Landing pages y sitios institucionales para PyMEs y emprendedores. Diseño a medida y listo en semanas. Pedí tu presupuesto.',
     locale: 'es_AR',
     ogImage: 'https://portfolio-blond-beta-46.vercel.app/images/pasion-cap-1.png',
     siteName: 'Gabriel Marrero - Desarrollador Web',

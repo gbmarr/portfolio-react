@@ -10,11 +10,10 @@ describe('Services', () => {
     expect(screen.getByRole('heading', { name: copy.services.title })).toBeInTheDocument()
   })
 
-  it('renders both services with visible prices', () => {
+  it('renders both services with their headings', () => {
     render(<Services />)
     for (const service of services) {
       expect(screen.getByRole('heading', { level: 3, name: service.name })).toBeInTheDocument()
-      expect(screen.getByText(service.priceFrom)).toBeInTheDocument()
     }
   })
 

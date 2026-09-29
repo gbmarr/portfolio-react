@@ -24,11 +24,9 @@ describe('ServiceCard', () => {
     }
   })
 
-  it('renders the timeline and the price', () => {
+  it('renders the timeline', () => {
     render(<ServiceCard service={landing} />)
     expect(screen.getByText(`Plazo: ${landing.timeline}`)).toBeInTheDocument()
-    expect(screen.getByText('Desde')).toBeInTheDocument()
-    expect(screen.getByText(landing.priceFrom)).toBeInTheDocument()
   })
 
   it('renders a WhatsApp CTA with the service-specific message', () => {
