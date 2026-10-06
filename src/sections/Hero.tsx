@@ -29,7 +29,7 @@ export function Hero() {
             <div className="hidden w-1/2 sm:block">
               <HeroMockup />
             </div>
-            <div className="w-1/2 sm:w-1/3">
+            <div className="w-full max-w-[190px] sm:w-1/3">
               <HeroMockup variant="phone" />
             </div>
           </div>

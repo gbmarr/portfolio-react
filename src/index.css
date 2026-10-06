@@ -23,6 +23,14 @@
     scroll-behavior: smooth;
   }
 
+  html,
+  body {
+    /* Evita el scroll horizontal en mobile (clip no crea un scroll container,
+       así que position: sticky del navbar sigue funcionando). */
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
   body {
     @apply bg-background text-text font-sans antialiased;
   }

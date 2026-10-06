@@ -15,7 +15,7 @@ export function HeroMockup({ variant = 'desktop' }: HeroMockupProps) {
     <div
       className={
         isPhone
-          ? 'relative mx-auto w-[190px] rounded-[2rem] border-4 border-border bg-background p-2 shadow-glow'
+          ? 'relative mx-auto w-full max-w-[190px] rounded-[2rem] border-4 border-border bg-background p-2 shadow-glow'
           : 'relative overflow-hidden rounded-xl border border-border bg-background shadow-glow'
       }
     >
