@@ -29,3 +29,6 @@ certificaciones/
 .vercel
 .env*
 !.env.example
+
+# Agent skills runtime state (local issue tracker, tickets, specs generados)
+.scratch/
