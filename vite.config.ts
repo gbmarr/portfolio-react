@@ -9,7 +9,9 @@ export default defineConfig({
   // Solo se expone FORM_ACCESS_KEY a import.meta.env (sin prefijo VITE_ para
   // evitar el warning de "public vars" de Vercel). Web3Forms usa una key
   // semipública de cliente; la protección real es el honeypot del form.
-  envPrefix: ['FORM_'],
+  // DATABASE_URL / DATABASE_PUBLISHABLE_KEY (Supabase) también son públicas
+  // por diseño: la protección real son las políticas RLS de la base.
+  envPrefix: ['FORM_', 'DATABASE_'],
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
