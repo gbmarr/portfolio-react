@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
 import { Button } from './Button'
 import { submitContactForm } from '../utils/formSubmission'
+import { saveContactMessage } from '../lib/messages'
 
 export interface ContactFormData {
   name: string
@@ -28,6 +29,21 @@ const MIN_MESSAGE_LENGTH = 10
 export function ContactForm({ onSubmit }: ContactFormProps) {
   const [status, setStatus] = useState<Status>('idle')
   const lastSubmitAt = useRef(0)
+
+  /** Copia del mensaje en la bandeja del panel. Secundario: un fallo acá no
+   *  debe romper el envío principal por Web3Forms. */
+  async function persistToPanel(data: ContactFormData): Promise<void> {
+    try {
+      await saveContactMessage({
+        name: data.name,
+        email: data.email,
+        message: data.message,
+        subject: null,
+      })
+    } catch {
+      // Silencioso a propósito: la bandeja es un extra, el email manda.
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -66,6 +82,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
         await onSubmit(data)
       } else {
         await submitContactForm(data, String(formData.get('botcheck') ?? ''))
+        await persistToPanel(data)
       }
       setStatus('success')
       form.reset()
