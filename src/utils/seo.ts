@@ -26,3 +26,26 @@ export function applySeoMeta(meta: SeoMeta): void {
   if (meta.ogImage) setMeta('property', 'og:image', meta.ogImage)
   if (meta.siteName) setMeta('property', 'og:site_name', meta.siteName)
 }
+
+/** Rutas que no deben indexarse (accesos y paneles privados). */
+const PRIVATE_PATH_PREFIXES = ['/login', '/acceso-admin', '/admin', '/panel']
+
+/** `true` si la ruta corresponde a una superficie privada del sitio. */
+export function isPrivatePath(pathname: string): boolean {
+  return PRIVATE_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  )
+}
+
+/**
+ * Meta robots por ruta (complementa los headers X-Robots-Tag del deploy):
+ * `noindex, nofollow` en rutas privadas; en públicas elimina la meta para no
+ * dejar rastro de una navegación anterior dentro de la SPA.
+ */
+export function applyRobotsMeta(pathname: string): void {
+  if (isPrivatePath(pathname)) {
+    setMeta('name', 'robots', 'noindex, nofollow')
+    return
+  }
+  document.head.querySelector('meta[name="robots"]')?.remove()
+}

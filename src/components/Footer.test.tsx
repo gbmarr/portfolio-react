@@ -22,4 +22,10 @@ describe('Footer', () => {
     render(<Footer />)
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
+
+  it('renders a discreet client access link to /login', () => {
+    render(<Footer />)
+    const link = screen.getByRole('link', { name: copy.footer.clientAccess })
+    expect(link).toHaveAttribute('href', '/login')
+  })
 })

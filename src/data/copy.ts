@@ -102,6 +102,8 @@ export const copy = {
   footer: {
     tagline: 'Sitios web para negocios. Hechos por Gabriel Marrero.',
     rights: 'Todos los derechos reservados.',
+    // [en uso] enlace discreto en el Footer hacia /login (acceso de clientes)
+    clientAccess: 'Acceso clientes',
   },
   seo: {
     title: 'Gabriel Marrero | Sitios web para negocios en Argentina',

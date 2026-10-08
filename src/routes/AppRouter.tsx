@@ -1,6 +1,8 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import App from '../App'
 import { AuthProvider } from '../lib/auth'
+import { applyRobotsMeta } from '../utils/seo'
 import { LoginPage } from '../pages/LoginPage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
 import { RequireAdmin, RequireAuth, RequireClient } from './guards'
@@ -16,6 +18,17 @@ import { ClientLayout } from '../pages/client/ClientLayout'
 import { ClientProjectsPage } from '../pages/client/ClientProjectsPage'
 import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage'
 
+/** Aplica la meta robots según la ruta actual (noindex en superficies privadas). */
+function RobotsMeta() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    applyRobotsMeta(pathname)
+  }, [pathname])
+
+  return null
+}
+
 /**
  * Router raíz del sitio.
  *
@@ -30,6 +43,7 @@ import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage
 export function AppRouter() {
   return (
     <BrowserRouter>
+      <RobotsMeta />
       <AuthProvider>
         <Routes>
           <Route path="/" element={<App />} />

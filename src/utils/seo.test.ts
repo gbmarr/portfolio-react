@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach } from 'vitest'
-import { applySeoMeta } from './seo'
+import { applyRobotsMeta, applySeoMeta } from './seo'
 
 afterEach(() => {
   document.head.innerHTML = ''
@@ -67,5 +67,32 @@ describe('applySeoMeta', () => {
     // When ogImage and siteName are omitted, the optional fields are not injected
     expect(document.querySelector('meta[property="og:image"]')).toBeNull()
     expect(document.querySelector('meta[property="og:site_name"]')).toBeNull()
+  })
+})
+
+describe('applyRobotsMeta', () => {
+  it.each([
+    '/login',
+    '/acceso-admin',
+    '/admin',
+    '/admin/proyectos/123',
+    '/panel',
+    '/panel/abc',
+  ])('marks %s as noindex for search engines', (path) => {
+    applyRobotsMeta(path)
+    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
+      'noindex, nofollow'
+    )
+  })
+
+  it('leaves public paths without a robots meta', () => {
+    applyRobotsMeta('/')
+    expect(document.querySelector('meta[name="robots"]')).toBeNull()
+  })
+
+  it('removes the robots meta when navigating back to a public path', () => {
+    applyRobotsMeta('/login')
+    applyRobotsMeta('/')
+    expect(document.querySelector('meta[name="robots"]')).toBeNull()
   })
 })
