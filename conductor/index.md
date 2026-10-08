@@ -5,6 +5,7 @@
 - [Product Definition](./product.md)
 - [Product Guidelines](./product-guidelines.md)
 - [Tech Stack](./tech-stack.md)
+- [Services Catalog](./servicios.md)
 - [Vercel Hobby Fair-use & Guardrails](./fair-use.md)
 
 ## Workflow
