@@ -1,16 +1,22 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { AdminDashboard } from './AdminDashboard'
-import type { ContactMessage, Project } from '../../lib/types'
+import type { ContactMessage, Project, ProjectBrief } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   listProjects: vi.fn(),
   listMessages: vi.fn(),
+  listBriefs: vi.fn(),
 }))
 
 vi.mock('../../lib/projects', () => ({ listProjects: h.listProjects }))
 vi.mock('../../lib/messages', () => ({ listMessages: h.listMessages }))
+vi.mock('../../lib/briefs', () => ({ listBriefs: h.listBriefs }))
+
+beforeEach(() => {
+  h.listBriefs.mockResolvedValue([])
+})
 
 const DAY_MS = 86_400_000
 const project = (over: Partial<Project> = {}): Project => ({
@@ -35,6 +41,18 @@ const message = (over: Partial<ContactMessage> = {}): ContactMessage => ({
   subject: 'Consulta',
   read_at: null,
   created_at: '2026-09-01T00:00:00Z',
+  ...over,
+})
+
+const brief = (over: Partial<ProjectBrief> = {}): ProjectBrief => ({
+  id: 'b1',
+  project_id: 'p1',
+  service_type: 'landing',
+  extra_ids: [],
+  answers: {},
+  status: 'pendiente',
+  created_at: '2026-10-08T00:00:00Z',
+  updated_at: '2026-10-08T00:00:00Z',
   ...over,
 })
 
@@ -87,6 +105,22 @@ describe('AdminDashboard', () => {
     expect(stat('Entregas vencidas').getByText('0')).toBeInTheDocument()
     expect(screen.getByText('sin leer')).toBeInTheDocument()
     expect(stat('Mensajes').getByText('1')).toBeInTheDocument()
+  })
+
+  it('resume briefs completados y pendientes', async () => {
+    h.listProjects.mockResolvedValue([])
+    h.listMessages.mockResolvedValue([])
+    h.listBriefs.mockResolvedValue([
+      brief({ status: 'completado' }),
+      brief({ id: 'b2', status: 'pendiente' }),
+      brief({ id: 'b3', status: 'pendiente' }),
+    ])
+
+    renderDashboard()
+
+    await screen.findByText('Proyectos en curso')
+    expect(within(screen.getByTestId('stat-Briefs completados')).getByText('1')).toBeInTheDocument()
+    expect(within(screen.getByTestId('stat-Briefs pendientes')).getByText('2')).toBeInTheDocument()
   })
 
   it('no muestra la sección de finanzas', async () => {

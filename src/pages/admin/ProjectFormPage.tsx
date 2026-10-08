@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createProject, getProject, updateProject } from '../../lib/projects'
+import { getBrief, upsertBrief } from '../../lib/briefs'
 import { listClients } from '../../lib/clients'
 import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { statusLabels, panelCopy } from '../../data/panel'
+import { estimateTiers, estimateExtras, type EstimateTierId } from '../../data/estimate'
 import type { ProjectStatus, ProjectType } from '../../lib/types'
 
 const typeOptions = (
@@ -16,6 +18,8 @@ const statusOptions = (
   Object.entries(statusLabels.project) as Array<[ProjectStatus, string]>
 ).map(([value, label]) => ({ value, label }))
 
+const serviceOptions = estimateTiers.map((tier) => ({ value: tier.id, label: tier.name }))
+
 type FormState = {
   title: string
   client_email: string
@@ -24,6 +28,8 @@ type FormState = {
   start_date: string
   deadline: string
   description: string
+  service_type: EstimateTierId
+  extra_ids: string[]
 }
 
 const emptyForm: FormState = {
@@ -34,6 +40,8 @@ const emptyForm: FormState = {
   start_date: '',
   deadline: '',
   description: '',
+  service_type: 'landing',
+  extra_ids: [],
 }
 
 /** Alta y edición de proyectos. `/admin/proyectos/nuevo` y `.../:id/editar`. */
@@ -52,14 +60,24 @@ export function ProjectFormPage() {
     setForm((current) => ({ ...current, [key]: value }))
   }
 
+  function toggleExtra(extraId: string) {
+    setForm((current) => ({
+      ...current,
+      extra_ids: current.extra_ids.includes(extraId)
+        ? current.extra_ids.filter((id) => id !== extraId)
+        : [...current.extra_ids, extraId],
+    }))
+  }
+
   useEffect(() => {
     let cancelled = false
 
     async function load() {
       try {
-        const [clients, project] = await Promise.all([
+        const [clients, project, brief] = await Promise.all([
           listClients(),
           id ? getProject(id) : Promise.resolve(null),
+          id ? getBrief(id) : Promise.resolve(null),
         ])
         if (cancelled) return
         setClientEmails(clients.map((client) => client.email))
@@ -72,6 +90,8 @@ export function ProjectFormPage() {
             start_date: project.start_date ?? '',
             deadline: project.deadline ?? '',
             description: project.description ?? '',
+            service_type: brief?.service_type ?? 'landing',
+            extra_ids: brief?.extra_ids ?? [],
           })
         }
         setLoading(false)
@@ -111,6 +131,7 @@ export function ProjectFormPage() {
         description: form.description.trim() || null,
       }
       const saved = isEdit ? await updateProject(id!, input) : await createProject(input)
+      await upsertBrief(saved.id, form.service_type, form.extra_ids)
       navigate(`/admin/proyectos/${saved.id}`)
     } catch {
       setError(panelCopy.error.generic)
@@ -201,6 +222,38 @@ export function ProjectFormPage() {
           value={form.description}
           onValueChange={(value) => set('description', value)}
         />
+
+        <div className="space-y-4 rounded-xl border border-border bg-surface/40 p-4">
+          <SelectField
+            id="project-service"
+            label="Servicio"
+            value={form.service_type}
+            onValueChange={(value) => set('service_type', value as EstimateTierId)}
+            options={serviceOptions}
+          />
+          <fieldset>
+            <legend className="mb-2 text-sm font-semibold text-text">
+              Extras opcionales del brief
+            </legend>
+            <p className="mb-3 text-xs text-text-muted">
+              Definí qué le vas a pedir al cliente en “¿Qué vamos a necesitar?”. Cambiar el
+              servicio o los extras reinicia lo que el cliente ya haya completado.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {estimateExtras.map((extra) => (
+                <label key={extra.id} className="flex items-center gap-2 text-sm text-text-muted">
+                  <input
+                    type="checkbox"
+                    checked={form.extra_ids.includes(extra.id)}
+                    onChange={() => toggleExtra(extra.id)}
+                    className="h-4 w-4 accent-accent"
+                  />
+                  {extra.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
 
         {error && (
           <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">

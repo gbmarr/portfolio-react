@@ -10,17 +10,21 @@ import {
   reorderStages,
   updateStage,
 } from '../../lib/projects'
+import { getBrief } from '../../lib/briefs'
 import { useAuth } from '../../lib/auth'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { StageEditor } from './StageEditor'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
-import type { MilestoneApproval, Project, ProjectStage } from '../../lib/types'
+import { estimateTiers, estimateExtras } from '../../data/estimate'
+import { getBriefTemplate, getExtraSections } from '../../data/briefTemplates'
+import type { MilestoneApproval, Project, ProjectBrief, ProjectStage } from '../../lib/types'
 
 type Detail = {
   project: Project
   stages: ProjectStage[]
   approvals: MilestoneApproval[]
+  brief: ProjectBrief | null
 }
 
 type State =
@@ -39,12 +43,13 @@ export function ProjectDetailPage() {
 
   const load = useCallback(async () => {
     if (!id) return null
-    const [project, stages, approvals] = await Promise.all([
+    const [project, stages, approvals, brief] = await Promise.all([
       getProject(id),
       listStages(id),
       listApprovals(id),
+      getBrief(id),
     ])
-    return { project, stages, approvals } satisfies Detail
+    return { project, stages, approvals, brief } satisfies Detail
   }, [id])
 
   useEffect(() => {
@@ -135,7 +140,33 @@ export function ProjectDetailPage() {
 
   if (!detail) return null
 
-  const { project, stages, approvals } = detail
+  const { project, stages, approvals, brief } = detail
+
+  const briefServiceName = brief
+    ? estimateTiers.find((tier) => tier.id === brief.service_type)?.name ?? brief.service_type
+    : null
+  const briefExtras = brief
+    ? estimateExtras.filter((extra) => brief.extra_ids.includes(extra.id))
+    : []
+
+  const briefFieldLabels = new Map<string, string>()
+  const briefAnswers: Array<{ fieldId: string; label: string; value: string }> = []
+  if (brief) {
+    const template = getBriefTemplate(brief.service_type)
+    const allSections = [...template.sections, ...getExtraSections(template, brief.extra_ids)]
+    for (const section of allSections) {
+      for (const field of section.fields) briefFieldLabels.set(field.id, field.label)
+    }
+    for (const [fieldId, value] of Object.entries(brief.answers)) {
+      if (value && value.trim()) {
+        briefAnswers.push({
+          fieldId,
+          label: briefFieldLabels.get(fieldId) ?? fieldId,
+          value,
+        })
+      }
+    }
+  }
 
   return (
     <div className="space-y-10">
@@ -241,6 +272,42 @@ export function ProjectDetailPage() {
           </p>
         )}
       </div>
+
+      <section
+        aria-label="Brief del cliente"
+        className="space-y-3 rounded-xl border border-border bg-background/60 p-5"
+      >
+        <h2 className="text-sm font-semibold text-text">Brief del cliente</h2>
+        {brief ? (
+          <>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge>{briefServiceName}</Badge>
+              {briefExtras.map((extra) => (
+                <Badge key={extra.id}>{extra.label}</Badge>
+              ))}
+              <Badge tone={brief.status === 'completado' ? 'done' : 'neutral'}>
+                {brief.status === 'completado' ? 'Completado' : 'Pendiente'}
+              </Badge>
+            </div>
+            {briefAnswers.length > 0 ? (
+              <dl className="grid gap-3 sm:grid-cols-2">
+                {briefAnswers.map((item) => (
+                  <div key={item.fieldId}>
+                    <dt className="text-xs text-text-muted">{item.label}</dt>
+                    <dd className="mt-0.5 whitespace-pre-wrap text-sm text-text">{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <p className="text-sm text-text-muted">El cliente todavía no respondió ningún campo.</p>
+            )}
+          </>
+        ) : (
+          <p className="text-sm text-text-muted">
+            Todavía no definiste el brief. Editá el proyecto para elegir el servicio y los extras.
+          </p>
+        )}
+      </section>
 
       <StageEditor
         stages={stages}

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ProjectDetailPage } from './ProjectDetailPage'
-import type { MilestoneApproval, Project, ProjectStage } from '../../lib/types'
+import type { MilestoneApproval, Project, ProjectBrief, ProjectStage } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   getProject: vi.fn(),
@@ -14,6 +14,7 @@ const h = vi.hoisted(() => ({
   deleteStage: vi.fn(),
   reorderStages: vi.fn(),
   deleteProject: vi.fn(),
+  getBrief: vi.fn(),
   useAuth: vi.fn(),
 }))
 
@@ -27,6 +28,7 @@ vi.mock('../../lib/projects', () => ({
   reorderStages: h.reorderStages,
   deleteProject: h.deleteProject,
 }))
+vi.mock('../../lib/briefs', () => ({ getBrief: h.getBrief }))
 vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
 
 beforeEach(() => {
@@ -64,6 +66,18 @@ const stage = (over: Partial<ProjectStage> = {}): ProjectStage => ({
   ...over,
 })
 
+const brief = (over: Partial<ProjectBrief> = {}): ProjectBrief => ({
+  id: 'b1',
+  project_id: 'p1',
+  service_type: 'institucional',
+  extra_ids: ['blog', 'seo'],
+  answers: { nombre: 'Estudio Contable' },
+  status: 'pendiente',
+  created_at: '2026-10-08T00:00:00Z',
+  updated_at: '2026-10-08T00:00:00Z',
+  ...over,
+})
+
 function renderDetail() {
   return render(
     <MemoryRouter initialEntries={['/admin/proyectos/p1']}>
@@ -79,6 +93,7 @@ function mockDetailData() {
   h.getProject.mockResolvedValue(project())
   h.listStages.mockResolvedValue([stage()])
   h.listApprovals.mockResolvedValue([] satisfies MilestoneApproval[])
+  h.getBrief.mockResolvedValue(brief())
   h.createStage.mockResolvedValue({ id: 's-new' })
 }
 
@@ -87,6 +102,7 @@ describe('ProjectDetailPage', () => {
     h.getProject.mockReturnValue(new Promise(() => {}))
     h.listStages.mockResolvedValue([])
     h.listApprovals.mockResolvedValue([])
+    h.getBrief.mockReturnValue(new Promise(() => {}))
     renderDetail()
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
@@ -95,6 +111,7 @@ describe('ProjectDetailPage', () => {
     h.getProject.mockRejectedValue(new Error('boom'))
     h.listStages.mockResolvedValue([])
     h.listApprovals.mockResolvedValue([])
+    h.getBrief.mockResolvedValue(null)
     renderDetail()
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent('Algo salió mal. Probá de nuevo en unos minutos.')
@@ -123,6 +140,27 @@ describe('ProjectDetailPage', () => {
     expect(screen.queryByText('Monto')).not.toBeInTheDocument()
     expect(screen.queryByText('Pagos')).not.toBeInTheDocument()
     expect(screen.queryByText('Seña')).not.toBeInTheDocument()
+  })
+
+  it('muestra el resumen del brief con servicio, extras y estado', async () => {
+    mockDetailData()
+    renderDetail()
+
+    const section = await screen.findByRole('region', { name: 'Brief del cliente' })
+    expect(within(section).getByText('Sitio institucional')).toBeInTheDocument()
+    expect(within(section).getByText('Blog / CMS editable')).toBeInTheDocument()
+    expect(within(section).getByText('SEO técnico avanzado + analytics')).toBeInTheDocument()
+    expect(within(section).getByText('Pendiente')).toBeInTheDocument()
+    expect(within(section).getByText('Estudio Contable')).toBeInTheDocument()
+  })
+
+  it('avisa cuando el proyecto todavía no tiene brief', async () => {
+    mockDetailData()
+    h.getBrief.mockResolvedValue(null)
+    renderDetail()
+
+    await screen.findByText('Sitio web para Estudio')
+    expect(screen.getByText(/todavía no definiste el brief/i)).toBeInTheDocument()
   })
 
   it('envía invitación por magic link al cliente', async () => {

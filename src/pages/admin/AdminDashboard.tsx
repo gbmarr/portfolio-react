@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom'
 import { computeKpis, type DashboardKpis } from '../../lib/dashboard'
 import { listProjects } from '../../lib/projects'
 import { listMessages } from '../../lib/messages'
+import { listBriefs } from '../../lib/briefs'
 import { panelCopy } from '../../data/panel'
 
+type BriefStats = { completed: number; pending: number }
+
 type State =
-  | { loading: true; error: null; kpis: null }
-  | { loading: false; error: string | null; kpis: DashboardKpis | null }
+  | { loading: true; error: null; kpis: null; briefs: null }
+  | { loading: false; error: string | null; kpis: DashboardKpis | null; briefs: BriefStats | null }
 
 function StatCard({
   label,
@@ -32,20 +35,30 @@ function StatCard({
 
 /** Resumen operativo: actividad, vencimientos y mensajes. */
 export function AdminDashboard() {
-  const [state, setState] = useState<State>({ loading: true, error: null, kpis: null })
+  const [state, setState] = useState<State>({ loading: true, error: null, kpis: null, briefs: null })
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
       try {
-        const [projects, messages] = await Promise.all([listProjects(), listMessages()])
+        const [projects, messages, briefs] = await Promise.all([
+          listProjects(),
+          listMessages(),
+          listBriefs(),
+        ])
         if (!cancelled) {
-          setState({ loading: false, error: null, kpis: computeKpis(projects, messages) })
+          const completed = briefs.filter((brief) => brief.status === 'completado').length
+          setState({
+            loading: false,
+            error: null,
+            kpis: computeKpis(projects, messages),
+            briefs: { completed, pending: briefs.length - completed },
+          })
         }
       } catch {
         if (!cancelled) {
-          setState({ loading: false, error: panelCopy.error.generic, kpis: null })
+          setState({ loading: false, error: panelCopy.error.generic, kpis: null, briefs: null })
         }
       }
     }
@@ -72,7 +85,7 @@ export function AdminDashboard() {
     )
   }
 
-  const { kpis } = state
+  const { kpis, briefs } = state
 
   return (
     <div className="space-y-8">
@@ -91,6 +104,8 @@ export function AdminDashboard() {
           <p className="mt-1 font-display text-3xl font-semibold text-text">{kpis.unreadMessages}</p>
           <p className="mt-1 text-xs text-text-muted">sin leer</p>
         </Link>
+        <StatCard label="Briefs completados" value={briefs?.completed ?? 0} />
+        <StatCard label="Briefs pendientes" value={briefs?.pending ?? 0} />
       </section>
     </div>
   )

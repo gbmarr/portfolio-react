@@ -10,6 +10,8 @@ const h = vi.hoisted(() => ({
   updateProject: vi.fn(),
   getProject: vi.fn(),
   listClients: vi.fn(),
+  getBrief: vi.fn(),
+  upsertBrief: vi.fn(),
 }))
 
 vi.mock('../../lib/projects', () => ({
@@ -18,6 +20,10 @@ vi.mock('../../lib/projects', () => ({
   getProject: h.getProject,
 }))
 vi.mock('../../lib/clients', () => ({ listClients: h.listClients }))
+vi.mock('../../lib/briefs', () => ({
+  getBrief: h.getBrief,
+  upsertBrief: h.upsertBrief,
+}))
 
 const project = (over: Partial<Project> = {}): Project => ({
   id: 'p1',
@@ -50,6 +56,7 @@ describe('ProjectFormPage', () => {
   it('muestra loading en modo edición mientras carga', () => {
     h.getProject.mockReturnValue(new Promise(() => {}))
     h.listClients.mockResolvedValue([])
+    h.getBrief.mockReturnValue(new Promise(() => {}))
     renderAt('/admin/proyectos/p1/editar')
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
@@ -57,6 +64,7 @@ describe('ProjectFormPage', () => {
   it('muestra error si falla la carga en edición', async () => {
     h.getProject.mockRejectedValue(new Error('boom'))
     h.listClients.mockResolvedValue([])
+    h.getBrief.mockResolvedValue(null)
     renderAt('/admin/proyectos/p1/editar')
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Algo salió mal. Probá de nuevo en unos minutos.',
@@ -67,6 +75,7 @@ describe('ProjectFormPage', () => {
     const user = userEvent.setup()
     h.listClients.mockResolvedValue([])
     h.createProject.mockResolvedValue({ id: 'p-new' })
+    h.upsertBrief.mockResolvedValue({})
     renderAt('/admin/proyectos/nuevo')
 
     await user.type(screen.getByLabelText('Título'), 'Sitio para Panadería')
@@ -82,6 +91,8 @@ describe('ProjectFormPage', () => {
       deadline: null,
       description: null,
     }))
+    // El servicio por defecto es landing, sin extras.
+    expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'landing', [])
     expect(await screen.findByText('Detalle del proyecto')).toBeInTheDocument()
   })
 
@@ -111,7 +122,9 @@ describe('ProjectFormPage', () => {
     const user = userEvent.setup()
     h.listClients.mockResolvedValue([{ email: 'otro@example.com', projectCount: 0, active: false, full_name: null }])
     h.getProject.mockResolvedValue(project())
+    h.getBrief.mockResolvedValue(null)
     h.updateProject.mockResolvedValue({ id: 'p1' })
+    h.upsertBrief.mockResolvedValue({})
     renderAt('/admin/proyectos/p1/editar')
 
     const titleInput = await screen.findByLabelText('Título')
@@ -129,6 +142,7 @@ describe('ProjectFormPage', () => {
         expect.objectContaining({ title: 'Sitio existente v2', status: 'lead' }),
       ),
     )
+    expect(h.upsertBrief).toHaveBeenCalledWith('p1', 'landing', [])
   })
 
   it('muestra la lista de clientes conocidos como datalist', async () => {
@@ -139,5 +153,49 @@ describe('ProjectFormPage', () => {
     expect(await screen.findByLabelText('Email del cliente')).toBeInTheDocument()
     const option = document.querySelector('#known-clients option')
     expect(option).toHaveAttribute('value', 'cliente@example.com')
+  })
+
+  it('renderiza el selector de servicio y los extras', async () => {
+    h.listClients.mockResolvedValue([])
+    renderAt('/admin/proyectos/nuevo')
+
+    expect(await screen.findByLabelText('Servicio')).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /Módulo de tienda online/ })).toBeInTheDocument()
+  })
+
+  it('envía el servicio y los extras seleccionados al crear', async () => {
+    const user = userEvent.setup()
+    h.listClients.mockResolvedValue([])
+    h.createProject.mockResolvedValue({ id: 'p-new' })
+    h.upsertBrief.mockResolvedValue({})
+    renderAt('/admin/proyectos/nuevo')
+
+    await user.type(screen.getByLabelText('Título'), 'Tienda')
+    await user.type(screen.getByLabelText('Email del cliente'), 'tienda@example.com')
+    await user.selectOptions(await screen.findByLabelText('Servicio'), 'medida')
+    await user.click(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ }))
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    await waitFor(() => expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'medida', ['blog']))
+  })
+
+  it('precarga el brief existente en modo edición', async () => {
+    h.listClients.mockResolvedValue([])
+    h.getProject.mockResolvedValue(project())
+    h.getBrief.mockResolvedValue({
+      id: 'b1',
+      project_id: 'p1',
+      service_type: 'institucional',
+      extra_ids: ['seo'],
+      answers: {},
+      status: 'pendiente',
+      created_at: '2026-10-08T00:00:00Z',
+      updated_at: '2026-10-08T00:00:00Z',
+    })
+    renderAt('/admin/proyectos/p1/editar')
+
+    expect(await screen.findByLabelText('Servicio')).toHaveValue('institucional')
+    expect(screen.getByRole('checkbox', { name: /SEO técnico avanzado/ })).toBeChecked()
   })
 })
