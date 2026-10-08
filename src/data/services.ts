@@ -22,6 +22,7 @@ export const services: Service[] = [
     ],
     excludes: ['Redacción de textos', 'Fotografía profesional', 'Diseño de logo'],
     timeline: '1 a 2 semanas',
+    priceFromUsd: 250,
     whatsappMessage:
       'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para una landing page.',
   },
@@ -41,6 +42,7 @@ export const services: Service[] = [
     ],
     excludes: ['Redacción de textos', 'Fotografía profesional', 'Diseño de logo'],
     timeline: '2 a 4 semanas',
+    priceFromUsd: 450,
     whatsappMessage:
       'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio institucional.',
   },

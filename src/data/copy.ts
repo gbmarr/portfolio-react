@@ -29,6 +29,8 @@ export const copy = {
     includesLabel: 'Incluye',
     excludesLabel: 'No incluye',
     timelineLabel: 'Plazo',
+    // [en uso] precio "desde" en ServiceCard
+    priceLabel: 'Desde',
     ctaLabel: 'Pedir presupuesto',
     unsureText: '¿No sabés cuál necesitás? Escribime y te lo digo sin vueltas.',
   },

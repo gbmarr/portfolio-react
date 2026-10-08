@@ -29,6 +29,17 @@ describe('ServiceCard', () => {
     expect(screen.getByText(`Plazo: ${landing.timeline}`)).toBeInTheDocument()
   })
 
+  it('renders the from-price when available', () => {
+    render(<ServiceCard service={landing} />)
+    expect(screen.getByText(`Desde USD ${landing.priceFromUsd}`)).toBeInTheDocument()
+  })
+
+  it('hides the from-price when the service does not declare one', () => {
+    const withoutPrice = { ...landing, priceFromUsd: undefined }
+    render(<ServiceCard service={withoutPrice} />)
+    expect(screen.queryByText(/Desde USD/)).toBeNull()
+  })
+
   it('renders a WhatsApp CTA with the service-specific message', () => {
     render(<ServiceCard service={landing} />)
     const cta = screen.getByRole('link', { name: 'Pedir presupuesto' })

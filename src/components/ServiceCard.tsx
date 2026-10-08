@@ -77,6 +77,11 @@ export function ServiceCard({ service }: ServiceCardProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
+        {service.priceFromUsd != null && (
+          <span className="text-sm font-semibold text-text">
+            {copy.services.priceLabel} USD {service.priceFromUsd.toLocaleString('es-AR')}
+          </span>
+        )}
         <span className="text-sm text-text-muted">
           {copy.services.timelineLabel}: {service.timeline}
         </span>
