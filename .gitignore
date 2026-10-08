@@ -32,3 +32,7 @@ certificaciones/
 
 # Agent skills runtime state (local issue tracker, tickets, specs generados)
 .scratch/
+
+# Respaldos de DB (contienen datos personales; nunca se versionan)
+supabase/backups/
+supabase/.temp/
