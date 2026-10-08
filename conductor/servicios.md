@@ -298,3 +298,16 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 - [x] Todos los extras tienen precio en `estimate.ts` y ficha acá.
 - [x] Guardrails fair-use referenciados en cada requerimiento que toca backend.
 - [x] Ejemplos basados en casos reales (`cases.ts`) y rubros reales (`industries.ts`).
+
+---
+
+## 7. Brief de proyecto — el catálogo en acción
+
+Cada servicio (y cada extra) de este catálogo tiene su contraparte operativa en el **brief del cliente**: la sección "¿Qué vamos a necesitar?" del panel (`src/pages/client/ClientBrief.tsx`), que le pide al cliente exactamente los datos que el desarrollo de ese servicio/extra requiere.
+
+- **Fuente de los campos:** `src/data/briefTemplates.ts` — un template por servicio (`landing`/`institucional`/`medida`) + una sección por extra, derivados de este documento.
+- **Cuándo aparece:** el admin define servicio + extras al crear/editar el proyecto (`upsertBrief`); el cliente ve las secciones correspondientes y completa campos (texto, color, URL, textarea, sí/no).
+- **Guardrail fair-use:** cero archivos (sin Supabase Storage en el MVP; links de Drive/Dropbox como texto), cero serverless, cero email automático. Todo client-side + RLS.
+- **Estado:** el brief es `pendiente` hasta que el cliente responde todos los campos obligatorios; el admin lo ve en el detalle del proyecto y en el contador del dashboard.
+
+Track de implementación: `conductor/tracks/client_brief_20261008/`.

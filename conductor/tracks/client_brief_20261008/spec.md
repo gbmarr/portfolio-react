@@ -159,10 +159,10 @@ export interface ProjectBrief {
 
 ## 8. Criterios de aceptación
 
-- [ ] El cliente ve "¿Qué vamos a necesitar?" solo en sus proyectos, con los campos del servicio + extras que eligió el admin.
-- [ ] Guardar persiste vía RLS y el status se auto-calcula (completado = todos los obligatorios respondidos).
-- [ ] El admin ve contador "Briefs completados / pendientes" en el dashboard.
-- [ ] Sin archivos subidos, sin email automático, sin serverless (fair-use intacto).
-- [ ] Superficies públicas intactas; `/panel/*` ya noindex.
-- [ ] `npm run build`, `lint`, `test`, `typecheck` en verde; cobertura ≥80%.
-- [ ] Migración `0003` aplicada y verificada en la DB.
+- [x] El cliente ve "¿Qué vamos a necesitar?" solo en sus proyectos, con los campos del servicio + extras que eligió el admin.
+- [x] Guardar persiste vía RLS y el status se auto-calcula (completado = todos los obligatorios respondidos).
+- [x] El admin ve contador "Briefs completados / pendientes" en el dashboard.
+- [x] Sin archivos subidos, sin email automático, sin serverless (fair-use intacto).
+- [x] Superficies públicas intactas; `/panel/*` ya noindex.
+- [x] `npm run build`, `lint`, `test`, `typecheck` en verde; cobertura ≥80% (94.97% statements / 87.51% branches).
+- [x] Migración `0003` aplicada y verificada en la DB.
