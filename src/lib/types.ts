@@ -2,6 +2,7 @@
  * Tipos de las tablas del sistema de gestión (Supabase).
  * Espejan el schema de `supabase/migrations/0001_init.sql`.
  */
+import type { EstimateTierId } from '../data/estimate'
 
 export type ProfileRole = 'admin' | 'client'
 
@@ -75,4 +76,21 @@ export interface MilestoneApproval {
   decision: ApprovalDecision
   comment: string | null
   created_at: string
+}
+
+export type BriefStatus = 'pendiente' | 'completado'
+
+export interface ProjectBrief {
+  id: string
+  project_id: string
+  /** Servicio elegido por el admin (tiers del estimador). */
+  service_type: EstimateTierId
+  /** Ids de extras del estimador seleccionados. */
+  extra_ids: string[]
+  /** Respuestas del cliente: { fieldId: value } según briefTemplates. */
+  answers: Record<string, string>
+  /** Autocalculado: 'completado' si todos los obligatorios respondidos. */
+  status: BriefStatus
+  created_at: string
+  updated_at: string
 }
