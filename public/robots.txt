@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-blond-beta-46.vercel.app/sitemap.xml
+Sitemap: https://gabrielmarrero.com.ar/sitemap.xml
