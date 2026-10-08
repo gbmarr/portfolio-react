@@ -38,21 +38,38 @@ export function ProjectDetailPage() {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const load = useCallback(async () => {
-    if (!id) return
-    try {
-      const [project, stages, approvals] = await Promise.all([
-        getProject(id),
-        listStages(id),
-        listApprovals(id),
-      ])
-      setState({ loading: false, error: null, detail: { project, stages, approvals } })
-    } catch {
-      setState({ loading: false, error: panelCopy.error.generic, detail: null })
-    }
+    if (!id) return null
+    const [project, stages, approvals] = await Promise.all([
+      getProject(id),
+      listStages(id),
+      listApprovals(id),
+    ])
+    return { project, stages, approvals } satisfies Detail
   }, [id])
 
   useEffect(() => {
-    void load()
+    let cancelled = false
+
+    async function boot() {
+      try {
+        const detail = await load()
+        if (cancelled) return
+        if (!detail) {
+          setState({ loading: false, error: panelCopy.error.generic, detail: null })
+          return
+        }
+        setState({ loading: false, error: null, detail })
+      } catch {
+        if (!cancelled) {
+          setState({ loading: false, error: panelCopy.error.generic, detail: null })
+        }
+      }
+    }
+
+    void boot()
+    return () => {
+      cancelled = true
+    }
   }, [load])
 
   const detail = state.detail
@@ -65,10 +82,15 @@ export function ProjectDetailPage() {
     )
   }
 
+  async function refresh() {
+    const detail = await load()
+    if (detail) setState({ loading: false, error: null, detail })
+  }
+
   async function run(action: () => Promise<unknown>) {
     try {
       await action()
-      await load()
+      await refresh()
     } catch {
       setActionError()
     }

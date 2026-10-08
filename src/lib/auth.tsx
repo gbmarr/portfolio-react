@@ -45,10 +45,14 @@ function assertConfigured(): void {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  // Perfil junto al usuario al que pertenece: permite derivar "cargando"
+  // (userId actual !== userId del perfil) sin setState sincrónico en effects.
+  const [profileState, setProfileState] = useState<{ userId: string | null; profile: Profile | null }>({
+    userId: null,
+    profile: null,
+  })
   const [passkeys, setPasskeys] = useState<Passkey[] | null>(null)
   const [authResolved, setAuthResolved] = useState(!isSupabaseConfigured)
-  const [profileLoading, setProfileLoading] = useState(false)
 
   // Suscripción a cambios de auth (solo setState: no hacer awaits adentro del
   // callback, Supabase lo desaconseja para evitar deadlocks).
@@ -60,28 +64,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setAuthResolved(true)
+      // Sin sesión no quedan perfil ni passkeys. Se limpian acá (callback de la
+      // suscripción) y no en los effects para no setear estado sincrónicamente.
+      if (!nextSession) {
+        setProfileState({ userId: null, profile: null })
+        setPasskeys(null)
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
   // Carga del perfil (rol) cada vez que cambia el usuario de la sesión.
+  const userId = session?.user.id ?? null
   useEffect(() => {
-    const userId = session?.user.id
-    if (!userId) {
-      setProfile(null)
-      return
-    }
+    // Sin usuario, la limpieza ya la hizo el callback de onAuthStateChange.
+    if (!userId) return
 
     let cancelled = false
-    setProfileLoading(true)
 
     async function loadProfile() {
       try {
         const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle()
-        if (!cancelled) setProfile((data as Profile | null) ?? null)
-      } finally {
-        if (!cancelled) setProfileLoading(false)
+        if (!cancelled) {
+          setProfileState({ userId, profile: (data as Profile | null) ?? null })
+        }
+      } catch {
+        // Sin perfil cargable: se queda sin rol (comportamiento previo).
+        if (!cancelled) setProfileState({ userId, profile: null })
       }
     }
 
@@ -90,7 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [session?.user.id])
+  }, [userId])
+
+  // El perfil se expone solo si pertenece al usuario de la sesión actual.
+  const profile = userId !== null && profileState.userId === userId ? profileState.profile : null
+  const profileLoading = userId !== null && profileState.userId !== userId
 
   // Carga las passkeys (si el dashboard las tiene habilitadas) por usuario.
   // Los errores se ignoran a propósito: sin passkeys habilitadas la sesión
@@ -98,10 +112,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isSupabaseConfigured) return
     const userId = session?.user.id
-    if (!userId) {
-      setPasskeys(null)
-      return
-    }
+    // Sin usuario, la limpieza ya la hizo el callback de onAuthStateChange.
+    if (!userId) return
 
     let cancelled = false
 
