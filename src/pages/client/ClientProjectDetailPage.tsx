@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
+import { ClientBrief } from './ClientBrief'
 import { useAuth } from '../../lib/auth'
+import { getBrief } from '../../lib/briefs'
 import { formatDate } from '../../lib/format'
 import {
   decideMilestone,
@@ -15,6 +17,7 @@ import type {
   ApprovalDecision,
   MilestoneApproval,
   Project,
+  ProjectBrief,
   ProjectStage,
 } from '../../lib/types'
 
@@ -22,6 +25,7 @@ type Detail = {
   project: Project
   stages: ProjectStage[]
   approvals: MilestoneApproval[]
+  brief: ProjectBrief | null
 }
 
 type LoadState =
@@ -52,12 +56,13 @@ export function ClientProjectDetailPage() {
 
   const load = useCallback(async () => {
     if (!id) return null
-    const [project, stages, approvals] = await Promise.all([
+    const [project, stages, approvals, brief] = await Promise.all([
       getProject(id),
       listStages(id),
       listApprovals(id),
+      getBrief(id),
     ])
-    return { project, stages, approvals }
+    return { project, stages, approvals, brief }
   }, [id])
 
   useEffect(() => {
@@ -84,6 +89,12 @@ export function ClientProjectDetailPage() {
   async function refresh() {
     const detail = await load()
     if (detail) setState({ loading: false, error: null, detail })
+  }
+
+  function handleBriefSaved(updated: ProjectBrief) {
+    setState((prev) =>
+      prev.detail ? { loading: false, error: null, detail: { ...prev.detail, brief: updated } } : prev,
+    )
   }
 
   async function handleSubmitDecision(event: FormEvent<HTMLFormElement>) {
@@ -133,7 +144,7 @@ export function ClientProjectDetailPage() {
     )
   }
 
-  const { project, stages, approvals } = state.detail
+  const { project, stages, approvals, brief } = state.detail
   const visibleStages = stages.filter((stage) => stage.client_visible)
 
   return (
@@ -153,6 +164,8 @@ export function ClientProjectDetailPage() {
           <p className="whitespace-pre-wrap text-sm text-text-muted">{project.description}</p>
         )}
       </header>
+
+      {brief && <ClientBrief brief={brief} onSaved={handleBriefSaved} />}
 
       {actionMessage && (
         <p role="status" className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">

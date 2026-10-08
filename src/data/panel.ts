@@ -80,6 +80,22 @@ export const panelCopy = {
     youApproved: 'Aprobaste esta etapa',
     youRejected: 'Rechazaste esta etapa',
     decisionError: 'No se pudo enviar la decisión.',
+    brief: {
+      title: '¿Qué vamos a necesitar?',
+      intro:
+        'Completá estos datos para arrancar sin idas y vueltas. Podés guardar y seguir después.',
+      progress: (done: number, total: number): string =>
+        `${done} de ${total} campos obligatorios completados`,
+      save: 'Guardar',
+      saving: 'Guardando…',
+      saved: 'Guardamos tus respuestas.',
+      saveError: 'No se pudieron guardar tus respuestas.',
+      statusCompleted: 'Completado',
+      statusPending: 'Pendiente',
+      yesnoPlaceholder: 'Elegí…',
+      yesnoYes: 'Sí',
+      yesnoNo: 'No',
+    },
   },
 } as const
 

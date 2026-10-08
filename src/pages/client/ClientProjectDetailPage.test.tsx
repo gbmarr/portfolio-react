@@ -3,7 +3,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ClientProjectDetailPage } from './ClientProjectDetailPage'
-import type { ApprovalDecision, MilestoneApproval, Project, ProjectStage } from '../../lib/types'
+import type {
+  ApprovalDecision,
+  MilestoneApproval,
+  Project,
+  ProjectBrief,
+  ProjectStage,
+} from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   useAuth: vi.fn(),
@@ -11,6 +17,8 @@ const h = vi.hoisted(() => ({
   listStages: vi.fn(),
   listApprovals: vi.fn(),
   decideMilestone: vi.fn(),
+  getBrief: vi.fn(),
+  updateBriefAnswers: vi.fn(),
 }))
 
 vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
@@ -19,6 +27,10 @@ vi.mock('../../lib/projects', () => ({
   listStages: h.listStages,
   listApprovals: h.listApprovals,
   decideMilestone: h.decideMilestone,
+}))
+vi.mock('../../lib/briefs', () => ({
+  getBrief: h.getBrief,
+  updateBriefAnswers: h.updateBriefAnswers,
 }))
 
 const project = (over: Partial<Project> = {}): Project => ({
@@ -61,6 +73,18 @@ const approval = (over: Partial<MilestoneApproval> = {}): MilestoneApproval => (
   ...over,
 })
 
+const brief = (over: Partial<ProjectBrief> = {}): ProjectBrief => ({
+  id: 'b1',
+  project_id: 'p1',
+  service_type: 'landing',
+  extra_ids: [],
+  answers: {},
+  status: 'pendiente',
+  created_at: '2026-09-01T00:00:00Z',
+  updated_at: '2026-09-01T00:00:00Z',
+  ...over,
+})
+
 function deferred<T>() {
   let resolve!: (value: T) => void
   const promise = new Promise<T>((r) => {
@@ -85,6 +109,8 @@ describe('ClientProjectDetailPage', () => {
     h.getProject.mockResolvedValue(project())
     h.listStages.mockResolvedValue([stage()])
     h.listApprovals.mockResolvedValue([])
+    h.getBrief.mockResolvedValue(null)
+    h.updateBriefAnswers.mockResolvedValue(brief())
   })
 
   it('muestra loading mientras carga', () => {
@@ -218,5 +244,101 @@ describe('ClientProjectDetailPage', () => {
     expect(screen.queryByText('Pagos')).not.toBeInTheDocument()
     expect(screen.queryByText('Todavía no hay pagos cargados.')).not.toBeInTheDocument()
     expect(screen.queryByText('Monto')).not.toBeInTheDocument()
+  })
+
+  it('muestra la sección del brief cuando existe', async () => {
+    h.getBrief.mockResolvedValue(brief())
+
+    renderPage()
+
+    expect(await screen.findByText('¿Qué vamos a necesitar?')).toBeInTheDocument()
+    expect(screen.getByText('0 de 6 campos obligatorios completados')).toBeInTheDocument()
+    expect(screen.getByLabelText('Nombre del negocio o marca')).toBeInTheDocument()
+  })
+
+  it('no muestra la sección del brief si no existe', async () => {
+    renderPage()
+
+    expect(await screen.findByText('Sitio web para Estudio')).toBeInTheDocument()
+    expect(screen.queryByText('¿Qué vamos a necesitar?')).not.toBeInTheDocument()
+  })
+
+  it('renderiza las secciones según el servicio y los extras', async () => {
+    h.getBrief.mockResolvedValue(brief({ service_type: 'institucional', extra_ids: ['blog'] }))
+
+    renderPage()
+
+    expect(await screen.findByText('¿Qué vamos a necesitar?')).toBeInTheDocument()
+    expect(screen.getByText('Secciones del sitio')).toBeInTheDocument()
+    expect(screen.getByText('Contenidos del blog')).toBeInTheDocument()
+  })
+
+  it('renderiza inputs según el tipo de campo', async () => {
+    h.getBrief.mockResolvedValue(brief())
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    expect(screen.getByLabelText('Color principal')).toHaveAttribute('type', 'color')
+    expect(screen.getByLabelText('Descripción breve de lo que hacés').tagName).toBe('TEXTAREA')
+    expect(screen.getByLabelText('¿Ya tenés logo?').tagName).toBe('SELECT')
+  })
+
+  it('guarda las respuestas del brief y confirma', async () => {
+    const user = userEvent.setup()
+    h.getBrief.mockResolvedValue(brief())
+    h.updateBriefAnswers.mockResolvedValue(
+      brief({ answers: { nombre: 'Estudio' }, status: 'pendiente' }),
+    )
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    await user.type(screen.getByLabelText('Nombre del negocio o marca'), 'Estudio')
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    await waitFor(() =>
+      expect(h.updateBriefAnswers).toHaveBeenCalledWith(
+        'p1',
+        expect.objectContaining({ nombre: 'Estudio' }),
+      ),
+    )
+    expect(await screen.findByText('Guardamos tus respuestas.')).toBeInTheDocument()
+  })
+
+  it('avisa si falla el guardado del brief', async () => {
+    const user = userEvent.setup()
+    h.getBrief.mockResolvedValue(brief())
+    h.updateBriefAnswers.mockRejectedValue(new Error('boom'))
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    await user.type(screen.getByLabelText('Nombre del negocio o marca'), 'Estudio')
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    expect(await screen.findByText('No se pudieron guardar tus respuestas.')).toBeInTheDocument()
+  })
+
+  it('marca el brief como completado cuando están todas las respuestas obligatorias', async () => {
+    h.getBrief.mockResolvedValue(
+      brief({
+        answers: {
+          nombre: 'Estudio',
+          sector: 'Diseño',
+          descripcion_corta: 'Hacemos marcas',
+          objetivo: 'Conseguir clientes',
+          cta_principal: 'WhatsApp',
+          color_principal: '#ff0000',
+        },
+        status: 'completado',
+      }),
+    )
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    expect(screen.getByText('6 de 6 campos obligatorios completados')).toBeInTheDocument()
+    expect(screen.getByText('Completado')).toBeInTheDocument()
   })
 })
