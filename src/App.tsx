@@ -10,6 +10,7 @@ import { HowItWorks } from './sections/HowItWorks'
 import { Cases } from './sections/Cases'
 import { AboutShort } from './sections/AboutShort'
 import { FAQSection } from './sections/FAQSection'
+import { Estimator } from './sections/Estimator'
 import { CTAFinal } from './sections/CTAFinal'
 import { Contact } from './sections/Contact'
 import { copy } from './data/copy'
@@ -33,6 +34,7 @@ function App() {
         <Cases />
         <AboutShort />
         <FAQSection />
+        <Estimator />
         <CTAFinal />
         <Contact />
       </main>

@@ -101,6 +101,24 @@ export const copy = {
     // [en uso] enlace mailto en la sección Contacto
     sendEmail: 'Enviar email',
   },
+  estimator: {
+    eyebrow: 'Calculadora',
+    title: 'Estimá tu presupuesto',
+    subtitle: 'Elegí lo que necesitás y mirá un rango orientativo al instante, sin compromiso.',
+    tierLegend: '¿Qué tipo de proyecto necesitás?',
+    sectionsLabel: '¿Cuántas secciones querés?',
+    extrasLegend: 'Extras opcionales',
+    expressLabel: 'Lo necesito en menos de una semana (exprés)',
+    resultLabel: 'Rango orientativo',
+    arsApproxLabel: 'Aprox. en pesos',
+    timelineLabel: 'Plazo estimado',
+    breakdownLabel: 'Desglose',
+    includedNote: 'Incluido en este plan',
+    maintenanceChip: '¿Necesitás mantenimiento mensual? Lo vemos después de publicar',
+    disclaimer:
+      'Estimación orientativa y no vinculante. El presupuesto cerrado lo armamos en una charla.',
+    ctaWhatsApp: 'Consultar por WhatsApp',
+  },
   footer: {
     tagline: 'Sitios web para negocios. Hechos por Gabriel Marrero.',
     rights: 'Todos los derechos reservados.',
