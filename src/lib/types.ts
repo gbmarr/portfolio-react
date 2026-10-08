@@ -25,8 +25,6 @@ export interface Project {
   client_email: string
   title: string
   type: ProjectType
-  amount: number
-  currency: Currency
   status: ProjectStatus
   start_date: string | null
   deadline: string | null
@@ -42,7 +40,6 @@ export type StageInput = Pick<
   ProjectStage,
   'name' | 'description' | 'position' | 'status' | 'client_visible' | 'notes'
 >
-export type PaymentInput = Omit<Payment, 'id' | 'created_at'>
 
 export interface ProjectStage {
   id: string
@@ -65,22 +62,6 @@ export interface ContactMessage {
   message: string
   subject: string | null
   read_at: string | null
-  created_at: string
-}
-
-export type PaymentKind = 'senal' | 'saldo' | 'extra'
-export type PaymentStatus = 'pendiente' | 'pagado' | 'vencido'
-
-export interface Payment {
-  id: string
-  project_id: string
-  kind: PaymentKind
-  amount: number
-  currency: Currency
-  status: PaymentStatus
-  due_date: string | null
-  paid_at: string | null
-  note: string | null
   created_at: string
 }
 

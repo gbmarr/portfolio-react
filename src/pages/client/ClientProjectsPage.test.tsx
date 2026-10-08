@@ -16,8 +16,6 @@ const project = (over: Partial<Project> = {}): Project => ({
   client_email: 'cliente@example.com',
   title: 'Sitio web para Estudio',
   type: 'web',
-  amount: 1500,
-  currency: 'ARS',
   status: 'en_progreso',
   start_date: null,
   deadline: '2026-11-15',

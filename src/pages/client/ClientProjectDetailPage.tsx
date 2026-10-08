@@ -3,20 +3,17 @@ import { Link, useParams } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { useAuth } from '../../lib/auth'
-import { formatDate, formatMoney } from '../../lib/format'
+import { formatDate } from '../../lib/format'
 import {
   decideMilestone,
   getProject,
   listApprovals,
-  listPayments,
   listStages,
 } from '../../lib/projects'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import type {
   ApprovalDecision,
-  Currency,
   MilestoneApproval,
-  Payment,
   Project,
   ProjectStage,
 } from '../../lib/types'
@@ -24,7 +21,6 @@ import type {
 type Detail = {
   project: Project
   stages: ProjectStage[]
-  payments: Payment[]
   approvals: MilestoneApproval[]
 }
 
@@ -43,18 +39,7 @@ const dotClass = (status: ProjectStage['status']) => {
   return 'border-border bg-background'
 }
 
-export function computePaymentTotals(payments: Payment[]): Array<[Currency, { paid: number; pending: number }]> {
-  const map = new Map<Currency, { paid: number; pending: number }>()
-  for (const payment of payments) {
-    const bucket = map.get(payment.currency) ?? { paid: 0, pending: 0 }
-    if (payment.status === 'pagado') bucket.paid += Number(payment.amount)
-    else bucket.pending += Number(payment.amount)
-    map.set(payment.currency, bucket)
-  }
-  return [...map.entries()]
-}
-
-/** Detalle de proyecto para el cliente: timeline + aprobaciones + pagos. */
+/** Detalle de proyecto para el cliente: timeline + aprobaciones. */
 export function ClientProjectDetailPage() {
   const { id } = useParams()
   const { session } = useAuth()
@@ -67,13 +52,12 @@ export function ClientProjectDetailPage() {
 
   const load = useCallback(async () => {
     if (!id) return null
-    const [project, stages, payments, approvals] = await Promise.all([
+    const [project, stages, approvals] = await Promise.all([
       getProject(id),
       listStages(id),
-      listPayments(id),
       listApprovals(id),
     ])
-    return { project, stages, payments, approvals }
+    return { project, stages, approvals }
   }, [id])
 
   useEffect(() => {
@@ -149,9 +133,8 @@ export function ClientProjectDetailPage() {
     )
   }
 
-  const { project, stages, payments, approvals } = state.detail
+  const { project, stages, approvals } = state.detail
   const visibleStages = stages.filter((stage) => stage.client_visible)
-  const totals = computePaymentTotals(payments)
 
   return (
     <section className="space-y-10">
@@ -289,50 +272,6 @@ export function ClientProjectDetailPage() {
               )
             })}
           </ol>
-        )}
-      </section>
-
-      <section aria-label={panelCopy.client.payments} className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
-          {panelCopy.client.payments}
-        </h2>
-        {payments.length === 0 ? (
-          <p className="text-text-muted">{panelCopy.client.noPayments}</p>
-        ) : (
-          <>
-            <ul className="space-y-2">
-              {payments.map((payment) => (
-                <li
-                  key={payment.id}
-                  className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-background/60 px-4 py-3 text-sm"
-                >
-                  <span className="font-medium text-text">{statusLabels.paymentKind[payment.kind]}</span>
-                  <span className="text-text-muted">{formatMoney(Number(payment.amount), payment.currency)}</span>
-                  <Badge tone={statusTones.payment[payment.status]}>
-                    {statusLabels.payment[payment.status]}
-                  </Badge>
-                  {(payment.due_date || payment.paid_at) && (
-                    <span className="text-xs text-text-muted">
-                      {payment.status === 'pagado' && payment.paid_at
-                        ? `Pagado el ${formatDate(payment.paid_at)}`
-                        : payment.due_date
-                          ? `Vence ${formatDate(payment.due_date)}`
-                          : null}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <div className="space-y-1">
-              {totals.map(([currency, { paid, pending }]) => (
-                <p key={currency} data-testid={`client-payment-totals-${currency}`} className="text-sm text-text-muted">
-                  <span className="text-emerald-300">{formatMoney(paid, currency)}</span> {panelCopy.client.paidLabel} ·{' '}
-                  <span className="text-amber-300">{formatMoney(pending, currency)}</span>{' '}
-                  {panelCopy.client.pendingLabel}
-                </p>
-              ))}
-            </div>
-          </>
         )}
       </section>
     </section>

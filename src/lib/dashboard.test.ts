@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { computeKpis } from './dashboard'
-import type { ContactMessage, Payment, Project } from './types'
+import type { ContactMessage, Project } from './types'
 
 function project(overrides: Partial<Project> = {}): Project {
   return {
@@ -8,30 +8,12 @@ function project(overrides: Partial<Project> = {}): Project {
     client_email: 'a@b.com',
     title: 'Sitio',
     type: 'web',
-    amount: 100,
-    currency: 'ARS',
     status: 'en_progreso',
     start_date: null,
     deadline: null,
     description: null,
     created_at: '',
     updated_at: '',
-    ...overrides,
-  }
-}
-
-function payment(overrides: Partial<Payment> = {}): Payment {
-  return {
-    id: 'pay1',
-    project_id: 'p1',
-    kind: 'senal',
-    amount: 100,
-    currency: 'ARS',
-    status: 'pendiente',
-    due_date: null,
-    paid_at: null,
-    note: null,
-    created_at: '',
     ...overrides,
   }
 }
@@ -56,7 +38,6 @@ describe('computeKpis', () => {
     const kpis = computeKpis(
       [project({ status: 'en_progreso' }), project({ status: 'lead' }), project({ status: 'completado' })],
       [message(), message({ read_at: '2026-10-01' })],
-      [],
       today,
     )
     expect(kpis.activeProjects).toBe(1)
@@ -75,28 +56,9 @@ describe('computeKpis', () => {
         project({ deadline: null }), // sin fecha
       ],
       [],
-      [],
       today,
     )
     expect(kpis.upcomingDeadlines).toBe(2)
     expect(kpis.overdueDeadlines).toBe(1)
-  })
-
-  it('suma pagos por moneda: pagado vs pendiente', () => {
-    const kpis = computeKpis(
-      [],
-      [],
-      [
-        payment({ amount: 100, status: 'pagado' }),
-        payment({ amount: 50, status: 'pendiente' }),
-        payment({ amount: 10, status: 'vencido' }),
-        payment({ amount: 7, currency: 'USD', status: 'pagado' }),
-      ],
-      today,
-    )
-    expect(kpis.totals).toEqual({
-      ARS: { paid: 100, pending: 60 },
-      USD: { paid: 7, pending: 0 },
-    })
   })
 })

@@ -6,7 +6,7 @@ import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { statusLabels, panelCopy } from '../../data/panel'
-import type { Currency, ProjectStatus, ProjectType } from '../../lib/types'
+import type { ProjectStatus, ProjectType } from '../../lib/types'
 
 const typeOptions = (
   Object.entries(statusLabels.type) as Array<[ProjectType, string]>
@@ -16,17 +16,10 @@ const statusOptions = (
   Object.entries(statusLabels.project) as Array<[ProjectStatus, string]>
 ).map(([value, label]) => ({ value, label }))
 
-const currencyOptions = [
-  { value: 'ARS', label: 'ARS' },
-  { value: 'USD', label: 'USD' },
-]
-
 type FormState = {
   title: string
   client_email: string
   type: ProjectType
-  amount: string
-  currency: Currency
   status: ProjectStatus
   start_date: string
   deadline: string
@@ -37,8 +30,6 @@ const emptyForm: FormState = {
   title: '',
   client_email: '',
   type: 'web',
-  amount: '',
-  currency: 'ARS',
   status: 'lead',
   start_date: '',
   deadline: '',
@@ -77,8 +68,6 @@ export function ProjectFormPage() {
             title: project.title,
             client_email: project.client_email,
             type: project.type,
-            amount: String(project.amount),
-            currency: project.currency,
             status: project.status,
             start_date: project.start_date ?? '',
             deadline: project.deadline ?? '',
@@ -103,14 +92,9 @@ export function ProjectFormPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const email = form.client_email.trim().toLowerCase()
-    const amount = Number(form.amount)
 
     if (!form.title.trim() || !email) {
       setError('Completá el título y el email del cliente.')
-      return
-    }
-    if (Number.isNaN(amount) || amount < 0) {
-      setError('El monto debe ser un número mayor o igual a cero.')
       return
     }
 
@@ -121,8 +105,6 @@ export function ProjectFormPage() {
         title: form.title.trim(),
         client_email: email,
         type: form.type,
-        amount,
-        currency: form.currency,
         status: form.status,
         start_date: form.start_date || null,
         deadline: form.deadline || null,
@@ -194,23 +176,6 @@ export function ProjectFormPage() {
             value={form.status}
             onValueChange={(value) => set('status', value as ProjectStatus)}
             options={statusOptions}
-          />
-          <FormField
-            id="project-amount"
-            label="Monto"
-            type="number"
-            min="0"
-            step="0.01"
-            required
-            value={form.amount}
-            onValueChange={(value) => set('amount', value)}
-          />
-          <SelectField
-            id="project-currency"
-            label="Moneda"
-            value={form.currency}
-            onValueChange={(value) => set('currency', value as Currency)}
-            options={currencyOptions}
           />
           <FormField
             id="project-start"

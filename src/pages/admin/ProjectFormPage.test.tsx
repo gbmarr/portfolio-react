@@ -24,8 +24,6 @@ const project = (over: Partial<Project> = {}): Project => ({
   client_email: 'cliente@example.com',
   title: 'Sitio existente',
   type: 'web',
-  amount: 1200,
-  currency: 'ARS',
   status: 'lead',
   start_date: '2026-09-01',
   deadline: '2026-12-01',
@@ -73,15 +71,12 @@ describe('ProjectFormPage', () => {
 
     await user.type(screen.getByLabelText('Título'), 'Sitio para Panadería')
     await user.type(screen.getByLabelText('Email del cliente'), 'Panaderia@Example.com')
-    await user.type(screen.getByLabelText('Monto'), '2500')
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() => expect(h.createProject).toHaveBeenCalledWith({
       title: 'Sitio para Panadería',
       client_email: 'panaderia@example.com',
       type: 'web',
-      amount: 2500,
-      currency: 'ARS',
       status: 'lead',
       start_date: null,
       deadline: null,
@@ -90,7 +85,7 @@ describe('ProjectFormPage', () => {
     expect(await screen.findByText('Detalle del proyecto')).toBeInTheDocument()
   })
 
-  it('valida campos obligatorios y montos negativos', async () => {
+  it('valida campos obligatorios', async () => {
     const user = userEvent.setup()
     h.listClients.mockResolvedValue([])
     h.createProject.mockResolvedValue({ id: 'x' })
@@ -100,15 +95,16 @@ describe('ProjectFormPage', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Completá el título y el email del cliente.',
     )
-
-    await user.type(screen.getByLabelText('Título'), 'Un título')
-    await user.type(screen.getByLabelText('Email del cliente'), 'a@a.com')
-    await user.type(screen.getByLabelText('Monto'), '-10')
-    await user.click(screen.getByRole('button', { name: 'Guardar' }))
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'El monto debe ser un número mayor o igual a cero.',
-    )
     expect(h.createProject).not.toHaveBeenCalled()
+  })
+
+  it('no renderiza campos de monto', async () => {
+    h.listClients.mockResolvedValue([])
+    renderAt('/admin/proyectos/nuevo')
+
+    expect(await screen.findByLabelText('Título')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Monto')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Moneda')).not.toBeInTheDocument()
   })
 
   it('precarga datos en modo edición y actualiza', async () => {
@@ -121,7 +117,6 @@ describe('ProjectFormPage', () => {
     const titleInput = await screen.findByLabelText('Título')
     expect(titleInput).toHaveValue('Sitio existente')
     expect(screen.getByLabelText('Email del cliente')).toHaveValue('cliente@example.com')
-    expect(screen.getByLabelText('Monto')).toHaveValue(1200)
     expect(screen.getByLabelText('Descripción')).toHaveValue('Un proyecto de prueba')
 
     await user.clear(titleInput)

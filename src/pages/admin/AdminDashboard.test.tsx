@@ -2,15 +2,14 @@ import { describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { AdminDashboard } from './AdminDashboard'
-import type { ContactMessage, Payment, Project } from '../../lib/types'
+import type { ContactMessage, Project } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   listProjects: vi.fn(),
-  listAllPayments: vi.fn(),
   listMessages: vi.fn(),
 }))
 
-vi.mock('../../lib/projects', () => ({ listProjects: h.listProjects, listAllPayments: h.listAllPayments }))
+vi.mock('../../lib/projects', () => ({ listProjects: h.listProjects }))
 vi.mock('../../lib/messages', () => ({ listMessages: h.listMessages }))
 
 const DAY_MS = 86_400_000
@@ -19,28 +18,12 @@ const project = (over: Partial<Project> = {}): Project => ({
   client_email: 'cliente@example.com',
   title: 'Proyecto A',
   type: 'web',
-  amount: 1000,
-  currency: 'ARS',
   status: 'en_progreso',
   start_date: null,
   deadline: null,
   description: null,
   created_at: '2026-09-01T00:00:00Z',
   updated_at: '2026-09-01T00:00:00Z',
-  ...over,
-})
-
-const payment = (over: Partial<Payment> = {}): Payment => ({
-  id: 'pay-1',
-  project_id: 'p1',
-  kind: 'senal',
-  amount: 1000,
-  currency: 'ARS',
-  status: 'pagado',
-  due_date: null,
-  paid_at: '2026-09-01T00:00:00Z',
-  note: null,
-  created_at: '2026-09-01T00:00:00Z',
   ...over,
 })
 
@@ -66,7 +49,6 @@ function renderDashboard() {
 describe('AdminDashboard', () => {
   it('muestra loading mientras carga', () => {
     h.listProjects.mockReturnValue(new Promise(() => {}))
-    h.listAllPayments.mockResolvedValue([])
     h.listMessages.mockResolvedValue([])
     renderDashboard()
     expect(screen.getByRole('status')).toBeInTheDocument()
@@ -74,7 +56,6 @@ describe('AdminDashboard', () => {
 
   it('muestra error si falla la carga', async () => {
     h.listProjects.mockRejectedValue(new Error('boom'))
-    h.listAllPayments.mockResolvedValue([])
     h.listMessages.mockResolvedValue([])
     renderDashboard()
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -82,15 +63,11 @@ describe('AdminDashboard', () => {
     )
   })
 
-  it('resume KPIs: actividad, vencimientos, mensajes y finanzas en ARS', async () => {
+  it('resume KPIs: actividad, vencimientos y mensajes', async () => {
     const upcoming = new Date(Date.now() + 3 * DAY_MS).toISOString()
     h.listProjects.mockResolvedValue([
       project(),
       project({ id: 'p2', status: 'en_progreso', deadline: upcoming.split('T')[0] }),
-    ])
-    h.listAllPayments.mockResolvedValue([
-      payment(),
-      payment({ id: 'pay-2', amount: 500, status: 'pendiente' }),
     ])
     h.listMessages.mockResolvedValue([
       message(),
@@ -110,22 +87,17 @@ describe('AdminDashboard', () => {
     expect(stat('Entregas vencidas').getByText('0')).toBeInTheDocument()
     expect(screen.getByText('sin leer')).toBeInTheDocument()
     expect(stat('Mensajes').getByText('1')).toBeInTheDocument()
-    expect(screen.getByText('$ 1.000,00', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('$ 500,00', { exact: false })).toBeInTheDocument()
-    expect(screen.queryByText('Cobrado (USD)')).not.toBeInTheDocument()
   })
 
-  it('muestra finanzas en USD cuando hay movimientos', async () => {
+  it('no muestra la sección de finanzas', async () => {
     h.listProjects.mockResolvedValue([])
-    h.listAllPayments.mockResolvedValue([
-      payment({ id: 'pay-usd', amount: 100, currency: 'USD', status: 'pagado' }),
-    ])
     h.listMessages.mockResolvedValue([])
 
     renderDashboard()
 
-    expect(await screen.findByText('Cobrado (USD)')).toBeInTheDocument()
-    expect(screen.getByText('US$ 100,00')).toBeInTheDocument()
+    expect(await screen.findByText('Proyectos en curso')).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Finanzas' })).not.toBeInTheDocument()
+    expect(screen.queryByText(/Cobrado/)).not.toBeInTheDocument()
   })
 
   it('marca vencidas en rojo cuando hay entregas vencidas', async () => {
@@ -133,7 +105,6 @@ describe('AdminDashboard', () => {
     h.listProjects.mockResolvedValue([
       project({ id: 'p-over', status: 'en_progreso', deadline: overdue.split('T')[0] }),
     ])
-    h.listAllPayments.mockResolvedValue([])
     h.listMessages.mockResolvedValue([])
 
     renderDashboard()

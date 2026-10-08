@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { listProjects } from '../../lib/projects'
-import { formatDate, formatMoney } from '../../lib/format'
+import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import type { Project } from '../../lib/types'
@@ -66,7 +66,6 @@ export function ProjectsListPage() {
                 <th className="px-4 py-3 font-semibold">Proyecto</th>
                 <th className="px-4 py-3 font-semibold">Cliente</th>
                 <th className="px-4 py-3 font-semibold">Tipo</th>
-                <th className="px-4 py-3 font-semibold">Monto</th>
                 <th className="px-4 py-3 font-semibold">Estado</th>
                 <th className="px-4 py-3 font-semibold">Entrega</th>
               </tr>
@@ -84,9 +83,6 @@ export function ProjectsListPage() {
                   </td>
                   <td className="px-4 py-3 text-text-muted">{project.client_email}</td>
                   <td className="px-4 py-3 text-text-muted">{statusLabels.type[project.type]}</td>
-                  <td className="px-4 py-3 text-text-muted">
-                    {formatMoney(project.amount, project.currency)}
-                  </td>
                   <td className="px-4 py-3">
                     <Badge tone={statusTones.project[project.status]}>
                       {statusLabels.project[project.status]}

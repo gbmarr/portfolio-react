@@ -15,8 +15,6 @@ const project = (over: Partial<Project> = {}): Project => ({
   client_email: 'cliente@example.com',
   title: 'Sitio web para Estudio',
   type: 'web',
-  amount: 1500,
-  currency: 'USD',
   status: 'en_progreso',
   start_date: '2026-09-01',
   deadline: '2026-11-15',
@@ -67,7 +65,7 @@ describe('ProjectsListPage', () => {
   it('lista los proyectos en una tabla con link al detalle', async () => {
     h.listProjects.mockResolvedValue([
       project(),
-      project({ id: 'p2', title: 'Landing para Clínica', type: 'landing', amount: 800, status: 'lead', client_email: 'otro@example.com', deadline: '2026-12-20' }),
+      project({ id: 'p2', title: 'Landing para Clínica', type: 'landing', status: 'lead', client_email: 'otro@example.com', deadline: '2026-12-20' }),
     ])
     renderPage()
 
@@ -80,7 +78,7 @@ describe('ProjectsListPage', () => {
     expect(screen.getByText('cliente@example.com')).toBeInTheDocument()
     expect(screen.getByText('otro@example.com')).toBeInTheDocument()
     expect(screen.getByText('En progreso')).toBeInTheDocument()
-    expect(screen.getByText('US$ 1.500,00')).toBeInTheDocument()
+    expect(screen.queryByText('Monto')).not.toBeInTheDocument()
     expect(screen.getByText('15/11/2026')).toBeInTheDocument()
     expect(screen.getByText('20/12/2026')).toBeInTheDocument()
   })

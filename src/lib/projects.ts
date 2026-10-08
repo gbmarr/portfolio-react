@@ -1,8 +1,6 @@
 import { supabase } from './supabase'
 import type {
   MilestoneApproval,
-  Payment,
-  PaymentInput,
   Project,
   ProjectInput,
   ProjectStage,
@@ -93,39 +91,6 @@ export async function reorderStages(orderedIds: string[]): Promise<void> {
     const { error } = await supabase.from('project_stages').update({ position: index }).eq('id', id)
     if (error) throw new Error(error.message)
   }
-}
-
-// ----------------------------------------------------------------------------
-// Pagos
-// ----------------------------------------------------------------------------
-
-export async function listPayments(projectId: string): Promise<Payment[]> {
-  const result = await supabase
-    .from('payments')
-    .select('*')
-    .eq('project_id', projectId)
-    .order('due_date', { ascending: true, nullsFirst: false })
-  return unwrapList(result)
-}
-
-export async function listAllPayments(): Promise<Payment[]> {
-  const result = await supabase.from('payments').select('*').order('created_at', { ascending: false })
-  return unwrapList(result)
-}
-
-export async function createPayment(input: PaymentInput): Promise<Payment> {
-  const result = await supabase.from('payments').insert(input).select().single()
-  return unwrap(result)
-}
-
-export async function updatePayment(id: string, patch: Partial<PaymentInput>): Promise<Payment> {
-  const result = await supabase.from('payments').update(patch).eq('id', id).select().single()
-  return unwrap(result)
-}
-
-export async function deletePayment(id: string): Promise<void> {
-  const { error } = await supabase.from('payments').delete().eq('id', id)
-  if (error) throw new Error(error.message)
 }
 
 // ----------------------------------------------------------------------------

@@ -38,21 +38,16 @@ vi.mock('./supabase', () => ({
 }))
 
 import {
-  createPayment,
   createProject,
   createStage,
   decideMilestone,
-  deletePayment,
   deleteProject,
   deleteStage,
   getProject,
-  listAllPayments,
   listApprovals,
-  listPayments,
   listProjects,
   listStages,
   reorderStages,
-  updatePayment,
   updateProject,
   updateStage,
 } from './projects'
@@ -94,8 +89,6 @@ describe('proyectos', () => {
         client_email: 'a@b.com',
         title: 'Sitio',
         type: 'web',
-        amount: 100,
-        currency: 'ARS',
         status: 'lead',
         start_date: null,
         deadline: null,
@@ -158,34 +151,6 @@ describe('etapas', () => {
       () => h.makeBuilder({ data: [], error: { message: 'fail' } }),
     )
     await expect(reorderStages(['a', 'b'])).rejects.toThrow('fail')
-  })
-})
-
-describe('pagos', () => {
-  it('lista pagos por proyecto y todos', async () => {
-    h.tableResults.set('payments', { data: [{ id: 'pay1' }], error: null })
-    await expect(listPayments('p1')).resolves.toEqual([{ id: 'pay1' }])
-    await expect(listAllPayments()).resolves.toEqual([{ id: 'pay1' }])
-  })
-
-  it('create/update devuelven la fila; delete lanza ante error', async () => {
-    h.tableResults.set('payments', { data: { id: 'pay1' }, error: null })
-    await expect(
-      createPayment({
-        project_id: 'p1',
-        kind: 'senal',
-        amount: 100,
-        currency: 'ARS',
-        status: 'pendiente',
-        due_date: null,
-        paid_at: null,
-        note: null,
-      }),
-    ).resolves.toEqual({ id: 'pay1' })
-    await expect(updatePayment('pay1', { status: 'pagado' })).resolves.toEqual({ id: 'pay1' })
-
-    h.tableResults.set('payments', { data: [], error: { message: 'no' } })
-    await expect(deletePayment('pay1')).rejects.toThrow('no')
   })
 })
 

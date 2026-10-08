@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { computeKpis, type DashboardKpis } from '../../lib/dashboard'
-import { listAllPayments, listProjects } from '../../lib/projects'
+import { listProjects } from '../../lib/projects'
 import { listMessages } from '../../lib/messages'
-import { formatMoney } from '../../lib/format'
 import { panelCopy } from '../../data/panel'
 
 type State =
@@ -31,7 +30,7 @@ function StatCard({
   )
 }
 
-/** Resumen operativo: actividad, vencimientos, mensajes y dinero. */
+/** Resumen operativo: actividad, vencimientos y mensajes. */
 export function AdminDashboard() {
   const [state, setState] = useState<State>({ loading: true, error: null, kpis: null })
 
@@ -40,13 +39,9 @@ export function AdminDashboard() {
 
     async function load() {
       try {
-        const [projects, messages, payments] = await Promise.all([
-          listProjects(),
-          listMessages(),
-          listAllPayments(),
-        ])
+        const [projects, messages] = await Promise.all([listProjects(), listMessages()])
         if (!cancelled) {
-          setState({ loading: false, error: null, kpis: computeKpis(projects, messages, payments) })
+          setState({ loading: false, error: null, kpis: computeKpis(projects, messages) })
         }
       } catch {
         if (!cancelled) {
@@ -78,7 +73,6 @@ export function AdminDashboard() {
   }
 
   const { kpis } = state
-  const hasUsd = kpis.totals.USD.paid > 0 || kpis.totals.USD.pending > 0
 
   return (
     <div className="space-y-8">
@@ -97,20 +91,6 @@ export function AdminDashboard() {
           <p className="mt-1 font-display text-3xl font-semibold text-text">{kpis.unreadMessages}</p>
           <p className="mt-1 text-xs text-text-muted">sin leer</p>
         </Link>
-      </section>
-
-      <section aria-label="Finanzas" className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">Finanzas</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <StatCard label="Cobrado (ARS)" value={formatMoney(kpis.totals.ARS.paid, 'ARS')} />
-          <StatCard label="Pendiente (ARS)" value={formatMoney(kpis.totals.ARS.pending, 'ARS')} />
-          {hasUsd && (
-            <>
-              <StatCard label="Cobrado (USD)" value={formatMoney(kpis.totals.USD.paid, 'USD')} />
-              <StatCard label="Pendiente (USD)" value={formatMoney(kpis.totals.USD.pending, 'USD')} />
-            </>
-          )}
-        </div>
       </section>
     </div>
   )

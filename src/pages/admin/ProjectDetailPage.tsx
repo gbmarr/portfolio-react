@@ -1,31 +1,25 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
-  createPayment,
   createStage,
-  deletePayment,
   deleteProject,
   deleteStage,
   getProject,
   listApprovals,
-  listPayments,
   listStages,
   reorderStages,
-  updatePayment,
   updateStage,
 } from '../../lib/projects'
 import { useAuth } from '../../lib/auth'
-import { formatDate, formatMoney } from '../../lib/format'
+import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { StageEditor } from './StageEditor'
-import { PaymentsPanel } from './PaymentsPanel'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
-import type { MilestoneApproval, Payment, Project, ProjectStage } from '../../lib/types'
+import type { MilestoneApproval, Project, ProjectStage } from '../../lib/types'
 
 type Detail = {
   project: Project
   stages: ProjectStage[]
-  payments: Payment[]
   approvals: MilestoneApproval[]
 }
 
@@ -33,7 +27,7 @@ type State =
   | { loading: true; error: null; detail: null }
   | { loading: false; error: string | null; detail: Detail | null }
 
-/** Detalle del proyecto: datos, timeline editable, pagos e invitación. */
+/** Detalle del proyecto: datos, timeline editable e invitación. */
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -46,13 +40,12 @@ export function ProjectDetailPage() {
   const load = useCallback(async () => {
     if (!id) return
     try {
-      const [project, stages, payments, approvals] = await Promise.all([
+      const [project, stages, approvals] = await Promise.all([
         getProject(id),
         listStages(id),
-        listPayments(id),
         listApprovals(id),
       ])
-      setState({ loading: false, error: null, detail: { project, stages, payments, approvals } })
+      setState({ loading: false, error: null, detail: { project, stages, approvals } })
     } catch {
       setState({ loading: false, error: panelCopy.error.generic, detail: null })
     }
@@ -120,7 +113,7 @@ export function ProjectDetailPage() {
 
   if (!detail) return null
 
-  const { project, stages, payments, approvals } = detail
+  const { project, stages, approvals } = detail
 
   return (
     <div className="space-y-10">
@@ -201,10 +194,6 @@ export function ProjectDetailPage() {
 
         <dl className="grid grid-cols-2 gap-4 rounded-xl border border-border bg-background/60 p-5 text-sm sm:grid-cols-4">
           <div>
-            <dt className="text-text-muted">Monto</dt>
-            <dd className="mt-1 font-semibold text-text">{formatMoney(project.amount, project.currency)}</dd>
-          </div>
-          <div>
             <dt className="text-text-muted">Inicio</dt>
             <dd className="mt-1 text-text">{formatDate(project.start_date)}</dd>
           </div>
@@ -254,20 +243,6 @@ export function ProjectDetailPage() {
           return run(() => reorderStages(swapped))
         }}
         onDelete={(stageId) => run(() => deleteStage(stageId))}
-      />
-
-      <PaymentsPanel
-        payments={payments}
-        onAdd={(input) => run(() => createPayment({ ...input, project_id: project.id }))}
-        onTogglePaid={(payment) =>
-          run(() =>
-            updatePayment(payment.id, {
-              status: payment.status === 'pagado' ? 'pendiente' : 'pagado',
-              paid_at: payment.status === 'pagado' ? null : new Date().toISOString(),
-            }),
-          )
-        }
-        onDelete={(payment) => run(() => deletePayment(payment.id))}
       />
     </div>
   )

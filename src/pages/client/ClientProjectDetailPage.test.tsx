@@ -2,14 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { ClientProjectDetailPage, computePaymentTotals } from './ClientProjectDetailPage'
-import type { ApprovalDecision, MilestoneApproval, Payment, Project, ProjectStage } from '../../lib/types'
+import { ClientProjectDetailPage } from './ClientProjectDetailPage'
+import type { ApprovalDecision, MilestoneApproval, Project, ProjectStage } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   useAuth: vi.fn(),
   getProject: vi.fn(),
   listStages: vi.fn(),
-  listPayments: vi.fn(),
   listApprovals: vi.fn(),
   decideMilestone: vi.fn(),
 }))
@@ -18,7 +17,6 @@ vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
 vi.mock('../../lib/projects', () => ({
   getProject: h.getProject,
   listStages: h.listStages,
-  listPayments: h.listPayments,
   listApprovals: h.listApprovals,
   decideMilestone: h.decideMilestone,
 }))
@@ -28,8 +26,6 @@ const project = (over: Partial<Project> = {}): Project => ({
   client_email: 'cliente@example.com',
   title: 'Sitio web para Estudio',
   type: 'web',
-  amount: 1500,
-  currency: 'ARS',
   status: 'en_progreso',
   start_date: null,
   deadline: '2026-11-15',
@@ -50,20 +46,6 @@ const stage = (over: Partial<ProjectStage> = {}): ProjectStage => ({
   started_at: '2026-09-10T00:00:00',
   completed_at: '2026-09-20T00:00:00',
   notes: null,
-  created_at: '2026-09-01T00:00:00',
-  ...over,
-})
-
-const payment = (over: Partial<Payment> = {}): Payment => ({
-  id: 'pay-1',
-  project_id: 'p1',
-  kind: 'senal',
-  amount: 500,
-  currency: 'ARS',
-  status: 'pagado',
-  due_date: null,
-  paid_at: '2026-09-05T00:00:00',
-  note: null,
   created_at: '2026-09-01T00:00:00',
   ...over,
 })
@@ -102,7 +84,6 @@ describe('ClientProjectDetailPage', () => {
     h.useAuth.mockReturnValue({ session: { user: { id: 'client-1' } } })
     h.getProject.mockResolvedValue(project())
     h.listStages.mockResolvedValue([stage()])
-    h.listPayments.mockResolvedValue([])
     h.listApprovals.mockResolvedValue([])
   })
 
@@ -230,47 +211,12 @@ describe('ClientProjectDetailPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo enviar la decisión.')
   })
 
-  it('muestra resumen de pagos con totales por moneda', async () => {
-    h.listPayments.mockResolvedValue([
-      payment(),
-      payment({ id: 'pay-2', kind: 'saldo', amount: 1000, status: 'pendiente', paid_at: null }),
-      payment({ id: 'pay-3', kind: 'extra', amount: 200, currency: 'USD', status: 'pagado', paid_at: '2026-09-10T00:00:00Z' }),
-    ])
-
+  it('no renderiza la sección de pagos', async () => {
     renderPage()
 
-    expect(await screen.findByText('Seña')).toBeInTheDocument()
-    expect(screen.getByText('Saldo')).toBeInTheDocument()
-    expect(screen.getByText('Pagado el 05/09/2026')).toBeInTheDocument()
-    const ars = screen.getByTestId('client-payment-totals-ARS')
-    expect(ars).toHaveTextContent('$ 500,00')
-    expect(ars).toHaveTextContent('$ 1.000,00')
-    const usd = screen.getByTestId('client-payment-totals-USD')
-    expect(usd).toHaveTextContent('US$ 200,00')
-  })
-
-  it('muestra estado vacío de pagos', async () => {
-    renderPage()
-    expect(await screen.findByText('Todavía no hay pagos cargados.')).toBeInTheDocument()
-  })
-})
-
-describe('computePaymentTotals', () => {
-  it('suma pagado y pendiente por moneda', () => {
-    expect(
-      computePaymentTotals([
-        payment(),
-        payment({ id: 'p2', amount: 300, status: 'pendiente' }),
-        payment({ id: 'p3', amount: 100, currency: 'USD', status: 'pagado' }),
-        payment({ id: 'p4', amount: 50, currency: 'USD', status: 'vencido' }),
-      ]),
-    ).toEqual([
-      ['ARS', { paid: 500, pending: 300 }],
-      ['USD', { paid: 100, pending: 50 }],
-    ])
-  })
-
-  it('devuelve vacío sin pagos', () => {
-    expect(computePaymentTotals([])).toEqual([])
+    expect(await screen.findByText('Sitio web para Estudio')).toBeInTheDocument()
+    expect(screen.queryByText('Pagos')).not.toBeInTheDocument()
+    expect(screen.queryByText('Todavía no hay pagos cargados.')).not.toBeInTheDocument()
+    expect(screen.queryByText('Monto')).not.toBeInTheDocument()
   })
 })

@@ -1,4 +1,4 @@
-import type { PaymentKind, PaymentStatus, ProjectStatus, ProjectType, StageStatus } from '../lib/types'
+import type { ProjectStatus, ProjectType, StageStatus } from '../lib/types'
 
 /** Textos en español de los paneles (admin y cliente). */
 export const panelCopy = {
@@ -69,8 +69,6 @@ export const panelCopy = {
     timelineEmpty: 'Todavía no hay avances para mostrar.',
     statusLabel: 'Estado',
     deadline: 'Entrega estimada',
-    payments: 'Pagos',
-    noPayments: 'Todavía no hay pagos cargados.',
     stageReview: 'Esta etapa está en revisión. Aprobala o contanos qué ajustar.',
     approve: 'Aprobar',
     reject: 'Rechazar',
@@ -82,8 +80,6 @@ export const panelCopy = {
     youApproved: 'Aprobaste esta etapa',
     youRejected: 'Rechazaste esta etapa',
     decisionError: 'No se pudo enviar la decisión.',
-    paidLabel: 'cobrado',
-    pendingLabel: 'pendiente',
   },
 } as const
 
@@ -104,16 +100,6 @@ export const statusLabels = {
     completada: 'Completada',
     bloqueada: 'Bloqueada',
   } satisfies Record<StageStatus, string>,
-  payment: {
-    pendiente: 'Pendiente',
-    pagado: 'Pagado',
-    vencido: 'Vencido',
-  } satisfies Record<PaymentStatus, string>,
-  paymentKind: {
-    senal: 'Seña',
-    saldo: 'Saldo',
-    extra: 'Extra',
-  } satisfies Record<PaymentKind, string>,
   type: {
     web: 'Sitio web',
     landing: 'Landing',
@@ -139,9 +125,4 @@ export const statusTones = {
     completada: 'done',
     bloqueada: 'blocked',
   } satisfies Record<StageStatus, BadgeTone>,
-  payment: {
-    pendiente: 'neutral',
-    pagado: 'done',
-    vencido: 'danger',
-  } satisfies Record<PaymentStatus, BadgeTone>,
 } as const
