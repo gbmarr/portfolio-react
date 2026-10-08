@@ -180,11 +180,11 @@ export function computeEstimate(input: EstimateInput): EstimateResult
 
 ## 8. Criterios de aceptación
 
-- [ ] `npm run build`, `npm run lint`, `npm run test` y `npm run typecheck` en verde; cobertura ≥80%.
-- [ ] Cero referencias a `Payment`/`amount`/`currency`/`formatMoney(pagos)` en el código de paneles (búsqueda limpia).
-- [ ] Tabla `payments` y columnas `amount/currency` inexistentes en la DB; respaldo CSV verificado.
-- [ ] Link "Acceso clientes" visible en footer y funcional (llega a `/login`).
-- [ ] `/login`, `/acceso-admin`, `/admin/*`, `/panel/*` responden `X-Robots-Tag: noindex` y meta runtime.
-- [ ] Estimador: rango correcto para cada combinación de tier/secciones/Extras/exprés (tests unitarios), CTA WhatsApp con mensaje precargado.
-- [ ] ServiceCard muestra "Desde USD 250/450".
-- [ ] `conductor/fair-use.md` creado y enlazado desde `conductor/index.md`.
+- [x] `npm run build`, `npm run lint`, `npm run test` y `npm run typecheck` en verde; cobertura ≥80% (94.7% statements / 87.8% branches).
+- [x] Cero referencias a `Payment`/`amount`/`currency`/`formatMoney(pagos)` en el código de paneles (búsqueda limpia).
+- [x] Tabla `payments` y columnas `amount/currency` inexistentes en la DB; respaldo CSV verificado.
+- [x] Link "Acceso clientes" visible en footer y funcional (llega a `/login`).
+- [x] `/login`, `/acceso-admin`, `/admin/*`, `/panel/*` responden `X-Robots-Tag: noindex` y meta runtime.
+- [x] Estimador: rango correcto para cada combinación de tier/secciones/Extras/exprés (tests unitarios), CTA WhatsApp con mensaje precargado.
+- [x] ServiceCard muestra "Desde USD 250/450".
+- [x] `conductor/fair-use.md` creado y enlazado desde `conductor/index.md`.
