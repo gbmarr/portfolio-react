@@ -6,18 +6,20 @@ import { Container } from '../components/Container'
 import { FormField } from '../components/ui/FormField'
 import { panelCopy } from '../data/panel'
 
-type Status = 'idle' | 'submitting' | 'magic-sent'
+type Status = 'idle' | 'submitting'
 
 /**
- * Login de clientes en /login: solo enlace mágico.
- * El admin entra por su path oculto (/acceso-admin) con contraseña o passkey.
+ * Acceso de administración en /acceso-admin (path no publicado).
+ * Solo admins: email + contraseña o passkey (Face ID / Touch ID / Windows Hello).
  */
-export function LoginPage() {
-  const { session, profile, loading, configured, signInWithMagicLink } = useAuth()
+export function AdminLoginPage() {
+  const { session, profile, loading, configured, signInWithPassword, signInWithPasskey } =
+    useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
 
@@ -45,67 +47,88 @@ export function LoginPage() {
       <main className="flex min-h-screen items-center justify-center bg-background px-4">
         <Container className="max-w-md text-center">
           <p role="alert" className="mb-6 text-text-muted">
-            {panelCopy.login.notConfigured}
+            {panelCopy.adminLogin.notConfigured}
           </p>
           <Link to="/" className="text-accent hover:underline">
-            {panelCopy.login.backToSite}
+            {panelCopy.adminLogin.backToSite}
           </Link>
         </Container>
       </main>
     )
   }
 
-  async function handleMagicLink(event: FormEvent<HTMLFormElement>) {
+  async function handlePasswordSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const trimmed = email.trim()
-    if (!trimmed) {
-      setError(panelCopy.login.emailRequired)
-      return
-    }
     setStatus('submitting')
     setError(null)
     try {
-      await signInWithMagicLink(trimmed)
-      setStatus('magic-sent')
+      await signInWithPassword(email.trim(), password)
     } catch {
-      setError(panelCopy.error.generic)
+      setError(panelCopy.adminLogin.invalidCredentials)
       setStatus('idle')
     }
   }
+
+  async function handlePasskey() {
+    setStatus('submitting')
+    setError(null)
+    try {
+      await signInWithPasskey()
+    } catch {
+      setError(panelCopy.adminLogin.passkeyError)
+      setStatus('idle')
+    }
+  }
+
+  const sending = status === 'submitting'
+  const passkeySupported =
+    typeof window !== 'undefined' && 'PublicKeyCredential' in window
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Container className="max-w-md">
         <div className="rounded-2xl border border-border bg-background/60 p-8">
           <h1 className="mb-1 font-display text-2xl font-semibold text-text">
-            {panelCopy.login.title}
+            {panelCopy.adminLogin.title}
           </h1>
-          <p className="mb-6 text-sm text-text-muted">{panelCopy.login.subtitle}</p>
+          <p className="mb-6 text-sm text-text-muted">{panelCopy.adminLogin.subtitle}</p>
 
-          <form onSubmit={handleMagicLink} className="space-y-4" noValidate>
+          <form onSubmit={handlePasswordSubmit} className="space-y-4" noValidate>
             <FormField
-              id="login-email"
-              label={panelCopy.login.email}
+              id="admin-email"
+              label={panelCopy.adminLogin.email}
               type="email"
               required
-              autoComplete="email"
+              autoComplete="username"
               maxLength={120}
               value={email}
               onValueChange={setEmail}
             />
-            <Button type="submit" className="w-full" disabled={status === 'submitting'}>
-              {status === 'submitting' ? panelCopy.login.sending : panelCopy.login.magicLink}
+            <FormField
+              id="admin-password"
+              label={panelCopy.adminLogin.password}
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onValueChange={setPassword}
+            />
+            <Button type="submit" className="w-full" disabled={sending}>
+              {sending ? panelCopy.adminLogin.sending : panelCopy.adminLogin.submit}
             </Button>
           </form>
 
-          {status === 'magic-sent' && (
-            <p
-              role="status"
-              className="mt-4 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent"
+          {passkeySupported && (
+            <button
+              type="button"
+              onClick={() => void handlePasskey()}
+              disabled={sending}
+              className="mt-4 w-full rounded-full border border-border bg-background px-4 py-2.5 text-center text-sm font-medium text-text transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
             >
-              {panelCopy.login.magicSent}
-            </p>
+              {panelCopy.adminLogin.passkey}
+            </button>
           )}
+
           {error && (
             <p
               role="alert"
@@ -118,7 +141,7 @@ export function LoginPage() {
 
         <p className="mt-6 text-center">
           <Link to="/" className="text-sm text-text-muted hover:text-accent">
-            ← {panelCopy.login.backToSite}
+            ← {panelCopy.adminLogin.backToSite}
           </Link>
         </p>
       </Container>

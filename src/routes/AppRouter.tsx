@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import App from '../App'
 import { AuthProvider } from '../lib/auth'
 import { LoginPage } from '../pages/LoginPage'
+import { AdminLoginPage } from '../pages/AdminLoginPage'
 import { RequireAdmin, RequireAuth, RequireClient } from './guards'
 import { AdminLayout } from '../pages/admin/AdminLayout'
 import { AdminDashboard } from '../pages/admin/AdminDashboard'
@@ -10,6 +11,7 @@ import { ProjectFormPage } from '../pages/admin/ProjectFormPage'
 import { ProjectDetailPage } from '../pages/admin/ProjectDetailPage'
 import { ClientsPage } from '../pages/admin/ClientsPage'
 import { MessagesPage } from '../pages/admin/MessagesPage'
+import { AdminSecurityPage } from '../pages/admin/AdminSecurityPage'
 import { ClientLayout } from '../pages/client/ClientLayout'
 import { ClientProjectsPage } from '../pages/client/ClientProjectsPage'
 import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage'
@@ -18,7 +20,8 @@ import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage
  * Router raíz del sitio.
  *
  * - `/` renderiza el portfolio público (SPA de una sola página, con anclas).
- * - `/login` resuelve magic link o contraseña y redirige según el rol.
+ * - `/login` es el acceso de clientes (solo enlace mágico).
+ * - `/acceso-admin` es el acceso de gestión (path oculto, solo admins).
  * - `/admin/*` es el panel de administración (requiere rol admin).
  * - `/panel/*` es el panel del cliente (requiere sesión).
  * - Cualquier ruta desconocida redirige al home (el sitio público es la
@@ -31,6 +34,7 @@ export function AppRouter() {
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/acceso-admin" element={<AdminLoginPage />} />
 
           <Route element={<RequireAdmin />}>
             <Route path="/admin" element={<AdminLayout />}>
@@ -41,6 +45,7 @@ export function AppRouter() {
               <Route path="proyectos/:id/editar" element={<ProjectFormPage />} />
               <Route path="clientes" element={<ClientsPage />} />
               <Route path="mensajes" element={<MessagesPage />} />
+              <Route path="seguridad" element={<AdminSecurityPage />} />
             </Route>
           </Route>
 

@@ -23,13 +23,13 @@ export function RequireAuth() {
   return <Outlet />
 }
 
-/** Exige sesión + rol admin; un cliente va a /panel. */
+/** Exige sesión + rol admin; sin sesión va al acceso de gestión oculto. */
 export function RequireAdmin() {
   const { session, profile, loading } = useAuth()
   const location = useLocation()
 
   if (loading) return <PanelLoading />
-  if (!session) return <Navigate to="/login" state={{ from: location.pathname }} replace />
+  if (!session) return <Navigate to="/acceso-admin" state={{ from: location.pathname }} replace />
   if (profile?.role !== 'admin') return <Navigate to="/panel" replace />
   return <Outlet />
 }

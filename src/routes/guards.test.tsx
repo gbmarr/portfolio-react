@@ -19,6 +19,7 @@ function renderGuard(guard: ReactNode, path = '/protegido') {
           <Route path="/protegido" element={<div>contenido protegido</div>} />
         </Route>
         <Route path="/login" element={<div>pantalla-login</div>} />
+        <Route path="/acceso-admin" element={<div>pantalla-acceso-admin</div>} />
         <Route path="/panel" element={<div>pantalla-panel</div>} />
         <Route path="/admin" element={<div>pantalla-admin</div>} />
       </Routes>
@@ -52,10 +53,10 @@ describe('RequireAuth', () => {
 })
 
 describe('RequireAdmin', () => {
-  it('redirige a /login sin sesión', () => {
+  it('redirige al acceso de gestión (/acceso-admin) sin sesión', () => {
     mocks.useAuth.mockReturnValue({ session: null, profile: null, loading: false })
     renderGuard(<RequireAdmin />)
-    expect(screen.getByText('pantalla-login')).toBeInTheDocument()
+    expect(screen.getByText('pantalla-acceso-admin')).toBeInTheDocument()
   })
 
   it('redirige a /panel cuando el rol es client', () => {

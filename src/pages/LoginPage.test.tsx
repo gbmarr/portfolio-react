@@ -32,13 +32,11 @@ function authOverrides(overrides: Record<string, unknown> = {}) {
     loading: false,
     configured: true,
     signInWithMagicLink: vi.fn().mockResolvedValue(undefined),
-    signInWithPassword: vi.fn().mockResolvedValue(undefined),
-    signOut: vi.fn(),
     ...overrides,
   })
 }
 
-describe('LoginPage', () => {
+describe('LoginPage (cliente)', () => {
   it('muestra el estado de carga', () => {
     authOverrides({ loading: true })
     renderLogin()
@@ -67,29 +65,11 @@ describe('LoginPage', () => {
     expect(await screen.findByText('admin-page')).toBeInTheDocument()
   })
 
-  it('envía email y contraseña al submit', async () => {
-    const signInWithPassword = vi.fn().mockResolvedValue(undefined)
-    authOverrides({ signInWithPassword })
+  it('no muestra el formulario de contraseña (es exclusivo del acceso de gestión)', () => {
+    authOverrides()
     renderLogin()
-
-    await userEvent.type(screen.getByLabelText(panelCopy.login.email), 'yo@test.com')
-    await userEvent.type(screen.getByLabelText(panelCopy.login.password), 'secreta')
-    await userEvent.click(screen.getByRole('button', { name: panelCopy.login.submit }))
-
-    expect(signInWithPassword).toHaveBeenCalledWith('yo@test.com', 'secreta')
-  })
-
-  it('muestra error con credenciales inválidas', async () => {
-    authOverrides({
-      signInWithPassword: vi.fn().mockRejectedValue(new Error('bad')),
-    })
-    renderLogin()
-
-    await userEvent.type(screen.getByLabelText(panelCopy.login.email), 'yo@test.com')
-    await userEvent.type(screen.getByLabelText(panelCopy.login.password), 'mala')
-    await userEvent.click(screen.getByRole('button', { name: panelCopy.login.submit }))
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(panelCopy.login.invalidCredentials)
+    expect(screen.queryByLabelText('Contraseña')).not.toBeInTheDocument()
+    expect(screen.getByLabelText(panelCopy.login.email)).toBeInTheDocument()
   })
 
   it('pide el enlace mágico y muestra confirmación', async () => {
@@ -111,7 +91,7 @@ describe('LoginPage', () => {
 
     await userEvent.click(screen.getByRole('button', { name: panelCopy.login.magicLink }))
 
-    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByRole('alert')).toHaveTextContent(panelCopy.login.emailRequired)
     expect(signInWithMagicLink).not.toHaveBeenCalled()
   })
 })
