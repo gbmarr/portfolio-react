@@ -432,6 +432,11 @@ export const briefTemplates: Record<EstimateTierId, BriefTemplate> = {
   },
 }
 
+/** Template de brief para un tipo de servicio. */
+export function getBriefTemplate(serviceType: EstimateTierId): BriefTemplate {
+  return briefTemplates[serviceType]
+}
+
 /** Secciones de extras presentes en un brief según los ids seleccionados. */
 export function getExtraSections(template: BriefTemplate, extraIds: string[]): BriefSection[] {
   return extraIds.flatMap((id) => (template.extraSections[id] ? [template.extraSections[id]] : []))
