@@ -18,5 +18,9 @@ export const supabase = createClient(url ?? 'https://placeholder.supabase.co', p
     persistSession: true,
     detectSessionInUrl: true,
     storageKey: 'portfolio-auth',
+    // Passkeys (WebAuthn) es experimental en Supabase. Sin el flag, las
+    // llamadas de passkey fallan con "passkey_disabled". Requiere además
+    // habilitarlo en el dashboard (Authentication → Passkeys).
+    experimental: { passkey: true },
   },
 })

@@ -33,6 +33,10 @@ describe('AdminLayout', () => {
     expect(screen.getByRole('link', { name: 'Proyectos' })).toHaveAttribute('href', '/admin/proyectos')
     expect(screen.getByRole('link', { name: 'Clientes' })).toHaveAttribute('href', '/admin/clientes')
     expect(screen.getByRole('link', { name: 'Mensajes' })).toHaveAttribute('href', '/admin/mensajes')
+    expect(screen.getByRole('link', { name: 'Seguridad' })).toHaveAttribute(
+      'href',
+      '/admin/seguridad',
+    )
     expect(screen.getByRole('link', { name: 'Ver sitio' })).toHaveAttribute('href', '/')
     expect(screen.getByText('Contenido admin')).toBeInTheDocument()
   })

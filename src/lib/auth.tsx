@@ -11,14 +11,27 @@ import type { Session } from '@supabase/supabase-js'
 import { isSupabaseConfigured, supabase } from './supabase'
 import type { Profile } from './types'
 
+export type Passkey = {
+  id: string
+  friendly_name?: string | null
+  created_at?: string
+  last_used_at?: string | null
+}
+
 export type AuthContextValue = {
   session: Session | null
   profile: Profile | null
   /** `true` mientras se resuelve la sesión o el perfil. */
   loading: boolean
   configured: boolean
+  /** `null` hasta que se cargan las passkeys de la sesión actual. */
+  passkeys: Passkey[] | null
   signInWithMagicLink: (email: string) => Promise<void>
   signInWithPassword: (email: string, password: string) => Promise<void>
+  signInWithPasskey: () => Promise<void>
+  registerPasskey: () => Promise<void>
+  refreshPasskeys: () => Promise<void>
+  deletePasskey: (id: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -33,6 +46,7 @@ function assertConfigured(): void {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [passkeys, setPasskeys] = useState<Passkey[] | null>(null)
   const [authResolved, setAuthResolved] = useState(!isSupabaseConfigured)
   const [profileLoading, setProfileLoading] = useState(false)
 
@@ -78,6 +92,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session?.user.id])
 
+  // Carga las passkeys (si el dashboard las tiene habilitadas) por usuario.
+  // Los errores se ignoran a propósito: sin passkeys habilitadas la sesión
+  // de auth sigue funcionando con magic link / password.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return
+    const userId = session?.user.id
+    if (!userId) {
+      setPasskeys(null)
+      return
+    }
+
+    let cancelled = false
+
+    async function loadPasskeys() {
+      try {
+        const { data, error } = await supabase.auth.passkey.list()
+        if (!cancelled && !error) setPasskeys(data ?? [])
+      } catch {
+        // Sin soporte o sin habilitar: se deja lo que haya.
+      }
+    }
+
+    void loadPasskeys()
+
+    return () => {
+      cancelled = true
+    }
+  }, [session?.user.id])
+
   const signInWithMagicLink = useCallback(async (email: string) => {
     assertConfigured()
     const { error } = await supabase.auth.signInWithOtp({
@@ -97,6 +140,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message)
   }, [])
 
+  const signInWithPasskey = useCallback(async () => {
+    assertConfigured()
+    const { error } = await supabase.auth.signInWithPasskey()
+    if (error) throw new Error(error.message)
+  }, [])
+
+  const refreshPasskeys = useCallback(async () => {
+    assertConfigured()
+    const { data, error } = await supabase.auth.passkey.list()
+    if (error) throw new Error(error.message)
+    setPasskeys(data ?? [])
+  }, [])
+
+  const registerPasskey = useCallback(async () => {
+    assertConfigured()
+    const { error } = await supabase.auth.registerPasskey()
+    if (error) throw new Error(error.message)
+    await refreshPasskeys()
+  }, [refreshPasskeys])
+
+  const deletePasskey = useCallback(async (id: string) => {
+    assertConfigured()
+    const { error } = await supabase.auth.passkey.delete({ passkeyId: id })
+    if (error) throw new Error(error.message)
+    setPasskeys((prev) => prev?.filter((p) => p.id !== id) ?? null)
+  }, [])
+
   const signOut = useCallback(async () => {
     assertConfigured()
     const { error } = await supabase.auth.signOut()
@@ -109,11 +179,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       loading: !authResolved || profileLoading,
       configured: isSupabaseConfigured,
+      passkeys,
       signInWithMagicLink,
       signInWithPassword,
+      signInWithPasskey,
+      registerPasskey,
+      refreshPasskeys,
+      deletePasskey,
       signOut,
     }),
-    [session, profile, authResolved, profileLoading, signInWithMagicLink, signInWithPassword, signOut],
+    [
+      session,
+      profile,
+      passkeys,
+      authResolved,
+      profileLoading,
+      signInWithMagicLink,
+      signInWithPassword,
+      signInWithPasskey,
+      registerPasskey,
+      refreshPasskeys,
+      deletePasskey,
+      signOut,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

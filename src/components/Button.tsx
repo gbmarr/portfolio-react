@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEventHandler, ReactNode } from 'react'
 
 interface ButtonProps {
   children: ReactNode
@@ -7,6 +7,7 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'
   className?: string
   disabled?: boolean
+  onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
 const baseClasses =
@@ -24,6 +25,7 @@ export function Button({
   type = 'button',
   className = '',
   disabled = false,
+  onClick,
 }: ButtonProps) {
   const classes = `${baseClasses} ${variantClasses[variant]} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${className}`
 
@@ -36,7 +38,7 @@ export function Button({
   }
 
   return (
-    <button type={type} disabled={disabled} className={classes}>
+    <button type={type} disabled={disabled} onClick={onClick} className={classes}>
       {children}
     </button>
   )
