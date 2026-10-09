@@ -16,3 +16,5 @@ This file tracks all major tracks for the project. Each track has its own detail
       _Link: [./tracks/panel_ux_20261008/](./tracks/panel_ux_20261008/)_ — implementado y verificado (2026-10-08); incluye migración `0004` (completed_at)
 - [x] **Track: Hardening de seguridad (auditoría run-1)**
       _Link: [./tracks/security_hardening_20261009/](./tracks/security_hardening_20261009/)_ — implementado y verificado (2026-10-09). Remedia los 8 leads `needs_validation` de la auditoría `portfolio-run-1` (remediados 0005/código, mitigado deploy, aceptados Web3Forms/passkey). Migraciones `0005` y `0006` aplicadas. Pendiente/aceptado: alinear RP ID de passkeys al dominio propio y antispam server-side (fuera del fair-use)
+- [ ] **Track: Email propio + Turnstile (reemplazo de Web3Forms)**
+      _Link: [./tracks/own_email_notifications_20261009/](./tracks/own_email_notifications_20261009/)_ — spec + plan propuestos (2026-10-09); pendiente de aprobación del usuario. Edge Function + Zoho SMTP + Turnstile; cierra leads #4 y #7

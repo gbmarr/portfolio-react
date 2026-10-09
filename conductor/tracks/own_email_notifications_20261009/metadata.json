@@ -1,0 +1,24 @@
+{
+  "track_id": "own_email_notifications_20261009",
+  "type": "feature",
+  "status": "planned",
+  "created_at": "2026-10-09T00:00:00Z",
+  "updated_at": "2026-10-09T00:00:00Z",
+  "description": "Reemplaza Web3Forms por una Supabase Edge Function (contact-notify) que valida Cloudflare Turnstile, envia el email de contacto por Zoho SMTP desde hola@gabrielmarrero.com.ar y deja copia en contact_messages. Cierra los leads 4 (anti-abuse) y 7 (Web3Forms access key) de la auditoria run-1. Rompe el guardrail cero-serverless para una unica funcion acotada (se actualiza fair-use.md).",
+  "decisions": {
+    "E1": "Supabase Edge Function (Deno)",
+    "E2": "Cloudflare Turnstile incluido en el mismo track",
+    "E3": "Reemplazo total de Web3Forms (sin fallback)",
+    "E4": "Actualizar fair-use.md para permitir la unica funcion"
+  },
+  "owner_prerequisites": [
+    "Zoho Mail: dominio gabrielmarrero.com.ar con SPF/DKIM/DMARC",
+    "App password de Zoho para SMTP",
+    "Cloudflare Turnstile: site key + secret",
+    "Edge Function deploy habilitado en el plan de Supabase"
+  ],
+  "closes_leads": [
+    "contact-messages/anon-insert-client-only-abuse-controls (parcial)",
+    "form-submission/web3forms-access-key-client-bundled"
+  ]
+}
