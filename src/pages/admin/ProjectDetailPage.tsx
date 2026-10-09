@@ -18,6 +18,7 @@ import { StageEditor } from './StageEditor'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import { estimateTiers, estimateExtras } from '../../data/estimate'
 import { getBriefTemplate, getExtraSections } from '../../data/briefTemplates'
+import { getStageTemplate } from '../../data/stageTemplates'
 import type { MilestoneApproval, Project, ProjectBrief, ProjectStage } from '../../lib/types'
 
 type Detail = {
@@ -40,6 +41,7 @@ export function ProjectDetailPage() {
   const [state, setState] = useState<State>({ loading: true, error: null, detail: null })
   const [inviteStatus, setInviteStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [stageMessage, setStageMessage] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!id) return null
@@ -166,6 +168,38 @@ export function ProjectDetailPage() {
           value,
         })
       }
+    }
+  }
+
+  const suggestedStages = brief ? getStageTemplate(brief.service_type, brief.extra_ids) : []
+  const existingStageNames = new Set(stages.map((item) => item.name.trim().toLowerCase()))
+  const missingSuggestedStages = suggestedStages.filter(
+    (name) => !existingStageNames.has(name.trim().toLowerCase()),
+  )
+
+  async function handleAddSuggestedStages() {
+    if (!detail) return
+    if (missingSuggestedStages.length === 0) {
+      setStageMessage('Ya tenés todas las etapas sugeridas.')
+      return
+    }
+    try {
+      let position = stages.length
+      for (const name of missingSuggestedStages) {
+        await createStage(project.id, {
+          name,
+          description: null,
+          position: position++,
+          status: 'pendiente',
+          client_visible: true,
+          notes: null,
+        })
+      }
+      await refresh()
+      const count = missingSuggestedStages.length
+      setStageMessage(`Se agregaron ${count} ${count === 1 ? 'etapa' : 'etapas'} sugeridas.`)
+    } catch {
+      setActionError()
     }
   }
 
@@ -306,6 +340,35 @@ export function ProjectDetailPage() {
         ) : (
           <p className="text-sm text-text-muted">
             Todavía no definiste el brief. Editá el proyecto para elegir el servicio y los extras.
+          </p>
+        )}
+      </section>
+
+      <section
+        aria-label="Etapas sugeridas"
+        className="space-y-3 rounded-xl border border-border bg-background/60 p-5"
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold text-text">Etapas sugeridas</h2>
+            <p className="mt-1 text-sm text-text-muted">
+              {brief
+                ? `Agregá la plantilla para “${briefServiceName}” y ajustá sólo lo que difiera.`
+                : 'Definí el servicio y los extras en el brief para ver las etapas sugeridas.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleAddSuggestedStages}
+            disabled={!brief}
+            className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
+          >
+            Agregar etapas sugeridas
+          </button>
+        </div>
+        {stageMessage && (
+          <p role="status" className="text-sm text-accent">
+            {stageMessage}
           </p>
         )}
       </section>

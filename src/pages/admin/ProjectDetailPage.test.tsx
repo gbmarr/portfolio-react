@@ -247,4 +247,59 @@ describe('ProjectDetailPage', () => {
       ),
     )
   })
+
+  it('agrega sólo las etapas sugeridas que faltan según el brief', async () => {
+    const user = userEvent.setup()
+    mockDetailData()
+    renderDetail()
+
+    await user.click(await screen.findByRole('button', { name: 'Agregar etapas sugeridas' }))
+
+    await waitFor(() => expect(h.createStage).toHaveBeenCalledTimes(9))
+    expect(h.createStage).toHaveBeenCalledWith(
+      'p1',
+      expect.objectContaining({ name: 'Contenido de secciones' }),
+    )
+    expect(h.createStage).toHaveBeenCalledWith(
+      'p1',
+      expect.objectContaining({ name: 'Configuración del blog/CMS' }),
+    )
+    expect(h.createStage).not.toHaveBeenCalledWith(
+      'p1',
+      expect.objectContaining({ name: 'Diseño aprobado' }),
+    )
+    expect(screen.getByText(/Se agregaron 9 etapas sugeridas/)).toBeInTheDocument()
+  })
+
+  it('no agrega nada cuando ya están todas las etapas sugeridas', async () => {
+    const user = userEvent.setup()
+    mockDetailData()
+    h.listStages.mockResolvedValue([
+      'Relevamiento del brief',
+      'Propuesta de diseño',
+      'Contenido de secciones',
+      'Desarrollo',
+      'Revisión del cliente',
+      'Ajustes finales',
+      'Configuración del blog/CMS',
+      'SEO técnico y analytics',
+      'Publicación',
+    ].map((name, index) => stage({ id: `stage-${index}`, name, position: index })))
+    renderDetail()
+
+    await user.click(await screen.findByRole('button', { name: 'Agregar etapas sugeridas' }))
+
+    expect(screen.getByText(/Ya tenés todas las etapas sugeridas/)).toBeInTheDocument()
+    expect(h.createStage).not.toHaveBeenCalled()
+  })
+
+  it('no ofrece etapas sugeridas si el proyecto no tiene brief', async () => {
+    mockDetailData()
+    h.getBrief.mockResolvedValue(null)
+    renderDetail()
+
+    await screen.findByText('Sitio web para Estudio')
+    expect(screen.getByRole('button', { name: 'Agregar etapas sugeridas' })).toBeDisabled()
+    expect(screen.getByText(/Definí el servicio y los extras/)).toBeInTheDocument()
+  })
 })
