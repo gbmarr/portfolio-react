@@ -80,6 +80,9 @@ export interface MilestoneApproval {
 
 export type BriefStatus = 'pendiente' | 'completado'
 
+/** Respuestas del brief: string para campos simples, string[] para chips. */
+export type BriefAnswers = Record<string, string | string[]>
+
 export interface ProjectBrief {
   id: string
   project_id: string
@@ -88,7 +91,7 @@ export interface ProjectBrief {
   /** Ids de extras del estimador seleccionados. */
   extra_ids: string[]
   /** Respuestas del cliente: { fieldId: value } según briefTemplates. */
-  answers: Record<string, string>
+  answers: BriefAnswers
   /** Autocalculado: 'completado' si todos los obligatorios respondidos. */
   status: BriefStatus
   created_at: string

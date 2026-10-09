@@ -161,6 +161,23 @@ describe('updateBriefAnswers', () => {
     expect(updateCall?.args[0]).toMatchObject({ answers, status: 'completado' })
   })
 
+  it('acepta respuestas multi-valor (chips) al calcular el estado', async () => {
+    h.tableResults.set('project_briefs', { data: briefRow, error: null })
+    const answers = {
+      nombre: 'Mi marca',
+      sector: 'Gimnasio',
+      descripcion_corta: 'Entrenamiento personalizado',
+      objetivo: ['Conseguir más clientes', 'Recibir consultas'],
+      cta_principal: ['Escribir por WhatsApp'],
+      color_principal: '#123456',
+      blog_contenidos: 'si',
+    }
+    await updateBriefAnswers('p1', answers)
+
+    const updateCall = h.calls.find((call) => call.method === 'update')
+    expect(updateCall?.args[0]).toMatchObject({ answers, status: 'completado' })
+  })
+
   it('deja el brief en pendiente cuando faltan obligatorios', async () => {
     h.tableResults.set('project_briefs', { data: briefRow, error: null })
     const answers: Record<string, string> = { nombre: 'Mi marca' }

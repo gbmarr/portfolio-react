@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ClientProjectDetailPage } from './ClientProjectDetailPage'
@@ -320,25 +320,76 @@ describe('ClientProjectDetailPage', () => {
     expect(await screen.findByText('No se pudieron guardar tus respuestas.')).toBeInTheDocument()
   })
 
-  it('marca el brief como completado cuando están todas las respuestas obligatorias', async () => {
-    h.getBrief.mockResolvedValue(
-      brief({
-        answers: {
-          nombre: 'Estudio',
-          sector: 'Diseño',
-          descripcion_corta: 'Hacemos marcas',
-          objetivo: 'Conseguir clientes',
-          cta_principal: 'WhatsApp',
-          color_principal: '#ff0000',
-        },
-        status: 'completado',
-      }),
-    )
+  it('oculta el formulario y muestra el cartel cuando el brief está completado', async () => {
+    h.getBrief.mockResolvedValue(brief({ status: 'completado' }))
+
+    renderPage()
+
+    expect(await screen.findByText('Brief completado')).toBeInTheDocument()
+    expect(screen.queryByText('¿Qué vamos a necesitar?')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Volver a editar' })).toBeInTheDocument()
+  })
+
+  it('permite reabrir el brief completado para editarlo', async () => {
+    const user = userEvent.setup()
+    h.getBrief.mockResolvedValue(brief({ status: 'completado' }))
+
+    renderPage()
+
+    await screen.findByText('Brief completado')
+    await user.click(screen.getByRole('button', { name: 'Volver a editar' }))
+
+    expect(await screen.findByText('¿Qué vamos a necesitar?')).toBeInTheDocument()
+  })
+
+  it('renderiza chips para objetivo y guarda las opciones elegidas', async () => {
+    const user = userEvent.setup()
+    h.getBrief.mockResolvedValue(brief())
+    h.updateBriefAnswers.mockResolvedValue(brief({ status: 'pendiente' }))
 
     renderPage()
 
     await screen.findByText('¿Qué vamos a necesitar?')
-    expect(screen.getByText('6 de 6 campos obligatorios completados')).toBeInTheDocument()
-    expect(screen.getByText('Completado')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Conseguir más clientes' }))
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    await waitFor(() =>
+      expect(h.updateBriefAnswers).toHaveBeenCalledWith(
+        'p1',
+        expect.objectContaining({ objetivo: ['Conseguir más clientes'] }),
+      ),
+    )
+  })
+
+  it('permite agregar una opción propia a un campo de chips', async () => {
+    const user = userEvent.setup()
+    h.getBrief.mockResolvedValue(brief())
+    h.updateBriefAnswers.mockResolvedValue(brief({ status: 'pendiente' }))
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    await user.type(screen.getAllByLabelText('Agregar otra')[0], 'Aumentar reservas')
+    await user.click(screen.getAllByRole('button', { name: 'Agregar' })[0])
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    await waitFor(() =>
+      expect(h.updateBriefAnswers).toHaveBeenCalledWith(
+        'p1',
+        expect.objectContaining({ objetivo: ['Aumentar reservas'] }),
+      ),
+    )
+  })
+
+  it('renderiza la tipografía como select con opciones y "Otra"', async () => {
+    h.getBrief.mockResolvedValue(brief())
+
+    renderPage()
+
+    await screen.findByText('¿Qué vamos a necesitar?')
+    const select = screen.getByLabelText('Tipografía preferida')
+    expect(select.tagName).toBe('SELECT')
+    expect(within(select).getByRole('option', { name: 'Inter' })).toBeInTheDocument()
+    expect(within(select).getByRole('option', { name: 'Otra' })).toBeInTheDocument()
   })
 })

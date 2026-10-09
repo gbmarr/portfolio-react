@@ -53,6 +53,7 @@ export function ClientProjectDetailPage() {
   const [sendingStage, setSendingStage] = useState<string | null>(null)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [editingBrief, setEditingBrief] = useState(false)
 
   const load = useCallback(async () => {
     if (!id) return null
@@ -95,6 +96,7 @@ export function ClientProjectDetailPage() {
     setState((prev) =>
       prev.detail ? { loading: false, error: null, detail: { ...prev.detail, brief: updated } } : prev,
     )
+    setEditingBrief(false)
   }
 
   async function handleSubmitDecision(event: FormEvent<HTMLFormElement>) {
@@ -165,7 +167,29 @@ export function ClientProjectDetailPage() {
         )}
       </header>
 
-      {brief && <ClientBrief brief={brief} onSaved={handleBriefSaved} />}
+      {brief &&
+        (brief.status === 'completado' && !editingBrief ? (
+          <section
+            aria-label={panelCopy.client.brief.completedTitle}
+            className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-5"
+          >
+            <div className="space-y-1">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-300">
+                {panelCopy.client.brief.completedTitle}
+              </h2>
+              <p className="text-sm text-text-muted">{panelCopy.client.brief.completedHint}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditingBrief(true)}
+              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:text-accent"
+            >
+              {panelCopy.client.brief.editAgain}
+            </button>
+          </section>
+        ) : (
+          <ClientBrief brief={brief} onSaved={handleBriefSaved} />
+        ))}
 
       {actionMessage && (
         <p role="status" className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">

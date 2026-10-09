@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 import type { EstimateTierId } from '../data/estimate'
 import { computeBriefStatus, getBriefTemplate } from '../data/briefTemplates'
-import type { BriefStatus, ProjectBrief } from './types'
+import type { BriefAnswers, BriefStatus, ProjectBrief } from './types'
 
 type Result<T> = { data: T | null; error: { message: string } | null }
 
@@ -80,7 +80,7 @@ export async function upsertBrief(
 /** Guarda las respuestas del cliente y recalcula el estado (autocalculado). */
 export async function updateBriefAnswers(
   projectId: string,
-  answers: Record<string, string>,
+  answers: BriefAnswers,
 ): Promise<ProjectBrief> {
   const current = await getBrief(projectId)
   if (!current) throw new Error('Brief no encontrado')

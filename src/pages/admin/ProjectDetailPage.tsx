@@ -157,7 +157,8 @@ export function ProjectDetailPage() {
     for (const section of allSections) {
       for (const field of section.fields) briefFieldLabels.set(field.id, field.label)
     }
-    for (const [fieldId, value] of Object.entries(brief.answers)) {
+    for (const [fieldId, rawValue] of Object.entries(brief.answers)) {
+      const value = Array.isArray(rawValue) ? rawValue.join(', ') : rawValue
       if (value && value.trim()) {
         briefAnswers.push({
           fieldId,

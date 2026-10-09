@@ -1,6 +1,6 @@
 import type { EstimateTierId } from './estimate'
 
-export type BriefFieldKind = 'text' | 'color' | 'url' | 'longtext' | 'yesno'
+export type BriefFieldKind = 'text' | 'color' | 'url' | 'longtext' | 'yesno' | 'chips' | 'select'
 
 export interface BriefField {
   /** Id único dentro del template. */
@@ -9,6 +9,8 @@ export interface BriefField {
   hint?: string
   kind: BriefFieldKind
   required: boolean
+  /** Opciones para los kinds 'chips' y 'select'. */
+  options?: string[]
 }
 
 export interface BriefSection {
@@ -23,6 +25,48 @@ export interface BriefTemplate {
   /** Secciones condicionales por extra (keyed por id de estimateExtras). */
   extraSections: Partial<Record<string, BriefSection>>
 }
+
+const objetivoOptions = [
+  'Conseguir más clientes',
+  'Mostrar mis servicios',
+  'Vender online',
+  'Recibir consultas',
+  'Generar confianza',
+  'Posicionar mi marca',
+]
+
+const ctaOptions = [
+  'Escribir por WhatsApp',
+  'Llamar',
+  'Completar formulario',
+  'Comprar',
+  'Pedir turno',
+  'Reservar',
+  'Suscribirse',
+  'Ver el catálogo',
+]
+
+const tipografiaOptions = [
+  'Inter',
+  'Montserrat',
+  'Poppins',
+  'Roboto',
+  'Lato',
+  'Raleway',
+  'Playfair Display',
+  'Oswald',
+  'Nunito',
+  'Merriweather',
+]
+
+const idiomasOptions = [
+  'Español',
+  'Inglés',
+  'Portugués',
+  'Francés',
+  'Italiano',
+  'Alemán',
+]
 
 const linksExternosSection: BriefSection = {
   id: 'archivos',
@@ -61,14 +105,17 @@ const landingSections: BriefSection[] = [
       {
         id: 'objetivo',
         label: '¿Qué querés lograr con esta página?',
-        kind: 'longtext',
+        hint: 'Elegí las que apliquen o agregá la tuya.',
+        kind: 'chips',
+        options: objetivoOptions,
         required: true,
       },
       {
         id: 'cta_principal',
         label: 'Acción principal que buscás del visitante',
-        hint: 'Ej: escribir por WhatsApp, comprar, pedir turno, contactarte.',
-        kind: 'text',
+        hint: 'Elegí las que apliquen o agregá la tuya.',
+        kind: 'chips',
+        options: ctaOptions,
         required: true,
       },
     ],
@@ -82,8 +129,9 @@ const landingSections: BriefSection[] = [
       {
         id: 'tipografia',
         label: 'Tipografía preferida',
-        hint: 'Ej: Montserrat, Inter. Si no sabés, la elegimos nosotros.',
-        kind: 'text',
+        hint: 'Elegí una o "Otra". Si no sabés, la elegimos nosotros.',
+        kind: 'select',
+        options: tipografiaOptions,
         required: false,
       },
       { id: 'tiene_logo', label: '¿Ya tenés logo?', kind: 'yesno', required: false },
@@ -300,8 +348,9 @@ const extraSections: Record<string, BriefSection> = {
       {
         id: 'idiomas',
         label: '¿Qué idiomas?',
-        hint: 'Ej: español e inglés.',
-        kind: 'text',
+        hint: 'Elegí los que apliquen o agregá el tuyo.',
+        kind: 'chips',
+        options: idiomasOptions,
         required: true,
       },
       {
@@ -448,15 +497,22 @@ export function getRequiredFields(template: BriefTemplate, extraIds: string[]): 
   return sections.flatMap((section) => section.fields.filter((field) => field.required))
 }
 
+/** Considera respondido un campo de texto con contenido o un array con al menos un valor. */
+export function hasAnswer(value: string | string[] | undefined): boolean {
+  if (Array.isArray(value)) {
+    return value.some((item) => item.trim().length > 0)
+  }
+  return typeof value === 'string' && value.trim().length > 0
+}
+
 /** Estado auto-calculado: completado si todos los obligatorios tienen respuesta. */
 export function computeBriefStatus(
   template: BriefTemplate,
   extraIds: string[],
-  answers: Record<string, string>,
+  answers: Record<string, string | string[]>,
 ): 'pendiente' | 'completado' {
-  const allAnswered = getRequiredFields(template, extraIds).every((field) => {
-    const value = answers[field.id]
-    return typeof value === 'string' && value.trim().length > 0
-  })
+  const allAnswered = getRequiredFields(template, extraIds).every((field) =>
+    hasAnswer(answers[field.id]),
+  )
   return allAnswered ? 'completado' : 'pendiente'
 }

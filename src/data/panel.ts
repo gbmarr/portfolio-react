@@ -95,6 +95,13 @@ export const panelCopy = {
       yesnoPlaceholder: 'Elegí…',
       yesnoYes: 'Sí',
       yesnoNo: 'No',
+      selectOtherLabel: 'Otra',
+      addOptionLabel: 'Agregar otra',
+      addOptionPlaceholder: 'Agregar otra opción',
+      addOptionButton: 'Agregar',
+      completedTitle: 'Brief completado',
+      completedHint: 'Gracias. Ya tenemos tu información para arrancar.',
+      editAgain: 'Volver a editar',
     },
   },
 } as const

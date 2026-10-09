@@ -154,6 +154,22 @@ describe('ProjectDetailPage', () => {
     expect(within(section).getByText('Estudio Contable')).toBeInTheDocument()
   })
 
+  it('muestra las respuestas multi-valor (chips) unidas con comas', async () => {
+    mockDetailData()
+    h.getBrief.mockResolvedValue(
+      brief({
+        answers: {
+          nombre: 'Estudio Contable',
+          objetivo: ['Conseguir más clientes', 'Vender online'],
+        },
+      }),
+    )
+    renderDetail()
+
+    const section = await screen.findByRole('region', { name: 'Brief del cliente' })
+    expect(within(section).getByText('Conseguir más clientes, Vender online')).toBeInTheDocument()
+  })
+
   it('avisa cuando el proyecto todavía no tiene brief', async () => {
     mockDetailData()
     h.getBrief.mockResolvedValue(null)

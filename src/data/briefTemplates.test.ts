@@ -3,6 +3,7 @@ import {
   briefTemplates,
   computeBriefStatus,
   getRequiredFields,
+  hasAnswer,
   type BriefField,
   type BriefTemplate,
 } from './briefTemplates'
@@ -39,12 +40,32 @@ describe('briefTemplates', () => {
   })
 
   it('solo usa kinds válidos', () => {
-    const validKinds = ['text', 'color', 'url', 'longtext', 'yesno']
+    const validKinds = ['text', 'color', 'url', 'longtext', 'yesno', 'chips', 'select']
     for (const tier of TIER_IDS) {
       for (const field of allFieldsFor(briefTemplates[tier])) {
         expect(validKinds).toContain(field.kind)
       }
     }
+  })
+
+  it('declara opciones no vacías en los campos de tipo chips y select', () => {
+    for (const tier of TIER_IDS) {
+      for (const field of allFieldsFor(briefTemplates[tier])) {
+        if (field.kind === 'chips' || field.kind === 'select') {
+          expect(Array.isArray(field.options)).toBe(true)
+          expect(field.options?.length ?? 0).toBeGreaterThan(0)
+        }
+      }
+    }
+  })
+
+  it('usa chips para objetivo, cta_principal e idiomas; select para tipografia', () => {
+    const fields = allFieldsFor(briefTemplates.medida)
+    const byId = new Map(fields.map((field) => [field.id, field]))
+    expect(byId.get('objetivo')?.kind).toBe('chips')
+    expect(byId.get('cta_principal')?.kind).toBe('chips')
+    expect(byId.get('idiomas')?.kind).toBe('chips')
+    expect(byId.get('tipografia')?.kind).toBe('select')
   })
 
   it('tiene campos obligatorios en cada tier', () => {
@@ -77,6 +98,30 @@ describe('getRequiredFields', () => {
   })
 })
 
+describe('hasAnswer', () => {
+  it('considera válido un string con contenido', () => {
+    expect(hasAnswer('Texto')).toBe(true)
+  })
+
+  it('descarta strings vacíos o solo espacios', () => {
+    expect(hasAnswer('')).toBe(false)
+    expect(hasAnswer('   ')).toBe(false)
+  })
+
+  it('considera válido un array con al menos un elemento con contenido', () => {
+    expect(hasAnswer(['Español'])).toBe(true)
+  })
+
+  it('descarta arrays vacíos o con elementos vacíos', () => {
+    expect(hasAnswer([])).toBe(false)
+    expect(hasAnswer(['   '])).toBe(false)
+  })
+
+  it('descarta undefined', () => {
+    expect(hasAnswer(undefined)).toBe(false)
+  })
+})
+
 describe('computeBriefStatus', () => {
   const template = briefTemplates.landing
 
@@ -88,6 +133,16 @@ describe('computeBriefStatus', () => {
   it('está completado cuando todos los obligatorios están respondidos', () => {
     const answers = requiredAnswersFor(template, [])
     expect(computeBriefStatus(template, [], answers)).toBe('completado')
+  })
+
+  it('considera completado un campo de chips con al menos una opción', () => {
+    const answers = { ...requiredAnswersFor(template, []), objetivo: ['Conseguir más clientes'] }
+    expect(computeBriefStatus(template, [], answers)).toBe('completado')
+  })
+
+  it('está pendiente si un campo de chips obligatorio queda vacío', () => {
+    const answers = { ...requiredAnswersFor(template, []), objetivo: [] }
+    expect(computeBriefStatus(template, [], answers)).toBe('pendiente')
   })
 
   it('ignora los campos opcionales vacíos para el estado', () => {
