@@ -12,3 +12,5 @@ This file tracks all major tracks for the project. Each track has its own detail
       _Link: [./tracks/fairuse_20261008/](./tracks/fairuse_20261008/)_ — implementado y verificado (2026-10-08); pendiente del usuario: valor `arsRate` real y re-asociar dominio en Vercel
 - [x] **Track: Brief de proyecto en el panel del cliente**
       _Link: [./tracks/client_brief_20261008/](./tracks/client_brief_20261008/)_ — implementado y verificado (2026-10-08); pendiente/follow-up: subida de archivos (Supabase Storage) y email automático (requeriría Pro)
+- [ ] **Track: Mejoras de panel — brief ágil, plantilla de etapas y cierre de proyecto**
+      _Link: [./tracks/panel_ux_20261008/](./tracks/panel_ux_20261008/)_ — spec y plan aprobados (2026-10-08), pendiente de implementación
