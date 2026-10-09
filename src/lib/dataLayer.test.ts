@@ -126,7 +126,6 @@ describe('etapas', () => {
         position: 0,
         status: 'pendiente',
         client_visible: true,
-        notes: null,
       }),
     ).resolves.toEqual({ id: 's1' })
     await expect(updateStage('s1', { status: 'completada' })).resolves.toEqual({ id: 's1' })

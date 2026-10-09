@@ -41,7 +41,7 @@ export type StageStatus = 'pendiente' | 'en_progreso' | 'revision' | 'completada
 export type ProjectInput = Omit<Project, 'id' | 'created_at' | 'updated_at' | 'completed_at'>
 export type StageInput = Pick<
   ProjectStage,
-  'name' | 'description' | 'position' | 'status' | 'client_visible' | 'notes'
+  'name' | 'description' | 'position' | 'status' | 'client_visible'
 >
 
 export interface ProjectStage {
@@ -54,7 +54,6 @@ export interface ProjectStage {
   client_visible: boolean
   started_at: string | null
   completed_at: string | null
-  notes: string | null
   created_at: string
 }
 

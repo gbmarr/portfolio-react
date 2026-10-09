@@ -64,7 +64,6 @@ const stage = (over: Partial<ProjectStage> = {}): ProjectStage => ({
   client_visible: true,
   started_at: null,
   completed_at: null,
-  notes: null,
   created_at: '2026-09-05T00:00:00Z',
   ...over,
 })

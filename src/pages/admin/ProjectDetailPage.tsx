@@ -193,7 +193,6 @@ export function ProjectDetailPage() {
           position: position++,
           status: 'pendiente',
           client_visible: true,
-          notes: null,
         })
       }
       await refresh()
@@ -404,7 +403,6 @@ export function ProjectDetailPage() {
               position: stages.length,
               status: 'pendiente',
               client_visible: true,
-              notes: null,
             }),
           )
         }
