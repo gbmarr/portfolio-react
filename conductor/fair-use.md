@@ -15,14 +15,15 @@ Por eso el producto fue ajustado (track `fairuse_20261008`): el panel admin/clie
 ## Límites Hobby vigentes (consulta: 2026-10)
 
 - 100 GB de *fast data transfer* / mes
-- 1M *edge requests* + 1M *function invocations* / mes (este proyecto: **0 functions**)
+- 1M *edge requests* + 1M *function invocations* / mes (este proyecto: **0 functions en Vercel**; en Supabase hay **1 función**, la excepción `contact-notify` de la Regla 1)
 - 4 h CPU activa, 360 GB-h de memoria de funciones
 - 6.000 min de build / mes, 100 deployments/día, 1 concurrent build
 - Sin overage facturable: al superar un límite, la feature se pausa
 
 ## Reglas (no negociables mientras estemos en Hobby)
 
-1. **Cero serverless functions para el negocio.** No crear carpeta `api/`, edge functions ni middleware transaccional. Toda la lógica del sitio es client-side; las llamadas externas van directas desde el browser a Supabase y Web3Forms.
+1. **Cero serverless functions para el negocio.** No crear carpeta `api/`, middleware transaccional ni más edge functions. Toda la lógica del sitio es client-side; las llamadas externas van directas desde el browser a Supabase (y hoy Web3Forms).
+   - **Única excepción:** `supabase/functions/contact-notify` (track `own_email_notifications_20261009`) — una Edge Function en **Supabase (Deno, no Vercel)** que envía el formulario de contacto por email propio (`hola@gabrielmarrero.com.ar` vía Zoho SMTP) + validación Cloudflare Turnstile, reemplazando a Web3Forms. **No se puede duplicar ni ampliar sin actualizar este documento** y revisar los límites del plan.
 2. **Cero cobros/transactions en este deploy.** Ningún checkout, pasarela de pago, suscripción ni procesamiento de pagos vía Vercel.
 3. **Cero gestión de montos en el panel.** `payments`, `amount`, `currency` fueron eliminados (migración `0002_drop_billing.sql`). No reintroducirlos: si vuelven los cobros gestionables, toca Pro u otro hosting.
 4. **El estimador es 100% client-side.** Si algún día se necesita server-side (IA, cotización dinámica real), evaluar antes Pro u otro runtime.
@@ -38,8 +39,8 @@ Por eso el producto fue ajustado (track `fairuse_20261008`): el panel admin/clie
 
 ## Anti-patrones a revisar en cada code review
 
-- `api/`, `functions/`, `@vercel/node`, `edge` config en `vercel.json`
+- `api/`, `functions/`, `@vercel/node`, `edge` config en `vercel.json` (Vercel debe seguir con **0 functions**; la única función del proyecto está en `supabase/functions/contact-notify`)
 - Imports de `stripe`, `mercadopago`, `paypal`, `checkout`
 - Inputs/renders de montos en `src/pages/admin/` o `src/pages/client/`
 - Tablas o columnas de dinero nuevas en `supabase/migrations/`
-- `fetch` a APIs propias (debe ir a terceros: Supabase, Web3Forms)
+- `fetch` a APIs propias — permitido **solo** hacia `https://<ref>.functions.supabase.co/contact-notify` (la función de contacto); cualquier otra API propia debe pasar por este documento

@@ -2,7 +2,7 @@
 
 > **Track ID:** `own_email_notifications_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ⬜ Propuesto — pendiente de aprobación del usuario (spec + plan).
+> **Status:** ✅ Aprobado por el usuario (2026-10-09) — Fase A completa. Checklist del dueño creado; **completar los `[x]` antes de la Fase E**.
 > **Reglas:** TDD en lógica pura y en interacciones del front; Edge Function con smoke test local. Commits convencionales; build verde en cada commit.
 > **Gate:** Fase E (deploy+envíos reales) requiere confirmación del dueño y sus credenciales/requisitos.
 
@@ -18,9 +18,9 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Archivos / herramienta | Estado |
 |---|-------|------------------------|--------|
-| A.1 | Actualizar `fair-use.md`: excepción para `contact-notify` + límites | `conductor/fair-use.md` | ⬜ |
-| A.2 | Checklist del dueño: DNS Zoho (SPF/DKIM/DMARC), app password, claves Turnstile | Zoho + Cloudflare dashboards | ⬜ |
-| A.3 | Documentar dónde viven los secretos (dashboard de la función) | `tech-stack.md` | ⬜ |
+| A.1 | Actualizar `fair-use.md`: excepción para `contact-notify` + límites | `conductor/fair-use.md` | ✅ |
+| A.2 | Checklist del dueño: DNS Zoho (SPF/DKIM/DMARC), app password, claves Turnstile | `CHECKLIST-OWNER.md` (creado) | ✅ |
+| A.3 | Documentar dónde viven los secretos (dashboard de la función) | `tech-stack.md` | ✅ |
 
 ---
 
