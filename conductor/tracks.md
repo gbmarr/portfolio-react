@@ -14,3 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
       _Link: [./tracks/client_brief_20261008/](./tracks/client_brief_20261008/)_ — implementado y verificado (2026-10-08); pendiente/follow-up: subida de archivos (Supabase Storage) y email automático (requeriría Pro)
 - [x] **Track: Mejoras de panel — brief ágil, plantilla de etapas y cierre de proyecto**
       _Link: [./tracks/panel_ux_20261008/](./tracks/panel_ux_20261008/)_ — implementado y verificado (2026-10-08); incluye migración `0004` (completed_at)
+- [ ] **Track: Hardening de seguridad (auditoría run-1)**
+      _Link: [./tracks/security_hardening_20261009/](./tracks/security_hardening_20261009/)_ — spec + plan propuestos (2026-10-09); pendiente de aprobación del usuario. Remedia los 8 leads `needs_validation` + hardening de la auditoría `portfolio-run-1`
