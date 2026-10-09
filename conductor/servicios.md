@@ -311,3 +311,7 @@ Cada servicio (y cada extra) de este catálogo tiene su contraparte operativa en
 - **Estado:** el brief es `pendiente` hasta que el cliente responde todos los campos obligatorios; el admin lo ve en el detalle del proyecto y en el contador del dashboard.
 
 Track de implementación: `conductor/tracks/client_brief_20261008/`.
+
+### Plantilla de etapas por servicio
+
+Cada combinación de servicio + extras tiene su **plantilla de etapas sugeridas** (`src/data/stageTemplates.ts`), que el admin aplica con un clic desde el detalle del proyecto ("Agregar etapas sugeridas"): se crean solo las que faltan (comparación por nombre) y luego ajusta lo que difiera del proyecto concreto. Track: `conductor/tracks/panel_ux_20261008/`.

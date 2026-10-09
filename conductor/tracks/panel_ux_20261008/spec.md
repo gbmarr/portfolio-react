@@ -138,11 +138,11 @@ Las etapas de extras se insertan antes de la última (`Publicación`) para que e
 
 ## 8. Criterios de aceptación
 
-- [ ] Brief completado se oculta tras un cartel y se puede reabrir.
-- [ ] `objetivo`, `cta_principal` e `idiomas` son chips (con opción propia); `tipografia` es select con "Otra".
-- [ ] Los arrays se guardan, se muestran en el admin (unidos por coma) y cuentan para el estado del brief.
-- [ ] El admin ve el comentario del cliente en cada etapa que tenga uno.
-- [ ] El botón "Agregar etapas sugeridas" crea solo las faltantes según el brief.
-- [ ] "Finalizar proyecto" registra `completed_at`, es reversible y no toca etapas; el cliente ve la card de logro.
-- [ ] `npm run build`, `lint`, `test`, `typecheck` en verde; coverage ≥80%.
-- [ ] Migración `0004` aplicada y verificada.
+- [x] Brief completado se oculta tras un cartel y se puede reabrir.
+- [x] `objetivo`, `cta_principal` e `idiomas` son chips (con opción propia); `tipografia` es select con "Otra".
+- [x] Los arrays se guardan, se muestran en el admin (unidos por coma) y cuentan para el estado del brief.
+- [x] El admin ve el comentario del cliente en cada etapa que tenga uno.
+- [x] El botón "Agregar etapas sugeridas" crea solo las faltantes según el brief.
+- [x] "Finalizar proyecto" registra `completed_at`, es reversible y no toca etapas; el cliente ve la card de logro.
+- [x] `npm run build`, `lint`, `test`, `typecheck` en verde; coverage ≥80% (94.0% statements / 86.5% branches).
+- [x] Migración `0004` aplicada y verificada.
