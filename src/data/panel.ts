@@ -69,6 +69,11 @@ export const panelCopy = {
     timelineEmpty: 'Todavía no hay avances para mostrar.',
     statusLabel: 'Estado',
     deadline: 'Entrega estimada',
+    completedCard: {
+      title: '¡Proyecto terminado!',
+      message: 'Gracias por confiar en mí. Tu proyecto ya está publicado.',
+      dateLabel: 'Entregado el',
+    },
     stageReview: 'Esta etapa está en revisión. Aprobala o contanos qué ajustar.',
     approve: 'Aprobar',
     reject: 'Rechazar',

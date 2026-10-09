@@ -9,6 +9,7 @@ import {
   listStages,
   reorderStages,
   updateStage,
+  updateProject,
 } from '../../lib/projects'
 import { getBrief } from '../../lib/briefs'
 import { useAuth } from '../../lib/auth'
@@ -223,6 +224,19 @@ export function ProjectDetailPage() {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
+              onClick={() =>
+                run(() =>
+                  updateProject(project.id, {
+                    status: project.status === 'completado' ? 'en_progreso' : 'completado',
+                  }),
+                )
+              }
+              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent"
+            >
+              {project.status === 'completado' ? 'Reabrir proyecto' : 'Finalizar proyecto'}
+            </button>
+            <button
+              type="button"
               onClick={handleInvite}
               disabled={inviteStatus === 'sending'}
               className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
@@ -293,6 +307,12 @@ export function ProjectDetailPage() {
             <dt className="text-text-muted">Creado</dt>
             <dd className="mt-1 text-text">{formatDate(project.created_at)}</dd>
           </div>
+          {project.completed_at && (
+            <div>
+              <dt className="text-text-muted">Finalizado</dt>
+              <dd className="mt-1 text-text">{formatDate(project.completed_at)}</dd>
+            </div>
+          )}
           {project.description && (
             <div className="col-span-2 sm:col-span-4">
               <dt className="text-text-muted">Descripción</dt>

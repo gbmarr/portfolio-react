@@ -32,11 +32,13 @@ export interface Project {
   description: string | null
   created_at: string
   updated_at: string
+  /** Fecha de cierre: la setea un trigger al pasar status a 'completado'. */
+  completed_at: string | null
 }
 
 export type StageStatus = 'pendiente' | 'en_progreso' | 'revision' | 'completada' | 'bloqueada'
 
-export type ProjectInput = Omit<Project, 'id' | 'created_at' | 'updated_at'>
+export type ProjectInput = Omit<Project, 'id' | 'created_at' | 'updated_at' | 'completed_at'>
 export type StageInput = Pick<
   ProjectStage,
   'name' | 'description' | 'position' | 'status' | 'client_visible' | 'notes'

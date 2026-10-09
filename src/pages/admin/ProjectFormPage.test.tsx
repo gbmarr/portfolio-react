@@ -36,6 +36,7 @@ const project = (over: Partial<Project> = {}): Project => ({
   description: 'Un proyecto de prueba',
   created_at: '2026-09-01T00:00:00Z',
   updated_at: '2026-09-01T00:00:00Z',
+  completed_at: null,
   ...over,
 })
 

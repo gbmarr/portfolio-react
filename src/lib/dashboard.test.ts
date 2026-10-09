@@ -14,6 +14,7 @@ function project(overrides: Partial<Project> = {}): Project {
     description: null,
     created_at: '',
     updated_at: '',
+    completed_at: null,
     ...overrides,
   }
 }

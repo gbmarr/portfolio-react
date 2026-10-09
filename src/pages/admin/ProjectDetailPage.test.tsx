@@ -14,6 +14,7 @@ const h = vi.hoisted(() => ({
   deleteStage: vi.fn(),
   reorderStages: vi.fn(),
   deleteProject: vi.fn(),
+  updateProject: vi.fn(),
   getBrief: vi.fn(),
   useAuth: vi.fn(),
 }))
@@ -27,6 +28,7 @@ vi.mock('../../lib/projects', () => ({
   deleteStage: h.deleteStage,
   reorderStages: h.reorderStages,
   deleteProject: h.deleteProject,
+  updateProject: h.updateProject,
 }))
 vi.mock('../../lib/briefs', () => ({ getBrief: h.getBrief }))
 vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
@@ -48,6 +50,7 @@ const project = (over: Partial<Project> = {}): Project => ({
   description: 'Sitio institucional con blog.',
   created_at: '2026-09-01T00:00:00Z',
   updated_at: '2026-09-01T00:00:00Z',
+  completed_at: null,
   ...over,
 })
 
@@ -204,6 +207,29 @@ describe('ProjectDetailPage', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Enviar invitación' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo enviar la invitación.')
+  })
+
+  it('finaliza el proyecto y muestra la fecha de cierre', async () => {
+    mockDetailData()
+    h.updateProject.mockResolvedValue(project())
+    h.getProject
+      .mockResolvedValueOnce(project())
+      .mockResolvedValueOnce(project({ status: 'completado', completed_at: '2026-10-20' }))
+    renderDetail()
+    await screen.findByRole('heading', { name: 'Sitio web para Estudio' })
+    await userEvent.click(screen.getByRole('button', { name: 'Finalizar proyecto' }))
+    await waitFor(() => expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'completado' }))
+    expect(await screen.findByText(/20\/10\/2026/)).toBeInTheDocument()
+  })
+
+  it('reabre un proyecto finalizado', async () => {
+    mockDetailData()
+    h.getProject.mockResolvedValue(project({ status: 'completado', completed_at: '2026-10-20' }))
+    h.updateProject.mockResolvedValue(project())
+    renderDetail()
+    await screen.findByRole('heading', { name: 'Sitio web para Estudio' })
+    await userEvent.click(screen.getByRole('button', { name: 'Reabrir proyecto' }))
+    await waitFor(() => expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'en_progreso' }))
   })
 
   it('elimina el proyecto tras confirmar', async () => {

@@ -44,6 +44,7 @@ const project = (over: Partial<Project> = {}): Project => ({
   description: 'Rediseño completo del sitio.',
   created_at: '2026-09-01T00:00:00Z',
   updated_at: '2026-09-01T00:00:00Z',
+  completed_at: null,
   ...over,
 })
 
@@ -159,6 +160,22 @@ describe('ClientProjectDetailPage', () => {
     expect(screen.getAllByText('En progreso').length).toBeGreaterThan(0)
     expect(screen.getByText(/Inicio: 10\/09\/2026/)).toBeInTheDocument()
     expect(screen.getByText(/Fin: 20\/09\/2026/)).toBeInTheDocument()
+  })
+
+  it('muestra el card de proyecto terminado cuando el estado es completado', async () => {
+    h.getProject.mockResolvedValue(
+      project({ status: 'completado', completed_at: '2026-10-20' }),
+    )
+    renderPage()
+    expect(await screen.findByText(/Proyecto terminado/)).toBeInTheDocument()
+    expect(screen.getByText(/Entregado el/)).toBeInTheDocument()
+    expect(screen.getByText(/20\/10\/2026/)).toBeInTheDocument()
+  })
+
+  it('no muestra el card de proyecto terminado mientras está en curso', async () => {
+    renderPage()
+    await screen.findByRole('heading', { name: 'Sitio web para Estudio' })
+    expect(screen.queryByText(/Proyecto terminado/)).not.toBeInTheDocument()
   })
 
   it('muestra la decisión ya tomada sobre una etapa', async () => {

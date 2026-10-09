@@ -167,6 +167,39 @@ export function ClientProjectDetailPage() {
         )}
       </header>
 
+      {project.status === 'completado' && (
+        <section
+          aria-label={panelCopy.client.completedCard.title}
+          className="flex flex-col items-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-6 text-center"
+        >
+          <span
+            aria-hidden="true"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-400/20 text-emerald-300"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </span>
+          <h2 className="font-display text-xl font-semibold text-emerald-300">
+            {panelCopy.client.completedCard.title}
+          </h2>
+          <p className="text-sm text-text-muted">{panelCopy.client.completedCard.message}</p>
+          {project.completed_at && (
+            <p className="text-xs text-text-muted">
+              {panelCopy.client.completedCard.dateLabel} {formatDate(project.completed_at)}
+            </p>
+          )}
+        </section>
+      )}
+
       {brief &&
         (brief.status === 'completado' && !editingBrief ? (
           <section

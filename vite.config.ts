@@ -1,5 +1,5 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
+import { configDefaults } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -15,6 +15,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // `.agents/` contiene skills/scripts ajenos al repo (no versionados) que
+    // Vitest levanta como si fueran suites. Los excluimos del test run.
+    exclude: [...configDefaults.exclude, '.agents/**'],
     coverage: {
       provider: 'v8',
       thresholds: {
