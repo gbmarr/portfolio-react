@@ -68,9 +68,9 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
 | E.1 | Chequear duplicados de `lower(email)` antes del índice | DB | ⬜ |
-| E.2 | Migración `0006_email_tenancy.sql` (índice único + trigger resync) | `supabase/migrations/` | ⬜ |
+| E.2 | Migración `0006_email_tenancy.sql` (índice único + trigger resync) | `supabase/migrations/` | ✅ |
 | E.3 | Aplicar + verificar (cambio de email de un usuario dummy) | DB | ⬜ |
-| E.4 | Nota en tech-stack sobre tenancy por email | `conductor/tech-stack.md` | ⬜ |
+| E.4 | Nota en tech-stack sobre tenancy por email | `conductor/tech-stack.md` | ✅ |
 | E.5 | Commit `fix(db): resync email tenancy on auth email change` | — | ⬜ |
 
 ---

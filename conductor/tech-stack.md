@@ -26,8 +26,8 @@
       - **No** versionar esta config con `supabase config push` (no existe `config pull` y empujaría ajustes que podrían pisar los de la nube); se administra en el dashboard y se documenta acá.
   - **Base de datos**: `profiles`, `projects`, `project_stages`, `project_briefs`, `milestone_approvals`, `contact_messages`.
   - **RLS (Row Level Security)**: el cliente solo ve sus proyectos/etapas/brief/decisiones; solo el admin escribe.
-  - **Migraciones** (`supabase/migrations/`, aplicar con `supabase db push`): `0001_init.sql` (esquema base), `0002_drop_billing.sql` (elimina la tabla `payments` y las columnas `projects.amount/currency` por la estrategia fair-use), `0003_client_brief.sql` (tabla `project_briefs`).
-  - Los proyectos se asocian al cliente por `client_email` (el perfil recién existe tras su primer login).
+  - **Migraciones** (`supabase/migrations/`, aplicar con `supabase db push`): `0001_init.sql` (esquema base), `0002_drop_billing.sql` (elimina la tabla `payments` y las columnas `projects.amount/currency` por la estrategia fair-use), `0003_client_brief.sql` (tabla `project_briefs`), `0004_project_completion.sql` (`projects.completed_at` + trigger), `0005_security_hardening.sql` (columnas admin-only en `project_briefs`, `client_visible` en RLS de `project_stages`, `contact_messages` acotado, elimina `project_stages.notes`), `0006_email_tenancy.sql` (índice único `lower(email)` + resync de tenancy).
+  - **Tenancy por email**: los proyectos se asocian al cliente por `lower(profiles.email) = projects.client_email` (el perfil recién existe tras su primer login). `profiles.email` tiene índice único case-insensitive y un trigger sobre `auth.users UPDATE` resincroniza `profiles.email` y `projects.client_email` cuando el usuario cambia de email.
 - **Formulario de contacto**: Web3Forms (email al inbox) + copia en `contact_messages` visible en el panel admin (fallo silencioso no rompe la UX).
 
 ## Hosting & Deployment
