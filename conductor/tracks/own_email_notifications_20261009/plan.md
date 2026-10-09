@@ -2,7 +2,7 @@
 
 > **Track ID:** `own_email_notifications_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Aprobado por el usuario (2026-10-09) — Fase A completa. Checklist del dueño creado; **completar los `[x]` antes de la Fase E**.
+> **Status:** ✅ Aprobado (2026-10-09) — Fases A y B completas. Sigue C (Edge Function). El front ya apunta a `contact-notify`; Web3Forms fuera del bundle. **Checklist del dueño pendiente para la Fase E.** Nota: la parte de envPrefix/.env.example/vite-env.d.ts de la Fase D quedó adelantada en B.
 > **Reglas:** TDD en lógica pura y en interacciones del front; Edge Function con smoke test local. Commits convencionales; build verde en cada commit.
 > **Gate:** Fase E (deploy+envíos reales) requiere confirmación del dueño y sus credenciales/requisitos.
 
@@ -28,11 +28,11 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| B.1 | TDD: `validateContactPayload`/`buildContactPayload` (límites 80/120/2000) | `src/utils/contactPayload.ts` (+test) | ⬜ |
-| B.2 | Integrar Turnstile (widget) + POST a la función con manejo de errores | `src/components/ContactForm.tsx` | ⬜ |
-| B.3 | Eliminar Web3Forms: borrar `formSubmission.ts`(+test), quitar `FORM_ACCESS_KEY` | `src/utils/`, `.env.example`, `src/vite-env.d.ts` | ⬜ |
-| B.4 | Tests del form + suite | `ContactForm.test.tsx` | ⬜ |
-| B.5 | Commit `feat(contact): post to edge function with turnstile` | — | ⬜ |
+| B.1 | TDD: `validateContactPayload`/`buildContactPayload` (límites 80/120/2000) | `src/utils/contactPayload.ts` (+test) | ✅ |
+| B.2 | Integrar Turnstile (widget) + POST a la función con manejo de errores | `src/components/ContactForm.tsx` | ✅ |
+| B.3 | Eliminar Web3Forms: borrar `formSubmission.ts`(+test), quitar `FORM_ACCESS_KEY` | `src/utils/`, `.env.example`, `src/vite-env.d.ts` | ✅ |
+| B.4 | Tests del form + suite | `ContactForm.test.tsx` | ✅ |
+| B.5 | Commit `feat(contact): post to edge function with turnstile` | — | ✅ |
 
 ---
 
