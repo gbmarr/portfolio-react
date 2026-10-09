@@ -7,3 +7,12 @@ certificaciones
 *.log
 .env
 .env.local
+
+# Árboles fuera del artefacto: evita que un deploy por upload local suba
+# dumps con PII/credenciales (supabase/backups) o config de herramientas.
+supabase
+conductor
+.agents
+.opencode
+.scratch
+skills-lock.json
