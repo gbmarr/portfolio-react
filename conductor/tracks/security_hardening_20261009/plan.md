@@ -2,7 +2,7 @@
 
 > **Track ID:** `security_hardening_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Completado (2026-10-09). Fases A–E y G implementadas y verificadas; F cerrada como documentada (D3); H (validación del dueño) ejecutada; I (checklist) verde.
+> **Status:** ✅ Completado (2026-10-09) + **reapertura por follow-ups del usuario (2026-10-09): Fase J (rate-limit DB 0007) y Fase K (desactivar passkeys)**.
 > **Reglas:** TDD en código de app; migraciones siguen el patrón del repo ("aplicar y verificar"). Commits convencionales; build verde en cada commit (ver `conductor/workflow.md`).
 > **Gate:** ninguna fase se marca `[x]` sin verificación manual del usuario (protocolo de checkpoint).
 
@@ -117,9 +117,34 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 ---
 
+## Fase J — Anti-abuse: rate limit por IP + subject nulo (lead #4)
+
+| # | Tarea | Archivos | Estado |
+|---|-------|----------|--------|
+| J.1 | Migración `0007_contact_rate_limit.sql`: tabla `contact_rate_limits` + trigger `throttle_contact_messages` (x-forwarded-for, 5/min/IP) | `supabase/migrations/` | ✅ |
+| J.2 | `check (subject is null)` (reemplaza el CHECK de longitud de 0005) | idem | ✅ |
+| J.3 | Backup + aplicar + verificar (hits y rechazo >5 inserciones) | DB (SQL Editor) | ⬜ |
+| J.4 | Commit `fix(db): rate-limit anonymous contact inserts` | — | ✅ `d0dec64` |
+
+---
+
+## Fase K — Desactivar passkeys (lead #8)
+
+| # | Tarea | Archivos | Estado |
+|---|-------|----------|--------|
+| K.1 | Quitar flag `experimental.passkey` | `src/lib/supabase.ts` | ✅ |
+| K.2 | Quitar estado/funciones de passkey del contexto + tests | `src/lib/auth.tsx`, `auth.test.tsx` | ✅ |
+| K.3 | Quitar botón passkey del login + tests | `AdminLoginPage.tsx` (+test) | ✅ |
+| K.4 | Eliminar `AdminSecurityPage`, ruta `/admin/seguridad` y nav | `AdminSecurityPage.tsx`(+test), `AppRouter.tsx`, `AdminLayout.tsx` | ✅ |
+| K.5 | Quitar copy de passkey de `panel.ts` | `src/data/panel.ts` | ✅ |
+| K.6 | Suite + commit `refactor(auth): disable passkey login and management` | — | ✅ `316c5ca` |
+| K.7 | Notas en tech-stack/spec | `tech-stack.md`, `spec.md` | ⬜ |
+
+---
+
 ## Verificación por fase (protocolo `workflow.md`)
 
-Tras cada fase: resumen al usuario para verificación manual antes de marcar `[x]` y pasar a la siguiente. Las **migraciones (A.5, E.3)** requieren confirmación explícita del usuario antes de aplicarse.
+Tras cada fase: resumen al usuario para verificación manual antes de marcar `[x]` y pasar a la siguiente. Las **migraciones (A.5, E.3, J.3)** requieren confirmación explícita del usuario antes de aplicarse.
 
 ## Riesgos
 

@@ -2,7 +2,7 @@
 
 > **Track ID:** `security_hardening_20261009`
 > **Fuente:** auditoría `security-audit` run `portfolio-run-1` (source-only): 0 confirmados, 8 `needs_validation`, 1 rechazado.
-> **Estado:** Propuesto — pendiente de aprobación del usuario (spec + plan).
+> **Estado:** ✅ Aprobado y completado (2026-10-09) + **reapertura por follow-ups (2026-10-09): Fases J/K**.
 
 ---
 
@@ -23,11 +23,11 @@ Referencia de la auditoría (fuera del repo): `%USERPROFILE%\AppData\Local\Temp\
 | `supabase:project_briefs:update_policy:no_column_scope:service_type_extra_ids` | needs_validation | A.1 |
 | `rls.project_stages.select.client_visible_not_enforced` | needs_validation | A.2 (+ A.4 por `notes`) |
 | `contact-messages/anon-insert-unbounded-subject` | needs_validation | A.3 |
-| `contact-messages/anon-insert-client-only-abuse-controls` | needs_validation (parcial) | A.3 neutraliza mass-assignment; el antispam server-side queda **fuera** |
+| `contact-messages/anon-insert-client-only-abuse-controls` | needs_validation (parcial) | A.3 + **J** (rate-limit por IP en DB, sin serverless) |
 | `messagespage.mailto.stored-email-href-injection` | needs_validation | B.1 |
 | `deploy.vercelignore.missing-supabase-exclusion.auth-dump-build-context` | needs_validation | D |
 | `form-submission/web3forms-access-key-client-bundled` | needs_validation | G (parcial) + validación del dueño |
-| `auth.passkey-enrollment-no-step-up` | needs_validation | F |
+| `auth.passkey-enrollment-no-step-up` | needs_validation | F (documentada) + **K** (desactivación del feature) |
 | *(hardening)* tenancy por email + resync | hardening | E |
 | `rls.milestone_approvals.upsert_update_policy_missing_project_ownership` | **rechazado** | — (no se toca; asimetría es defensa en profundidad, no cruce) |
 
@@ -39,7 +39,7 @@ Referencia de la auditoría (fuera del repo): `%USERPROFILE%\AppData\Local\Temp\
 |---|------|----------|
 | **D1** | Columna `project_stages.notes` | **Eliminar la columna** (muerta: no se lee ni edita; el código solo manda `null`). |
 | **D2** | Cambio de email de auth | **Resincronizar `profiles.email` + `projects.client_email`** vía trigger en `auth.users UPDATE` (preserva el acceso del cliente). Refactor a tenancy por `profiles.id`: track futuro. |
-| **D3** | Paso de re-autenticación para passkeys | **Diferir** hasta ejecutar V3 (validar la política AAL de Supabase); implementar re-auth solo si el proveedor no lo exige. |
+| **D3** | Paso de re-autenticación para passkeys | V3 ejecutado: Supabase no expone AAL/step-up. **Follow-up 2026-10-09: desactivar passkeys (Fase K)** — la solución fuerte es eliminar la superficie. |
 | **D4** | `envPrefix`/nombres de env | **Solo documentar** en este track; renombrar a `PUBLIC_*` como follow-up con ventana de deploy. |
 
 ---
@@ -196,11 +196,33 @@ Si la validación (V3) confirma que Supabase no exige re-auth/AAL para `register
 
 **Resolución (2026-10-09):** V3 quedó inconcluso (Supabase no expone ni documenta ese step-up para passkeys experimentales). Se concluye que un re-auth **client-side no aporta seguridad** (se bypassa llamando a la API directo con la sesión robada), por lo que **F se cierra como documentada** y el riesgo se acepta (passkeys admin-only). El control real, si existiera, sería server-side (AAL). Ver nota en `conductor/tech-stack.md`.
 
+**Actualización (2026-10-09):** por decisión del usuario, **la Fase K desactiva el feature de passkeys** (se elimina del cliente y del login); el lead #8 queda cerrado por eliminación de la superficie. El acceso admin queda email + contraseña.
+
 ---
 
 ## 10. Fase G — `envPrefix` (P1, D4)
 
 Documentar en `.env.example`/`vite-env.d.ts` que **solo** valores públicos pueden usar los prefijos `FORM_`/`DATABASE_`, y dejar preparada la migración a `PUBLIC_*` como follow-up (D4 = b). Sin renombrar en este track para no romper el deploy.
+
+---
+
+## 10.1 Fase J — Anti-abuse del formulario de contacto (rate limit en DB)
+
+Decisión del usuario (2026-10-09): completar el lead #4 **sin serverless**, con PostgreSQL.
+
+- Migración `0007_contact_rate_limit.sql`: tabla `contact_rate_limits(ip, window_start, hits)` (RLS enabled, sin policies → solo la accede la función SECURITY DEFINER) + trigger `throttle_contact_messages` BEFORE INSERT que lee `current_setting('request.headers', true)::json ->> 'x-forwarded-for'` y rechaza >5 envíos/IP/minuto.
+- `subject` pasa a `check (subject is null)` (el formulario nunca lo envía; cierra mass-assign e ilimitado; sustituye el CHECK de longitud de 0005).
+- **Límite honesto:** `x-forwarded-for` es falsificable por un cliente directo → mitigación (sube el costo), no una autorización perfecta. Limpieza oportunista de la tabla.
+
+## 10.2 Fase K — Desactivar passkeys (lead #8)
+
+Decisión del usuario (2026-10-09): eliminar el feature de passkeys del cliente (no hay step-up server-side en Supabase).
+
+- Quitar `experimental.passkey` de `createClient`.
+- Quitar del contexto de auth: tipo `Passkey`, estado `passkeys`, `signInWithPasskey`, `registerPasskey`, `refreshPasskeys`, `deletePasskey` y el effect de carga.
+- Quitar el botón "Entrar con passkey" de `/acceso-admin`.
+- Eliminar `AdminSecurityPage` (archivo + ruta `/admin/seguridad` + nav) y su copy.
+- El acceso admin queda **email + contraseña**; el resto del panel queda igual.
 
 ---
 
@@ -220,7 +242,7 @@ Estas tareas no modifican código; convierten leads `needs_validation` en `confi
 
 ## 12. Fuera de alcance
 
-- **Antispam server-side** (rate limit/captcha/proof-of-work) para el formulario de contacto: exige serverless/functions — rompe el fair-use Hobby. Se documenta como decisión de arquitectura.
+- **Captcha/antispam server-side completo** (Turnstile/reCAPTCHA, rate-limit autoritativo): exige serverless/functions → track propio (`own_email_notifications`) con función + Turnstile si se decide. El `0007` mitiga sin serverless (rate-limit por IP en DB, Fase J).
 - Reutilización off-site de la Web3Forms key (config del proveedor).
 - Rotación de credenciales y método de deploy (tareas del dueño).
 - Escaneo de CVEs de dependencias (`npm audit`/OSV) — herramienta aparte.
@@ -249,6 +271,8 @@ Estas tareas no modifican código; convierten leads `needs_validation` en `confi
 - [ ] `.vercelignore` excluye los árboles no-release.
 - [ ] (Si D2=a) Migración `0006` aplicada: `profiles.email` resincronizado; tenancy preservada.
 - [ ] (Según D3) Paso de re-auth para passkeys implementado o documentado.
+- [ ] (J) Migración `0007` aplicada: throttle por IP activo y `subject` forzado a null.
+- [ ] (K) Passkeys eliminadas del cliente: login admin solo email+contraseña; `/admin/seguridad` y su nav removidos.
 - [ ] Anexo de validación ejecutado por el dueño; cada lead marcado `confirmed`/`rejected`.
 - [ ] `npm run build`, `lint`, `test`, `typecheck` en verde; cobertura ≥80%.
 - [ ] `REPORT.md`/`NEEDS-VALIDATION.md` de la auditoría actualizados con el cierre de cada lead.
