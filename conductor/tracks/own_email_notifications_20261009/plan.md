@@ -52,9 +52,9 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| D.1 | CSP: `script-src`/`connect-src` += `challenges.cloudflare.com`; `connect-src` += URL de funciones | `vercel.json`, `netlify.toml` | ⬜ |
-| D.2 | `.env.example` sin `FORM_ACCESS_KEY`; documentar `TURNSTILE_SITE_KEY` y secretos | `.env.example`, `src/vite-env.d.ts` | ⬜ |
-| D.3 | Build/lint/test/typecheck + commit `chore(config): connect contact function and turnstile` | — | ⬜ |
+| D.1 | CSP: `script-src`/`connect-src` += `challenges.cloudflare.com`; `connect-src` += URL de funciones | `vercel.json`, `netlify.toml` | ✅ |
+| D.2 | `.env.example` sin `FORM_ACCESS_KEY`; documentar `TURNSTILE_SITE_KEY` y secretos | `.env.example`, `src/vite-env.d.ts` | ✅ (hecho en Fase B: envPrefix `['DATABASE_','TURNSTILE_']`; la URL de funciones ya está cubierta por `https://*.supabase.co`) |
+| D.3 | Build/lint/test/typecheck + commit `chore(config): connect contact function and turnstile` | — | ✅ |
 
 ---
 
