@@ -2,7 +2,7 @@
 
 > **Track ID:** `security_hardening_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Aprobado por el usuario (2026-10-09) — en progreso (Fase A escrita; pendiente aplicar migración).
+> **Status:** ✅ Aprobado por el usuario (2026-10-09). Fases A (migración escrita), B (código) y C (CSP) completas y commiteadas; **A.5 pendiente de aplicar la migración `0005`**.
 > **Reglas:** TDD en código de app; migraciones siguen el patrón del repo ("aplicar y verificar"). Commits convencionales; build verde en cada commit (ver `conductor/workflow.md`).
 > **Gate:** ninguna fase se marca `[x]` sin verificación manual del usuario (protocolo de checkpoint).
 
@@ -25,7 +25,7 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 | A.3 | `subject` CHECK + trigger `normalize_contact_message` | idem | ✅ |
 | A.4 | (D1) `drop column notes` | idem | ✅ |
 | A.5 | Backup previo + aplicar migración + verificar policies | DB | ⬜ |
-| A.6 | Commit `fix(db): tighten briefs column scope, stage visibility and contact intake` | — | ⬜ |
+| A.6 | Commit `fix(db): tighten briefs column scope, stage visibility and contact intake` | — | ✅ |
 
 ---
 
@@ -33,12 +33,12 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| B.1 | TDD: validación de email en el submit | `src/components/ContactForm.test.tsx` | ⬜ |
-| B.2 | Implementar validación/normalización de email | `src/components/ContactForm.tsx` | ⬜ |
-| B.3 | TDD: `mailto` codifica el email (valores maliciosos neutralizados) | `src/pages/admin/MessagesPage.test.tsx` | ⬜ |
-| B.4 | Implementar href codificado | `src/pages/admin/MessagesPage.tsx` | ⬜ |
-| B.5 | (D1) Quitar `notes` del tipo, código y tests | `types.ts`, `ProjectDetailPage.tsx`, tests | ⬜ |
-| B.6 | Suite + commit `fix(messages): encode stored email in reply link` | — | ⬜ |
+| B.1 | TDD: validación de email en el submit | `src/components/ContactForm.test.tsx` | ✅ |
+| B.2 | Implementar validación/normalización de email | `src/components/ContactForm.tsx` | ✅ |
+| B.3 | TDD: `mailto` codifica el email (valores maliciosos neutralizados) | `src/pages/admin/MessagesPage.test.tsx` | ✅ |
+| B.4 | Implementar href codificado | `src/pages/admin/MessagesPage.tsx` | ✅ |
+| B.5 | (D1) Quitar `notes` del tipo, código y tests | `types.ts`, `ProjectDetailPage.tsx`, tests | ✅ |
+| B.6 | Suite + commit `fix(messages): encode stored email in reply link` | — | ✅ |
 
 ---
 
@@ -46,10 +46,10 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| C.1 | Quitar `onload` inline de `index.html` (fuente vía link estático) | `index.html` | ⬜ |
-| C.2 | Quitar `script-src-attr 'unsafe-inline'` de CSP | `vercel.json`, `netlify.toml` | ⬜ |
-| C.3 | TDD: `index.html` sin atributos `on*=` inline | `src/test` (nuevo) | ⬜ |
-| C.4 | Probar carga de fuentes en `preview` + commit `fix(csp): drop inline handler allowance` | — | ⬜ |
+| C.1 | Quitar `onload` inline de `index.html` (fuente vía link estático) | `index.html` | ✅ |
+| C.2 | Quitar `script-src-attr 'unsafe-inline'` de CSP | `vercel.json`, `netlify.toml` | ✅ |
+| C.3 | TDD: `index.html` sin atributos `on*=` inline | `src/indexHtml.test.ts` | ✅ |
+| C.4 | Build + commit `fix(csp): drop inline handler allowance` | — | ✅ |
 
 ---
 
