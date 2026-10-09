@@ -2,7 +2,7 @@
 
 > **Track ID:** `security_hardening_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Aprobado por el usuario (2026-10-09). Fases A (migración escrita), B (código) y C (CSP) completas y commiteadas; **A.5 pendiente de aplicar la migración `0005`**.
+> **Status:** ✅ Aprobado por el usuario (2026-10-09). Fases A (migración aplicada), B (código), C (CSP) y D (deploy ignore) completas; siguen E/F/G y el anexo de validación.
 > **Reglas:** TDD en código de app; migraciones siguen el patrón del repo ("aplicar y verificar"). Commits convencionales; build verde en cada commit (ver `conductor/workflow.md`).
 > **Gate:** ninguna fase se marca `[x]` sin verificación manual del usuario (protocolo de checkpoint).
 
@@ -24,7 +24,7 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 | A.2 | Rehacer policy SELECT de `project_stages` con `client_visible` | idem | ✅ |
 | A.3 | `subject` CHECK + trigger `normalize_contact_message` | idem | ✅ |
 | A.4 | (D1) `drop column notes` | idem | ✅ |
-| A.5 | Backup previo + aplicar migración + verificar policies | DB | ⬜ |
+| A.5 | Backup previo + aplicar migración + verificar policies | DB | ✅ (aplicada por el usuario en el SQL Editor) |
 | A.6 | Commit `fix(db): tighten briefs column scope, stage visibility and contact intake` | — | ✅ |
 
 ---
@@ -57,9 +57,9 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| D.1 | Agregar exclusiones (`supabase`, `conductor`, `.agents`, `.opencode`, `.scratch`, `skills-lock.json`) | `.vercelignore` | ⬜ |
-| D.2 | Evaluar `.netlifyignore` (no-op con `publish="dist"`) | `netlify.toml`/`.netlifyignore` | ⬜ |
-| D.3 | Commit `chore(deploy): exclude non-release trees from upload context` | — | ⬜ |
+| D.1 | Agregar exclusiones (`supabase`, `conductor`, `.agents`, `.opencode`, `.scratch`, `skills-lock.json`) | `.vercelignore` | ✅ |
+| D.2 | Evaluar `.netlifyignore` | conclusión: no-op con `publish="dist"` (solo sube `dist/`) — no se crea archivo | ✅ |
+| D.3 | Commit `chore(deploy): exclude non-release trees from upload context` | — | ✅ |
 
 ---
 
