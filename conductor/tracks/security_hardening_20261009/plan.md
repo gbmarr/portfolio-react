@@ -2,7 +2,7 @@
 
 > **Track ID:** `security_hardening_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Aprobado por el usuario (2026-10-09). Fases A (migración aplicada), B (código), C (CSP) y D (deploy ignore) completas; siguen E/F/G y el anexo de validación.
+> **Status:** ✅ Completado (2026-10-09). Fases A–E y G implementadas y verificadas; F cerrada como documentada (D3); H (validación del dueño) ejecutada; I (checklist) verde.
 > **Reglas:** TDD en código de app; migraciones siguen el patrón del repo ("aplicar y verificar"). Commits convencionales; build verde en cada commit (ver `conductor/workflow.md`).
 > **Gate:** ninguna fase se marca `[x]` sin verificación manual del usuario (protocolo de checkpoint).
 
@@ -79,9 +79,9 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| F.1 | (D3) Decidir tras V3: implementar re-auth o documentar | — | ⏸️ diferido (espera V3) |
-| F.2 | TDD + implementar re-auth antes de register/delete passkey (si aplica) | `src/lib/auth.tsx`, `AdminSecurityPage.tsx` (+ tests) | ⬜ |
-| F.3 | Commit `fix(auth): require step-up for passkey changes` | — | ⬜ |
+| F.1 | (D3) Decidir tras V3: implementar re-auth o documentar | — | ✅ cerrada: sin fix client-side real; documentada |
+| F.2 | TDD + implementar re-auth antes de register/delete passkey (si aplica) | `src/lib/auth.tsx`, `AdminSecurityPage.tsx` (+ tests) | ❌ no aplica |
+| F.3 | Commit `fix(auth): require step-up for passkey changes` | — | ❌ no aplica |
 
 ---
 
@@ -90,7 +90,7 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
 | G.1 | (D4) Documentar prefijos públicos y preparar migración a `PUBLIC_*` | `.env.example`, `src/vite-env.d.ts`, `vite.config.ts`, `tech-stack.md` | ✅ |
-| G.2 | Commit `docs(config): clarify public env prefixes` | — | ⬜ |
+| G.2 | Commit `docs(config): clarify public env prefixes` | — | ✅ |
 
 ---
 
@@ -98,12 +98,12 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| H.1 | V1: método de deploy real | Vercel dashboard | ⬜ |
-| H.2 | V2: Web3Forms domain-lock/cuota | Web3Forms dashboard | ⬜ |
-| H.3 | V3: Supabase passkeys + AAL | Supabase dashboard | ⬜ |
-| H.4 | V4: migraciones aplicadas + RLS activo | SQL Editor | ⬜ |
-| H.5 | V5: reproducción local (briefs column-scope, stages visibility) | Postgres+PostgREST local | ⬜ |
-| H.6 | Actualizar `REPORT.md`/`NEEDS-VALIDATION.md` con el cierre de cada lead | run-1 | ⬜ |
+| H.1 | V1: método de deploy real | Vercel dashboard | ✅ Git integration (dump nunca sube) |
+| H.2 | V2: Web3Forms domain-lock/cuota | Web3Forms dashboard | ✅ sin domain-lock; cuota 250/mes |
+| H.3 | V3: Supabase passkeys + AAL | Supabase dashboard | ✅ habilitadas; AAL no expuesto; RP ID = vercel.app |
+| H.4 | V4: migraciones aplicadas + RLS activo | SQL Editor | ✅ todas `rowsecurity = true` |
+| H.5 | V5: reproducción local (briefs column-scope, stages visibility) | Postgres+PostgREST local | ✅ N/A (remediado en `0005`) |
+| H.6 | Actualizar `REPORT.md`/`NEEDS-VALIDATION.md` con el cierre de cada lead | run-1 | ✅ addendum + punteros |
 
 ---
 

@@ -18,6 +18,8 @@
     - Clientes: solo enlace mágico en `/login`.
     - Admin: email+password o **passkey** (WebAuthn: Face ID / Touch ID / Windows Hello) en `/acceso-admin` (path oculto, no publicado).
     - Passkeys: registro y gestión en `/admin/seguridad`; requieren el flag `experimental: { passkey: true }` en el cliente (ya configurado) y habilitarlas en el dashboard (Authentication → Passkeys).
+      - **Relying Party ID / Origins** (dashboard → Authentication → Passkeys): el RP ID debe ser el dominio registrable que sirve el sitio (p. ej. `gabrielmarrero.com.ar`, **no** `*.vercel.app`); RP Origins debe incluir los orígenes de producción (`https://gabrielmarrero.com.ar`, `https://www.gabrielmarrero.com.ar`) y `http://localhost:5173` para dev. Una passkey queda atada a su RP ID: **cambiarlo invalida las existentes**, que hay que **re-registrar** desde `/admin/seguridad`. Un mismo RP ID no puede cubrir a la vez `*.vercel.app` y el dominio propio.
+      - **Step-up (AAL)**: Supabase no expone (ni documenta) un requisito de re-auth/AAL para registrar/borrar passkeys; el control válido sería server-side. Un re-auth client-side **no** protege contra una sesión robada (se bypassa llamando a la API directo), así que no se implementa. Riesgo **aceptado y documentado** (passkeys son admin-only y experimentales).
     - **URL Configuration (dashboard)** — de acá depende la redirección del magic link (Authentication → URL Configuration):
       - **Site URL**: `https://gabrielmarrero.com.ar` (destino de *fallback* cuando el `redirect_to` no está en la lista de permitidos).
       - **Redirect URLs** permitidas: `https://gabrielmarrero.com.ar/**`, `https://www.gabrielmarrero.com.ar/**`, `http://localhost:5173/**` (dev local de Vite).

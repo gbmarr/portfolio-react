@@ -1,7 +1,7 @@
 {
   "track_id": "security_hardening_20261009",
   "type": "hardening",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-09T00:00:00Z",
   "updated_at": "2026-10-09T00:00:00Z",
   "description": "Remediacion de los 8 leads needs_validation + hardening de la auditoria security-audit run-1: RLS por columnas (project_briefs), visibilidad de etapas (client_visible), intake de contacto (subject/read_at/created_at), mailto seguro, CSP sin inline handler, higiene de .vercelignore, tenancy por email (resync), passkey step-up y acotado de envPrefix. Mantiene el guardrail fair-use: client-side + RLS, sin serverless.",

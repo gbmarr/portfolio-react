@@ -194,6 +194,8 @@ Nota en `conductor/tech-stack.md` sobre `profiles.email` como clave de tenancy y
 
 Si la validación (V3) confirma que Supabase no exige re-auth/AAL para `registerPasskey`/`deletePasskey`, exigir contraseña (o una sesión fresca) en el cliente antes de enrolar/borrar, en `src/lib/auth.tsx` + `AdminSecurityPage.tsx`, con test. Si Supabase ya lo exige, se documenta y se cierra.
 
+**Resolución (2026-10-09):** V3 quedó inconcluso (Supabase no expone ni documenta ese step-up para passkeys experimentales). Se concluye que un re-auth **client-side no aporta seguridad** (se bypassa llamando a la API directo con la sesión robada), por lo que **F se cierra como documentada** y el riesgo se acepta (passkeys admin-only). El control real, si existiera, sería server-side (AAL). Ver nota en `conductor/tech-stack.md`.
+
 ---
 
 ## 10. Fase G — `envPrefix` (P1, D4)
