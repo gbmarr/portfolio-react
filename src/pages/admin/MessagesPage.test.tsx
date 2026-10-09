@@ -78,6 +78,21 @@ describe('MessagesPage', () => {
     expect(reply).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('Re: Consulta por sitio')))
   })
 
+  it('no genera un link mailto para un email con caracteres peligrosos', async () => {
+    const user = userEvent.setup()
+    h.listMessages.mockResolvedValue([
+      message({ email: 'victim@example.com%0d%0abcc:attacker@example.com' }),
+    ])
+    renderPage()
+
+    await user.click(await screen.findByText('Ana López'))
+
+    expect(screen.queryByRole('link', { name: /Responder por email/ })).not.toBeInTheDocument()
+    expect(
+      screen.getByText('victim@example.com%0d%0abcc:attacker@example.com'),
+    ).toBeInTheDocument()
+  })
+
   it('marca leído y actualiza el contador', async () => {
     const user = userEvent.setup()
     h.markMessageRead.mockResolvedValue({ data: null, error: null })

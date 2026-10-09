@@ -3,6 +3,7 @@ import { copy } from '../data/copy'
 import { Button } from './Button'
 import { submitContactForm } from '../utils/formSubmission'
 import { saveContactMessage } from '../lib/messages'
+import { hasControlChars } from '../utils/contactSafety'
 
 export interface ContactFormData {
   name: string
@@ -68,6 +69,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       data.name.length > MAX_NAME_LENGTH ||
       data.email.length === 0 ||
       data.email.length > MAX_EMAIL_LENGTH ||
+      hasControlChars(data.email) ||
       data.message.length < MIN_MESSAGE_LENGTH ||
       data.message.length > MAX_MESSAGE_LENGTH
     ) {

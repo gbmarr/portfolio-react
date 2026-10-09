@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { deleteMessage, listMessages, markMessageRead } from '../../lib/messages'
 import { Badge } from '../../components/ui/Badge'
 import { formatDateTime } from '../../lib/format'
+import { safeMailtoAddress } from '../../utils/contactSafety'
 import { panelCopy } from '../../data/panel'
 import type { ContactMessage } from '../../lib/types'
 
@@ -94,6 +95,7 @@ export function MessagesPage() {
         <ul className="space-y-3">
           {state.messages.map((message) => {
             const expanded = expandedId === message.id
+            const replyAddress = safeMailtoAddress(message.email)
             return (
               <li
                 key={message.id}
@@ -117,14 +119,18 @@ export function MessagesPage() {
                   <div className="mt-3 space-y-3 border-t border-border pt-3">
                     <p className="whitespace-pre-wrap text-sm text-text">{message.message}</p>
                     <div className="flex flex-wrap items-center gap-3">
-                      <a
-                        href={`mailto:${message.email}?subject=${encodeURIComponent(
-                          message.subject ? `Re: ${message.subject}` : 'Re: consulta desde tu portfolio',
-                        )}`}
-                        className="text-sm text-accent hover:underline"
-                      >
-                        Responder por email ({message.email})
-                      </a>
+                      {replyAddress ? (
+                        <a
+                          href={`mailto:${replyAddress}?subject=${encodeURIComponent(
+                            message.subject ? `Re: ${message.subject}` : 'Re: consulta desde tu portfolio',
+                          )}`}
+                          className="text-sm text-accent hover:underline"
+                        >
+                          Responder por email ({message.email})
+                        </a>
+                      ) : (
+                        <span className="text-sm text-text-muted">{message.email}</span>
+                      )}
                       <div className="ml-auto flex gap-2">
                         <button
                           type="button"

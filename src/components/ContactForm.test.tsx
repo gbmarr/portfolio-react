@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContactForm, MIN_SUBMIT_INTERVAL_MS } from './ContactForm'
 
@@ -123,6 +123,22 @@ describe('ContactForm', () => {
     await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
+    expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
+  })
+
+  it('rechaza un email con caracteres de control', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(<ContactForm onSubmit={onSubmit} />)
+
+    fireEvent.change(screen.getByLabelText('Tu email o WhatsApp'), {
+      target: { value: 'ana@example.com\u0007bcc:attacker@example.com' },
+    })
+    await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
+    await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('button', { name: 'Enviar' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
     expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
   })
 
