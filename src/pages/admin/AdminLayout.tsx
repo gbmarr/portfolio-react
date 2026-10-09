@@ -7,7 +7,6 @@ const navItems = [
   { to: '/admin/proyectos', label: panelCopy.nav.projects },
   { to: '/admin/clientes', label: panelCopy.nav.clients },
   { to: '/admin/mensajes', label: panelCopy.nav.messages },
-  { to: '/admin/seguridad', label: panelCopy.security.nav },
 ]
 
 const linkClasses = ({ isActive }: { isActive: boolean }) =>

@@ -11,27 +11,14 @@ import type { Session } from '@supabase/supabase-js'
 import { isSupabaseConfigured, supabase } from './supabase'
 import type { Profile } from './types'
 
-export type Passkey = {
-  id: string
-  friendly_name?: string | null
-  created_at?: string
-  last_used_at?: string | null
-}
-
 export type AuthContextValue = {
   session: Session | null
   profile: Profile | null
   /** `true` mientras se resuelve la sesión o el perfil. */
   loading: boolean
   configured: boolean
-  /** `null` hasta que se cargan las passkeys de la sesión actual. */
-  passkeys: Passkey[] | null
   signInWithMagicLink: (email: string) => Promise<void>
   signInWithPassword: (email: string, password: string) => Promise<void>
-  signInWithPasskey: () => Promise<void>
-  registerPasskey: () => Promise<void>
-  refreshPasskeys: () => Promise<void>
-  deletePasskey: (id: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -51,7 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userId: null,
     profile: null,
   })
-  const [passkeys, setPasskeys] = useState<Passkey[] | null>(null)
   const [authResolved, setAuthResolved] = useState(!isSupabaseConfigured)
 
   // Suscripción a cambios de auth (solo setState: no hacer awaits adentro del
@@ -64,11 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setAuthResolved(true)
-      // Sin sesión no quedan perfil ni passkeys. Se limpian acá (callback de la
+      // Sin sesión no queda perfil. Se limpia acá (callback de la
       // suscripción) y no en los effects para no setear estado sincrónicamente.
       if (!nextSession) {
         setProfileState({ userId: null, profile: null })
-        setPasskeys(null)
       }
     })
 
@@ -106,33 +91,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const profile = userId !== null && profileState.userId === userId ? profileState.profile : null
   const profileLoading = userId !== null && profileState.userId !== userId
 
-  // Carga las passkeys (si el dashboard las tiene habilitadas) por usuario.
-  // Los errores se ignoran a propósito: sin passkeys habilitadas la sesión
-  // de auth sigue funcionando con magic link / password.
-  useEffect(() => {
-    if (!isSupabaseConfigured) return
-    const userId = session?.user.id
-    // Sin usuario, la limpieza ya la hizo el callback de onAuthStateChange.
-    if (!userId) return
-
-    let cancelled = false
-
-    async function loadPasskeys() {
-      try {
-        const { data, error } = await supabase.auth.passkey.list()
-        if (!cancelled && !error) setPasskeys(data ?? [])
-      } catch {
-        // Sin soporte o sin habilitar: se deja lo que haya.
-      }
-    }
-
-    void loadPasskeys()
-
-    return () => {
-      cancelled = true
-    }
-  }, [session?.user.id])
-
   const signInWithMagicLink = useCallback(async (email: string) => {
     assertConfigured()
     const { error } = await supabase.auth.signInWithOtp({
@@ -152,33 +110,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message)
   }, [])
 
-  const signInWithPasskey = useCallback(async () => {
-    assertConfigured()
-    const { error } = await supabase.auth.signInWithPasskey()
-    if (error) throw new Error(error.message)
-  }, [])
-
-  const refreshPasskeys = useCallback(async () => {
-    assertConfigured()
-    const { data, error } = await supabase.auth.passkey.list()
-    if (error) throw new Error(error.message)
-    setPasskeys(data ?? [])
-  }, [])
-
-  const registerPasskey = useCallback(async () => {
-    assertConfigured()
-    const { error } = await supabase.auth.registerPasskey()
-    if (error) throw new Error(error.message)
-    await refreshPasskeys()
-  }, [refreshPasskeys])
-
-  const deletePasskey = useCallback(async (id: string) => {
-    assertConfigured()
-    const { error } = await supabase.auth.passkey.delete({ passkeyId: id })
-    if (error) throw new Error(error.message)
-    setPasskeys((prev) => prev?.filter((p) => p.id !== id) ?? null)
-  }, [])
-
   const signOut = useCallback(async () => {
     assertConfigured()
     const { error } = await supabase.auth.signOut()
@@ -191,27 +122,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       loading: !authResolved || profileLoading,
       configured: isSupabaseConfigured,
-      passkeys,
       signInWithMagicLink,
       signInWithPassword,
-      signInWithPasskey,
-      registerPasskey,
-      refreshPasskeys,
-      deletePasskey,
       signOut,
     }),
     [
       session,
       profile,
-      passkeys,
       authResolved,
       profileLoading,
       signInWithMagicLink,
       signInWithPassword,
-      signInWithPasskey,
-      registerPasskey,
-      refreshPasskeys,
-      deletePasskey,
       signOut,
     ],
   )

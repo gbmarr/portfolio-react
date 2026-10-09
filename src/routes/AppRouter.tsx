@@ -13,7 +13,6 @@ import { ProjectFormPage } from '../pages/admin/ProjectFormPage'
 import { ProjectDetailPage } from '../pages/admin/ProjectDetailPage'
 import { ClientsPage } from '../pages/admin/ClientsPage'
 import { MessagesPage } from '../pages/admin/MessagesPage'
-import { AdminSecurityPage } from '../pages/admin/AdminSecurityPage'
 import { ClientLayout } from '../pages/client/ClientLayout'
 import { ClientProjectsPage } from '../pages/client/ClientProjectsPage'
 import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage'
@@ -59,7 +58,6 @@ export function AppRouter() {
               <Route path="proyectos/:id/editar" element={<ProjectFormPage />} />
               <Route path="clientes" element={<ClientsPage />} />
               <Route path="mensajes" element={<MessagesPage />} />
-              <Route path="seguridad" element={<AdminSecurityPage />} />
             </Route>
           </Route>
 

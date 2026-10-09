@@ -33,7 +33,6 @@ function authOverrides(overrides: Record<string, unknown> = {}) {
     loading: false,
     configured: true,
     signInWithPassword: vi.fn().mockResolvedValue(undefined),
-    signInWithPasskey: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   })
 }
@@ -97,33 +96,9 @@ describe('AdminLoginPage (acceso de gestión)', () => {
     )
   })
 
-  it('oculta el botón de passkey sin WebAuthn disponible', () => {
-    // jsdom no implementa PublicKeyCredential por defecto.
+  it('oculta el botón de passkey porque el feature está desactivado', () => {
     authOverrides()
     renderAdminLogin()
-    expect(screen.queryByRole('button', { name: panelCopy.adminLogin.passkey })).not.toBeInTheDocument()
-  })
-
-  it('entra con passkey cuando WebAuthn está disponible', async () => {
-    const signInWithPasskey = vi.fn().mockResolvedValue(undefined)
-    authOverrides({ signInWithPasskey })
-    vi.stubGlobal('PublicKeyCredential', class {})
-
-    renderAdminLogin()
-    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.passkey }))
-
-    expect(signInWithPasskey).toHaveBeenCalledTimes(1)
-  })
-
-  it('muestra error si falla el ingreso con passkey', async () => {
-    authOverrides({
-      signInWithPasskey: vi.fn().mockRejectedValue(new Error('nope')),
-    })
-    vi.stubGlobal('PublicKeyCredential', class {})
-
-    renderAdminLogin()
-    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.passkey }))
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(panelCopy.adminLogin.passkeyError)
+    expect(screen.queryByRole('button', { name: 'passkey' })).not.toBeInTheDocument()
   })
 })

@@ -10,7 +10,7 @@ type Status = 'idle' | 'submitting' | 'magic-sent'
 
 /**
  * Login de clientes en /login: solo enlace mágico.
- * El admin entra por su path oculto (/acceso-admin) con contraseña o passkey.
+ * El admin entra por su path oculto (/acceso-admin) con contraseña.
  */
 export function LoginPage() {
   const { session, profile, loading, configured, signInWithMagicLink } = useAuth()

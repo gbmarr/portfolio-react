@@ -10,10 +10,10 @@ type Status = 'idle' | 'submitting'
 
 /**
  * Acceso de administración en /acceso-admin (path no publicado).
- * Solo admins: email + contraseña o passkey (Face ID / Touch ID / Windows Hello).
+ * Solo admins: email + contraseña.
  */
 export function AdminLoginPage() {
-  const { session, profile, loading, configured, signInWithPassword, signInWithPasskey } =
+  const { session, profile, loading, configured, signInWithPassword } =
     useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -69,20 +69,7 @@ export function AdminLoginPage() {
     }
   }
 
-  async function handlePasskey() {
-    setStatus('submitting')
-    setError(null)
-    try {
-      await signInWithPasskey()
-    } catch {
-      setError(panelCopy.adminLogin.passkeyError)
-      setStatus('idle')
-    }
-  }
-
   const sending = status === 'submitting'
-  const passkeySupported =
-    typeof window !== 'undefined' && 'PublicKeyCredential' in window
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
@@ -117,17 +104,6 @@ export function AdminLoginPage() {
               {sending ? panelCopy.adminLogin.sending : panelCopy.adminLogin.submit}
             </Button>
           </form>
-
-          {passkeySupported && (
-            <button
-              type="button"
-              onClick={() => void handlePasskey()}
-              disabled={sending}
-              className="mt-4 w-full rounded-full border border-border bg-background px-4 py-2.5 text-center text-sm font-medium text-text transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
-            >
-              {panelCopy.adminLogin.passkey}
-            </button>
-          )}
 
           {error && (
             <p
