@@ -18,9 +18,15 @@
     - Clientes: solo enlace mágico en `/login`.
     - Admin: email+password o **passkey** (WebAuthn: Face ID / Touch ID / Windows Hello) en `/acceso-admin` (path oculto, no publicado).
     - Passkeys: registro y gestión en `/admin/seguridad`; requieren el flag `experimental: { passkey: true }` en el cliente (ya configurado) y habilitarlas en el dashboard (Authentication → Passkeys).
-  - **Base de datos**: `profiles`, `projects`, `project_stages`, `payments`, `milestone_approvals`, `contact_messages`.
-  - **RLS (Row Level Security)**: el cliente solo ve sus proyectos/etapas/pagos/decisiones; solo el admin escribe.
-  - **Migraciones**: `supabase/migrations/0001_init.sql` (aplicar en el SQL Editor del dashboard o con `supabase db push`).
+    - **URL Configuration (dashboard)** — de acá depende la redirección del magic link (Authentication → URL Configuration):
+      - **Site URL**: `https://gabrielmarrero.com.ar` (destino de *fallback* cuando el `redirect_to` no está en la lista de permitidos).
+      - **Redirect URLs** permitidas: `https://gabrielmarrero.com.ar/**`, `https://www.gabrielmarrero.com.ar/**`, `http://localhost:5173/**` (dev local de Vite).
+      - El código pasa `emailRedirectTo: \`${window.location.origin}/login\`` (`src/lib/auth.tsx`). Si el origen no está en la lista, Supabase cae al **Site URL** — por eso el Site URL debe ser producción y no `localhost`, o el enlace del email llega con el dominio equivocado.
+      - Las **plantillas de email** (Magic Link) no son editables en el plan free salvo configurando SMTP propio; no es necesario: la plantilla por defecto usa `{{ .ConfirmationURL }}`, que respeta el redirect.
+      - **No** versionar esta config con `supabase config push` (no existe `config pull` y empujaría ajustes que podrían pisar los de la nube); se administra en el dashboard y se documenta acá.
+  - **Base de datos**: `profiles`, `projects`, `project_stages`, `project_briefs`, `milestone_approvals`, `contact_messages`.
+  - **RLS (Row Level Security)**: el cliente solo ve sus proyectos/etapas/brief/decisiones; solo el admin escribe.
+  - **Migraciones** (`supabase/migrations/`, aplicar con `supabase db push`): `0001_init.sql` (esquema base), `0002_drop_billing.sql` (elimina la tabla `payments` y las columnas `projects.amount/currency` por la estrategia fair-use), `0003_client_brief.sql` (tabla `project_briefs`).
   - Los proyectos se asocian al cliente por `client_email` (el perfil recién existe tras su primer login).
 - **Formulario de contacto**: Web3Forms (email al inbox) + copia en `contact_messages` visible en el panel admin (fallo silencioso no rompe la UX).
 
