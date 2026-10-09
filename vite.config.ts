@@ -6,12 +6,12 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // envPrefix inlinea en el bundle del cliente toda variable FORM_* o DATABASE_*
-  // (sin prefijo VITE_ para evitar el warning de "public vars" de Vercel).
-  // SOLO valores públicos pueden usar estos prefijos; la protección real es el
-  // honeypot/validación del form y las políticas RLS de Supabase, no el secreto.
+  // envPrefix inlinea en el bundle del cliente toda variable DATABASE_* o
+  // TURNSTILE_* (sin prefijo VITE_ para evitar el warning de "public vars" de
+  // Vercel). SOLO valores públicos pueden usar estos prefijos; la protección
+  // real es Turnstile + las políticas RLS de Supabase, no el secreto.
   // Un prefijo explícito `PUBLIC_*` reemplazará esta convención (follow-up D4).
-  envPrefix: ['FORM_', 'DATABASE_'],
+  envPrefix: ['DATABASE_', 'TURNSTILE_'],
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

@@ -1,9 +1,13 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
 import { Button } from './Button'
-import { submitContactForm } from '../utils/formSubmission'
-import { saveContactMessage } from '../lib/messages'
 import { hasControlChars } from '../utils/contactSafety'
+import {
+  buildContactPayload,
+  contactFunctionUrl,
+  validateContactPayload,
+} from '../utils/contactPayload'
+import { TurnstileWidget } from './Turnstile'
 
 export interface ContactFormData {
   name: string
@@ -12,7 +16,8 @@ export interface ContactFormData {
 }
 
 interface ContactFormProps {
-  /** Resolvedor de envío. Por defecto usa Web3Forms. */
+  /** Resolvedor de envío. Por defecto envía a la Edge Function de contacto
+   *  (Turnstile + email propio), que reemplazó a Web3Forms. */
   onSubmit?: (data: ContactFormData) => Promise<void> | void
 }
 
@@ -30,21 +35,8 @@ const MIN_MESSAGE_LENGTH = 10
 export function ContactForm({ onSubmit }: ContactFormProps) {
   const [status, setStatus] = useState<Status>('idle')
   const lastSubmitAt = useRef(0)
-
-  /** Copia del mensaje en la bandeja del panel. Secundario: un fallo acá no
-   *  debe romper el envío principal por Web3Forms. */
-  async function persistToPanel(data: ContactFormData): Promise<void> {
-    try {
-      await saveContactMessage({
-        name: data.name,
-        email: data.email,
-        message: data.message,
-        subject: null,
-      })
-    } catch {
-      // Silencioso a propósito: la bandeja es un extra, el email manda.
-    }
-  }
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const siteKey = import.meta.env.TURNSTILE_SITE_KEY ?? ''
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -83,8 +75,31 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       if (onSubmit) {
         await onSubmit(data)
       } else {
-        await submitContactForm(data, String(formData.get('botcheck') ?? ''))
-        await persistToPanel(data)
+        // Honeypot: si un bot completó el campo invisible, respondemos éxito falso
+        // sin llegar a la función (ni gastar el rate-limit).
+        if (String(formData.get('botcheck') ?? '') !== '') {
+          setStatus('success')
+          form.reset()
+          return
+        }
+
+        const url = contactFunctionUrl()
+        if (!url) {
+          throw new Error('Falta la URL de la función de contacto')
+        }
+        const payload = buildContactPayload(data, turnstileToken)
+        const validation = validateContactPayload(payload)
+        if (!validation.ok) {
+          throw new Error(`Payload inválido: ${validation.reason}`)
+        }
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!response.ok) {
+          throw new Error(`La función respondió con estado ${response.status}`)
+        }
       }
       setStatus('success')
       form.reset()
@@ -98,7 +113,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Honeypot anti-spam: Web3Forms descarta envíos donde este campo viene lleno. */}
+      {/* Honeypot anti-spam: un bot que lo completa recibe éxito falso. */}
       <input
         type="text"
         name="botcheck"
@@ -152,6 +167,8 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           className={inputClasses}
         />
       </div>
+
+      {siteKey ? <TurnstileWidget siteKey={siteKey} onChange={setTurnstileToken} /> : null}
 
       <Button type="submit" className="w-full" disabled={status === 'sending'}>
         {status === 'sending' ? copy.contact.form.sending : copy.contact.form.submit}
