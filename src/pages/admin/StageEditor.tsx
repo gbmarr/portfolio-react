@@ -4,11 +4,16 @@ import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { statusLabels, statusTones } from '../../data/panel'
-import type { ApprovalDecision, MilestoneApproval, ProjectStage, StageStatus } from '../../lib/types'
+import type {
+  ApprovalDecision,
+  MilestoneApproval,
+  ProjectStage,
+  StageStatus,
+} from '../../lib/types'
 
-const stageStatusOptions = (
-  Object.entries(statusLabels.stage) as Array<[StageStatus, string]>
-).map(([value, label]) => ({ value, label }))
+const stageStatusOptions = (Object.entries(statusLabels.stage) as Array<[StageStatus, string]>).map(
+  ([value, label]) => ({ value, label })
+)
 
 export type StageEditorProps = {
   stages: ProjectStage[]
@@ -32,7 +37,14 @@ function DecisionBadge({ decision }: { decision: ApprovalDecision }) {
 }
 
 /** Editor del timeline de etapas del proyecto (solo admin). */
-export function StageEditor({ stages, approvals, onAdd, onUpdate, onMove, onDelete }: StageEditorProps) {
+export function StageEditor({
+  stages,
+  approvals,
+  onAdd,
+  onUpdate,
+  onMove,
+  onDelete,
+}: StageEditorProps) {
   const [newStageName, setNewStageName] = useState('')
   const [adding, setAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -139,68 +151,91 @@ export function StageEditor({ stages, approvals, onAdd, onUpdate, onMove, onDele
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="text-xs font-semibold text-text-muted">{index + 1}.</span>
-                  <span className="font-medium text-text">{stage.name}</span>
-                  <Badge tone={statusTones.stage[stage.status]}>{statusLabels.stage[stage.status]}</Badge>
-                  {approval && <DecisionBadge decision={approval.decision} />}
-                  {!stage.client_visible && <Badge>oculta al cliente</Badge>}
+                <>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-xs font-semibold text-text-muted">{index + 1}.</span>
+                    <span className="font-medium text-text">{stage.name}</span>
+                    <Badge tone={statusTones.stage[stage.status]}>
+                      {statusLabels.stage[stage.status]}
+                    </Badge>
+                    {approval && <DecisionBadge decision={approval.decision} />}
+                    {!stage.client_visible && <Badge>oculta al cliente</Badge>}
 
-                  <div className="ml-auto flex flex-wrap items-center gap-2">
-                    <SelectField
-                      id={`stage-status-${stage.id}`}
-                      label="Estado"
-                      hideLabel
-                      aria-label={`Estado de ${stage.name}`}
-                      className="w-auto rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
-                      value={stage.status}
-                      onValueChange={(value) => handleStatusChange(stage, value as StageStatus)}
-                      options={stageStatusOptions}
-                    />
-                    <button
-                      type="button"
-                      aria-label={`Subir ${stage.name}`}
-                      disabled={index === 0}
-                      onClick={() => onMove(stages.map((s) => s.id), -1, index)}
-                      className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Bajar ${stage.name}`}
-                      disabled={index === stages.length - 1}
-                      onClick={() => onMove(stages.map((s) => s.id), 1, index)}
-                      className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
-                    >
-                      ↓
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Visibilidad de ${stage.name}`}
-                      onClick={() => onUpdate(stage.id, { client_visible: !stage.client_visible })}
-                      className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent"
-                    >
-                      {stage.client_visible ? 'visible' : 'oculta'}
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Editar ${stage.name}`}
-                      onClick={() => startEditing(stage)}
-                      className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Eliminar ${stage.name}`}
-                      onClick={() => handleDelete(stage)}
-                      className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-red-400 hover:text-red-300"
-                    >
-                      ✕
-                    </button>
+                    <div className="ml-auto flex flex-wrap items-center gap-2">
+                      <SelectField
+                        id={`stage-status-${stage.id}`}
+                        label="Estado"
+                        hideLabel
+                        aria-label={`Estado de ${stage.name}`}
+                        className="w-auto rounded-lg border border-border bg-background px-2 py-1.5 text-xs"
+                        value={stage.status}
+                        onValueChange={(value) => handleStatusChange(stage, value as StageStatus)}
+                        options={stageStatusOptions}
+                      />
+                      <button
+                        type="button"
+                        aria-label={`Subir ${stage.name}`}
+                        disabled={index === 0}
+                        onClick={() =>
+                          onMove(
+                            stages.map((s) => s.id),
+                            -1,
+                            index
+                          )
+                        }
+                        className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Bajar ${stage.name}`}
+                        disabled={index === stages.length - 1}
+                        onClick={() =>
+                          onMove(
+                            stages.map((s) => s.id),
+                            1,
+                            index
+                          )
+                        }
+                        className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent disabled:opacity-40"
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Visibilidad de ${stage.name}`}
+                        onClick={() =>
+                          onUpdate(stage.id, { client_visible: !stage.client_visible })
+                        }
+                        className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent"
+                      >
+                        {stage.client_visible ? 'visible' : 'oculta'}
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Editar ${stage.name}`}
+                        onClick={() => startEditing(stage)}
+                        className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Eliminar ${stage.name}`}
+                        onClick={() => handleDelete(stage)}
+                        className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-red-400 hover:text-red-300"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
-                </div>
+                  {approval?.comment?.trim() && (
+                    <blockquote className="mt-2 rounded-lg border border-border bg-background/60 px-3 py-2 text-sm text-text-muted">
+                      "{approval.comment}"
+                    </blockquote>
+                  )}
+                </>
               )}
             </li>
           )
@@ -234,7 +269,10 @@ export function StageEditor({ stages, approvals, onAdd, onUpdate, onMove, onDele
       </form>
 
       {error && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+        <p
+          role="alert"
+          className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+        >
           {error}
         </p>
       )}

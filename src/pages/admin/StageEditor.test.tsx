@@ -66,6 +66,18 @@ describe('StageEditor', () => {
     expect(screen.getByText('oculta al cliente')).toBeInTheDocument()
   })
 
+  it('muestra el comentario del cliente junto a la decisión', () => {
+    renderEditor({
+      approvals: [approval({ decision: 'rechazado', comment: 'Faltan las fotos de la portada' })],
+    })
+    expect(screen.getByText(/Faltan las fotos de la portada/)).toBeInTheDocument()
+  })
+
+  it('no muestra comentario cuando está vacío o solo espacios', () => {
+    renderEditor({ approvals: [approval({ comment: '   ' })] })
+    expect(screen.queryByRole('blockquote')).not.toBeInTheDocument()
+  })
+
   it('agrega una etapa al enviar el formulario', async () => {
     const user = userEvent.setup()
     const onAdd = vi.fn<() => Promise<void>>(async () => {})
