@@ -40,9 +40,11 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| C.1 | Implementar `contact-notify` (CORS, Turnstile siteverify, validación, nodemailer Zoho 465, insert service role con rate-limit del trigger 0007, 200/400/429/500) | `supabase/functions/contact-notify/index.ts` | ⬜ |
-| C.2 | Smoke test local (`supabase functions serve`) con secrets dummy | CLI | ⬜ |
-| C.3 | Commit `feat(functions): contact-notify with zoho smtp and turnstile` | — | ⬜ |
+| C.1 | Implementar `contact-notify` (CORS, Turnstile siteverify, validación, nodemailer Zoho 465, insert service role con rate-limit del trigger 0007, 200/400/429/500) | `supabase/functions/contact-notify/index.ts` | ✅ |
+| C.2 | Smoke test local (`supabase functions serve`) con secrets dummy | CLI | ⬜ (bloqueado acá) |
+| C.3 | Commit `feat(functions): contact-notify with zoho smtp and turnstile` | — | ✅ |
+
+> **C.2 bloqueado en este entorno:** sin runtime Deno local y `supabase functions serve` descarga un Deno administrado por el CLI (red) y ejecuta código target sin sandbox OS; no se ejecutó. Comando del dueño (secrets dummy en `.env.local`): `supabase functions serve contact-notify --no-verify-jwt --env-file .env.local` y luego `curl -X POST http://127.0.0.1:54321/functions/v1/contact-notify -H "Content-Type: application/json" -d '{}'` → debe responder `400` (validación antes de cualquier red externa).
 
 ---
 
