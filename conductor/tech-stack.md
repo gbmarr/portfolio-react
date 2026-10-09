@@ -34,6 +34,7 @@
 
 - **Vercel / Netlify** — free hosting with automatic deploys from the Git repository.
 - Variables de entorno requeridas: `DATABASE_URL`, `DATABASE_PUBLISHABLE_KEY` (ver `.env.example`).
+- **Prefijos de env**: `envPrefix: ['FORM_', 'DATABASE_']` en `vite.config.ts` inlinea en el bundle del cliente toda variable con esos prefijos — son públicas por diseño (la protección real es RLS + honeypot). Nunca usar esos prefijos para secretos; un prefijo explícito `PUBLIC_*` reemplazará esta convención (follow-up).
 - CSP `connect-src` en `vercel.json` / `netlify.toml` ya incluye `https://*.supabase.co wss://*.supabase.co`.
 
 ## Tooling

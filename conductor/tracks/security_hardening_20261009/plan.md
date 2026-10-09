@@ -67,11 +67,11 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| E.1 | Chequear duplicados de `lower(email)` antes del índice | DB | ⬜ |
+| E.1 | Chequear duplicados de `lower(email)` antes del índice | DB | ✅ |
 | E.2 | Migración `0006_email_tenancy.sql` (índice único + trigger resync) | `supabase/migrations/` | ✅ |
-| E.3 | Aplicar + verificar (cambio de email de un usuario dummy) | DB | ⬜ |
+| E.3 | Aplicar + verificar (índice, trigger y resync funcional con rollback) | DB | ✅ |
 | E.4 | Nota en tech-stack sobre tenancy por email | `conductor/tech-stack.md` | ✅ |
-| E.5 | Commit `fix(db): resync email tenancy on auth email change` | — | ⬜ |
+| E.5 | Commit `fix(db): resync email tenancy on auth email change` | — | ✅ |
 
 ---
 
@@ -79,7 +79,7 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| F.1 | (D3) Decidir tras V3: implementar re-auth o documentar | — | ⬜ |
+| F.1 | (D3) Decidir tras V3: implementar re-auth o documentar | — | ⏸️ diferido (espera V3) |
 | F.2 | TDD + implementar re-auth antes de register/delete passkey (si aplica) | `src/lib/auth.tsx`, `AdminSecurityPage.tsx` (+ tests) | ⬜ |
 | F.3 | Commit `fix(auth): require step-up for passkey changes` | — | ⬜ |
 
@@ -89,7 +89,7 @@ Las **decisiones D1–D4** del `spec.md` se resuelven en la aprobación; cada ta
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| G.1 | (D4) Documentar prefijos públicos y preparar migración a `PUBLIC_*` | `.env.example`, `src/vite-env.d.ts`, `vite.config.ts` | ⬜ |
+| G.1 | (D4) Documentar prefijos públicos y preparar migración a `PUBLIC_*` | `.env.example`, `src/vite-env.d.ts`, `vite.config.ts`, `tech-stack.md` | ✅ |
 | G.2 | Commit `docs(config): clarify public env prefixes` | — | ⬜ |
 
 ---

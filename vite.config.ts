@@ -6,11 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // Solo se expone FORM_ACCESS_KEY a import.meta.env (sin prefijo VITE_ para
-  // evitar el warning de "public vars" de Vercel). Web3Forms usa una key
-  // semipública de cliente; la protección real es el honeypot del form.
-  // DATABASE_URL / DATABASE_PUBLISHABLE_KEY (Supabase) también son públicas
-  // por diseño: la protección real son las políticas RLS de la base.
+  // envPrefix inlinea en el bundle del cliente toda variable FORM_* o DATABASE_*
+  // (sin prefijo VITE_ para evitar el warning de "public vars" de Vercel).
+  // SOLO valores públicos pueden usar estos prefijos; la protección real es el
+  // honeypot/validación del form y las políticas RLS de Supabase, no el secreto.
+  // Un prefijo explícito `PUBLIC_*` reemplazará esta convención (follow-up D4).
   envPrefix: ['FORM_', 'DATABASE_'],
   test: {
     environment: 'jsdom',
