@@ -1,8 +1,8 @@
 // contact-notify — única Edge Function permitida por fair-use (ver `conductor/fair-use.md`).
 //
-// Flujo: turnstile siteverify -> validación del payload -> envío por Zoho Mail API
-// (OAuth2, sin SMTP/app passwords) -> copia en contact_messages (pasa el trigger
-// 0007 de rate limit => 429 si excede).
+// Flujo: turnstile siteverify -> validación del payload -> copia en
+// contact_messages PRIMERO (pasa el trigger 0007 de rate limit => 429 si
+// excede, sin gastar OAuth/email) -> envío por Zoho Mail API (OAuth2).
 //
 // Security notes:
 // - require JWT deshabilitado para este endpoint (la llama el browser sin auth).
@@ -108,11 +108,13 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
 }
 
 // Canjea el refresh token (self client de la API Console) por un access token.
+// Devuelve el detalle del error OAuth (p. ej. `invalid_client`/`invalid_grant`)
+// para que un fallo de `mail-auth` sea diagnosticable desde el browser.
 async function getZohoAccessToken(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-): Promise<string | null> {
+): Promise<{ ok: true; accessToken: string } | { ok: false; detail: string }> {
   const base = Deno.env.get("ZOHO_API_BASE") ?? "https://accounts.zoho.com";
   const form = new URLSearchParams();
   form.set("grant_type", "refresh_token");
@@ -124,11 +126,25 @@ async function getZohoAccessToken(
       method: "POST",
       body: form,
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { access_token?: string };
-    return data.access_token ?? null;
-  } catch {
-    return null;
+    const raw = await res.text();
+    if (!res.ok) {
+      let detail = `http-${res.status}`;
+      try {
+        const parsed = JSON.parse(raw) as { error?: string };
+        if (parsed.error) detail = parsed.error;
+      } catch {
+        detail = raw.slice(0, 120) || `http-${res.status}`;
+      }
+      return { ok: false, detail };
+    }
+    const data = JSON.parse(raw) as { access_token?: string };
+    if (!data.access_token) return { ok: false, detail: "no-access-token" };
+    return { ok: true, accessToken: data.access_token };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: err instanceof Error ? err.message.slice(0, 120) : "network",
+    };
   }
 }
 
@@ -189,34 +205,10 @@ serve(async (req) => {
 
   try {
     const { name, email, message } = check.payload;
-
-    const clientId = Deno.env.get("ZOHO_CLIENT_ID");
-    const clientSecret = Deno.env.get("ZOHO_CLIENT_SECRET");
-    const refreshToken = Deno.env.get("ZOHO_REFRESH_TOKEN");
     const notifyTo = Deno.env.get("ZOHO_NOTIFY_TO") ?? "hola@gabrielmarrero.com.ar";
-    if (!clientId || !clientSecret || !refreshToken) {
-      return json({ ok: false, error: "mail-misconfigured" }, 500, headers);
-    }
 
-    const accessToken = await getZohoAccessToken(
-      clientId,
-      clientSecret,
-      refreshToken,
-    );
-    if (!accessToken) {
-      return json({ ok: false, error: "mail-auth" }, 500, headers);
-    }
-
-    const sent = await sendZohoMail(accessToken, {
-      to: notifyTo,
-      subject: `Nuevo mensaje de ${name} <${email}>`,
-      content: message,
-      replyTo: email,
-    });
-    if (!sent) {
-      return json({ ok: false, error: "mail-send" }, 500, headers);
-    }
-
+    // 1) Copia en contact_messages PRIMERO: el trigger 0007 (rate limit) corta con
+    // 429 sin gastar OAuth/email, y un fallo de DB no deja email huérfano.
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !serviceKey) {
@@ -234,6 +226,33 @@ serve(async (req) => {
         return json({ ok: false, error: "rate-limited" }, 429, headers);
       }
       return json({ ok: false, error: "db-error" }, 500, headers);
+    }
+
+    // 2) Envío por Zoho Mail API (OAuth2, sin SMTP/app passwords).
+    const clientId = Deno.env.get("ZOHO_CLIENT_ID");
+    const clientSecret = Deno.env.get("ZOHO_CLIENT_SECRET");
+    const refreshToken = Deno.env.get("ZOHO_REFRESH_TOKEN");
+    if (!clientId || !clientSecret || !refreshToken) {
+      return json({ ok: false, error: "mail-misconfigured" }, 500, headers);
+    }
+
+    const token = await getZohoAccessToken(clientId, clientSecret, refreshToken);
+    if (!token.ok) {
+      return json(
+        { ok: false, error: "mail-auth", detail: token.detail },
+        500,
+        headers,
+      );
+    }
+
+    const sent = await sendZohoMail(token.accessToken, {
+      to: notifyTo,
+      subject: `Nuevo mensaje de ${name} <${email}>`,
+      content: message,
+      replyTo: email,
+    });
+    if (!sent) {
+      return json({ ok: false, error: "mail-send" }, 500, headers);
     }
 
     return json({ ok: true }, 200, headers);
