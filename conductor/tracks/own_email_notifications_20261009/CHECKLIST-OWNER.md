@@ -5,17 +5,16 @@
 
 ---
 
-## 1. Zoho Mail (dominio `gabrielmarrero.com.ar`) — envío vía Zoho Mail API (OAuth2)
+## 1. Envío por Resend (dominio `gabrielmarrero.com.ar`) — pivote 2026-10-10
+> Zoho Mail sigue como **receptor** (SPF admite varios `include`); el envío saliente lo hace Resend.
 
-- [x] Dominio verificado en Zoho Mail (registro de verificación en la zona DNS de `gabrielmarrero.com.ar`).
-- [x] **SPF** — registro TXT en DNS:
-      `v=spf1 include:zoho.com ~all`
-- [x] **DKIM** — clave generada en Zoho y TXT agregado (selector default: `zoho._domainkey`).
+- [x] Dominio verificado en Zoho Mail (receptor, registro de verificación en la zona DNS).
+- [x] **SPF Zoho** — `v=spf1 include:zoho.com ~all`.
+- [x] **DKIM Zoho** — TXT agregado (selector `zoho._domainkey`).
 - [ ] **DMARC** (recomendado) — registro TXT (name `_dmarc`, type TXT, value):
       `v=DMARC1; p=none; rua=mailto:hola@gabrielmarrero.com.ar`
-- [x] **OAuth2 (self client)**: Self Client `portfolio-contact` creado en Zoho API Console (`api-console.zoho.com`); Client ID y Client Secret anotados.
-- [x] **Refresh Token** generado con scope `ZohoMail.messages.ALL` autorizando `hola@gabrielmarrero.com.ar`.
-- [x] Región: se usó `api-console.zoho.com` (`.com` → defaults `accounts.zoho.com`/`mail.zoho.com`; solo hace falta `ZOHO_API_BASE`/`ZOHO_MAIL_BASE` si la cuenta es de otra región).
+- [ ] **Resend**: crear cuenta (resend.com, free ~100 emails/día) → Domains → **Add Domain** `gabrielmarrero.com.ar` → agregar en DNS los records que da Resend: un **DKIM** TXT (registro `resend._domainkey` o según indique) y el **SPF** que incluye `include:amazonses.com` (sumándolo a los de Zoho) → esperar **Verified**.
+- [ ] **API Key de Resend** (Dashboard → API Keys → Create) → se guarda como secret `MAIL_PROVIDER_API_KEY` (solo dashboard de Supabase).
 
 ## 2. Cloudflare Turnstile
 
@@ -26,8 +25,9 @@
 
 - [ ] Confirmar que el plan del proyecto incluye Edge Functions (free tier ~500K invocations/mes; verificar Project Settings/Billing). Project ref `jntueibgkfwptigpncmh` → `https://jntueibgkfwptigpncmh.functions.supabase.co`.
 - [x] (Fase E) Secrets de la función cargados (dashboard o `supabase secrets set`):
-      `TURNSTILE_SECRET`, `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`
-      (opcionales por región/entrega: `ZOHO_API_BASE`, `ZOHO_MAIL_BASE`, `ZOHO_NOTIFY_TO`).
+      `TURNSTILE_SECRET`, `MAIL_PROVIDER_API_KEY`
+      (opcionales: `MAIL_FROM`, `MAIL_TO`, default `hola@gabrielmarrero.com.ar`).
+      Los `ZOHO_*` quedaron **inertes** tras el pivote a Resend y pueden borrarse.
 - [ ] (Fase E.1) Deploy: `supabase functions deploy contact-notify --no-verify-jwt`.
 - [ ] (Fase E.2/E.3) Tras el primer envío real, revisar cabeceras del email: **SPF/DKIM/DMARC PASS** + fila en el panel + 7º envío en 1 min rechazado (rate-limit `0007` → 429).
 
