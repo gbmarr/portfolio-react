@@ -23,7 +23,7 @@ Por eso el producto fue ajustado (track `fairuse_20261008`): el panel admin/clie
 ## Reglas (no negociables mientras estemos en Hobby)
 
 1. **Cero serverless functions para el negocio.** No crear carpeta `api/`, middleware transaccional ni más edge functions. Toda la lógica del sitio es client-side; las llamadas externas van directas desde el browser a Supabase (y hoy Web3Forms).
-   - **Única excepción:** `supabase/functions/contact-notify` (track `own_email_notifications_20261009`) — una Edge Function en **Supabase (Deno, no Vercel)** que envía el formulario de contacto por email propio (`hola@gabrielmarrero.com.ar` vía Zoho SMTP) + validación Cloudflare Turnstile, reemplazando a Web3Forms. **No se puede duplicar ni ampliar sin actualizar este documento** y revisar los límites del plan.
+   - **Única excepción:** `supabase/functions/contact-notify` (track `own_email_notifications_20261009`) — una Edge Function en **Supabase (Deno, no Vercel)** que envía el formulario de contacto por email propio (`hola@gabrielmarrero.com.ar` vía la **Zoho Mail API** con OAuth2) + validación Cloudflare Turnstile, reemplazando a Web3Forms. **No se puede duplicar ni ampliar sin actualizar este documento** y revisar los límites del plan.
 2. **Cero cobros/transactions en este deploy.** Ningún checkout, pasarela de pago, suscripción ni procesamiento de pagos vía Vercel.
 3. **Cero gestión de montos en el panel.** `payments`, `amount`, `currency` fueron eliminados (migración `0002_drop_billing.sql`). No reintroducirlos: si vuelven los cobros gestionables, toca Pro u otro hosting.
 4. **El estimador es 100% client-side.** Si algún día se necesita server-side (IA, cotización dinámica real), evaluar antes Pro u otro runtime.

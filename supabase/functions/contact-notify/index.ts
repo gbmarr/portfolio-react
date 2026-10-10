@@ -1,19 +1,22 @@
 // contact-notify — única Edge Function permitida por fair-use (ver `conductor/fair-use.md`).
 //
-// Flujo: turnstile siteverify -> validación del payload -> envío por Zoho SMTP ->
-// copia en contact_messages (pasa el trigger 0007 de rate limit => 429 si excede).
+// Flujo: turnstile siteverify -> validación del payload -> envío por Zoho Mail API
+// (OAuth2, sin SMTP/app passwords) -> copia en contact_messages (pasa el trigger
+// 0007 de rate limit => 429 si excede).
 //
 // Security notes:
 // - require JWT deshabilitado para este endpoint (la llama el browser sin auth).
 //   Local:   supabase functions serve contact-notify --no-verify-jwt --env-file .env.local
 //   Deploy:  supabase functions deploy contact-notify --no-verify-jwt
 // - Secretos (SOLO dashboard / `supabase secrets set`; nunca en el repo):
-//   TURNSTILE_SECRET, ZOHO_SMTP_HOST, ZOHO_SMTP_PORT, ZOHO_SMTP_USER, ZOHO_APP_PASSWORD
+//   TURNSTILE_SECRET, ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN
+//   (opcionales por región: ZOHO_API_BASE, ZOHO_MAIL_BASE, ZOHO_NOTIFY_TO)
 // - SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY se inyectan automáticamente en deploy.
+// - OAuth2 (self client en Zoho API Console, scope ZohoMail.messages.ALL):
+//   el refresh token no expira salvo revocación. Ver CHECKLIST-OWNER.md del track.
 
 import { serve } from "https://deno.land/std@0.219.1/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.117.3";
-import nodemailer from "npm:nodemailer@6.9.14";
 
 const ALLOWED_ORIGINS = new Set([
   "https://gabrielmarrero.com.ar",
@@ -100,6 +103,58 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
   }
 }
 
+// Canjea el refresh token (self client de la API Console) por un access token.
+async function getZohoAccessToken(
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+): Promise<string | null> {
+  const base = Deno.env.get("ZOHO_API_BASE") ?? "https://accounts.zoho.com";
+  const form = new URLSearchParams();
+  form.set("grant_type", "refresh_token");
+  form.set("client_id", clientId);
+  form.set("client_secret", clientSecret);
+  form.set("refresh_token", refreshToken);
+  try {
+    const res = await fetch(`${base}/oauth/v2/token`, {
+      method: "POST",
+      body: form,
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { access_token?: string };
+    return data.access_token ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// Envía por Zoho Mail API (SendMail v1). El remitente es la cuenta del access token.
+async function sendZohoMail(
+  accessToken: string,
+  opts: { to: string; subject: string; content: string; replyTo: string },
+): Promise<boolean> {
+  const base = Deno.env.get("ZOHO_MAIL_BASE") ?? "https://mail.zoho.com";
+  try {
+    const res = await fetch(`${base}/api/accounts/me/messages/sendMail`, {
+      method: "POST",
+      headers: {
+        Authorization: `Zoho-oauthtoken ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        toAddress: opts.to,
+        subject: opts.subject,
+        content: opts.content,
+        mailFormat: "plaintext",
+        replyTo: opts.replyTo,
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 serve(async (req) => {
   const origin = req.headers.get("origin");
   const headers = cors(origin);
@@ -131,27 +186,32 @@ serve(async (req) => {
   try {
     const { name, email, message } = check.payload;
 
-    const host = Deno.env.get("ZOHO_SMTP_HOST");
-    const port = Number(Deno.env.get("ZOHO_SMTP_PORT") ?? "465");
-    const user = Deno.env.get("ZOHO_SMTP_USER");
-    const pass = Deno.env.get("ZOHO_APP_PASSWORD");
-    if (!host || !user || !pass) {
-      return json({ ok: false, error: "smtp-misconfigured" }, 500, headers);
+    const clientId = Deno.env.get("ZOHO_CLIENT_ID");
+    const clientSecret = Deno.env.get("ZOHO_CLIENT_SECRET");
+    const refreshToken = Deno.env.get("ZOHO_REFRESH_TOKEN");
+    const notifyTo = Deno.env.get("ZOHO_NOTIFY_TO") ?? "hola@gabrielmarrero.com.ar";
+    if (!clientId || !clientSecret || !refreshToken) {
+      return json({ ok: false, error: "mail-misconfigured" }, 500, headers);
     }
 
-    const mail = nodemailer.createTransport({
-      host,
-      port,
-      secure: true,
-      auth: { user, pass },
-    });
-    await mail.sendMail({
-      from: user,
-      to: user,
-      replyTo: email,
+    const accessToken = await getZohoAccessToken(
+      clientId,
+      clientSecret,
+      refreshToken,
+    );
+    if (!accessToken) {
+      return json({ ok: false, error: "mail-auth" }, 500, headers);
+    }
+
+    const sent = await sendZohoMail(accessToken, {
+      to: notifyTo,
       subject: `Nuevo mensaje de ${name} <${email}>`,
-      text: message,
+      content: message,
+      replyTo: email,
     });
+    if (!sent) {
+      return json({ ok: false, error: "mail-send" }, 500, headers);
+    }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

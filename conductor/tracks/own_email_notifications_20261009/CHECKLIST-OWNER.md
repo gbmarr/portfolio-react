@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Zoho Mail (dominio `gabrielmarrero.com.ar`)
+## 1. Zoho Mail (dominio `gabrielmarrero.com.ar`) — envío vía Zoho Mail API (OAuth2)
 
 - [ ] Dominio verificado en Zoho Mail (registro de verificación en la zona DNS de `gabrielmarrero.com.ar`).
 - [ ] **SPF** — registro TXT en DNS:
@@ -14,8 +14,9 @@
 - [ ] **DKIM** — generar la clave en Zoho (Control Panel → Mail → Domain → DKIM) y agregar el TXT que Zoho te da (selector default: `zoho._domainkey`).
 - [ ] **DMARC** (recomendado) — registro TXT:
       `v=DMARC1; p=none; rua=mailto:hola@gabrielmarrero.com.ar`
-- [ ] **App password**: con la *Two-Factor Authentication* activada, generar una application-specific password para SMTP (Zoho Account → Security → App Passwords). Es el único valor de `ZOHO_APP_PASSWORD`.
-- [ ] Anotar los valores SMTP: `smtp.zoho.com`, puerto `465` (SSL). Verificar la región correcta de tu cuenta (US/EU/IN/otra).
+- [ ] **OAuth2 (self client)**: en Zoho API Console (`https://api-console.zoho.com`, región según tu cuenta — `.com`/`.eu`/etc.) → Client → **Self Client** → Create (nombre `portfolio-contact`) → anotar **Client ID** y **Client Secret**.
+- [ ] Generar el **Refresh Token**: en el self client, opción **Generate Token** / Generate Refresh Token con scope `ZohoMail.messages.ALL`, autorizando con `hola@gabrielmarrero.com.ar`. Copiar el refresh token (no expira salvo revocación).
+- [ ] Anotar la región correcta de tu cuenta Zoho (por si hace falta `ZOHO_API_BASE`/`ZOHO_MAIL_BASE`, p. ej. `.eu`).
 
 ## 2. Cloudflare Turnstile
 
