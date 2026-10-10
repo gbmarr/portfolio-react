@@ -65,7 +65,7 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 | E.1 | Deploy de la función + secrets (`supabase functions deploy contact-notify` + dashboard) | Supabase | ⬜ |
 | E.2 | Prueba real: mensaje → email a `hola@` (SPF/DKIM/DMARC PASS) + fila en panel | form real | ⬜ |
 | E.3 | Verificar rate-limit (7º intento en 1 min rechazado) | form real | ⬜ |
-| E.4 | Rotar/eliminar la access key de Web3Forms | Web3Forms | ⬜ |
+| E.4 | Rotar/eliminar la access key de Web3Forms | Web3Forms | ✅ |
 | E.5 | Checklist final build/lint/test/typecheck | — | ⬜ |
 
 ---
