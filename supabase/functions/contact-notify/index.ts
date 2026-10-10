@@ -9,7 +9,8 @@
 //   Local:   supabase functions serve contact-notify --no-verify-jwt --env-file .env.local
 //   Deploy:  supabase functions deploy contact-notify --no-verify-jwt
 // - Secretos (SOLO dashboard / `supabase secrets set`; nunca en el repo):
-//   TURNSTILE_SECRET, ZOHO_CLIENT_ID, ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN
+//   TURNSTILE_SECRET (o su alias histórico TURNSTILE_SECRET_KEY), ZOHO_CLIENT_ID,
+//   ZOHO_CLIENT_SECRET, ZOHO_REFRESH_TOKEN
 //   (opcionales por región: ZOHO_API_BASE, ZOHO_MAIL_BASE, ZOHO_NOTIFY_TO)
 // - SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY se inyectan automáticamente en deploy.
 // - OAuth2 (self client en Zoho API Console, scope ZohoMail.messages.ALL):
@@ -84,7 +85,10 @@ function validate(raw: Partial<ContactPayload>):
 }
 
 async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
-  const secret = Deno.env.get("TURNSTILE_SECRET");
+  // Fallback al nombre histórico TURNSTILE_SECRET_KEY para no romper dashboards
+  // que ya cargaron el secret con ese nombre (2026-10-10).
+  const secret =
+    Deno.env.get("TURNSTILE_SECRET") ?? Deno.env.get("TURNSTILE_SECRET_KEY");
   if (!secret) return false;
   const form = new URLSearchParams();
   form.set("secret", secret);
