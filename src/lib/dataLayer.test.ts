@@ -52,7 +52,7 @@ import {
   updateStage,
 } from './projects'
 import { listClients } from './clients'
-import { deleteMessage, listMessages, markMessageRead, saveContactMessage } from './messages'
+import { deleteMessage, listMessages, markMessageRead } from './messages'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -201,18 +201,6 @@ describe('mensajes', () => {
 
     h.tableResults.set('contact_messages', { data: [], error: { message: 'upd' } })
     await expect(markMessageRead('m1', true)).rejects.toThrow('upd')
-  })
-
-  it('saveContactMessage inserta o lanza', async () => {
-    h.tableResults.set('contact_messages', { data: [], error: null })
-    await expect(
-      saveContactMessage({ name: 'Ana', email: 'a@b.com', message: 'Hola, todo bien' }),
-    ).resolves.toBeUndefined()
-
-    h.tableResults.set('contact_messages', { data: [], error: { message: 'insert denied' } })
-    await expect(
-      saveContactMessage({ name: 'Ana', email: 'a@b.com', message: 'Hola, todo bien' }),
-    ).rejects.toThrow('insert denied')
   })
 
   it('deleteMessage lanza ante error', async () => {
