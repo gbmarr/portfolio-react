@@ -5,7 +5,8 @@ import { AuthProvider } from '../lib/auth'
 import { applyRobotsMeta } from '../utils/seo'
 import { LoginPage } from '../pages/LoginPage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
-import { RequireAdmin, RequireAuth, RequireClient } from './guards'
+import { AdminMfaPage } from '../pages/AdminMfaPage'
+import { RequireAdmin, RequireAdminMfa, RequireAuth, RequireClient } from './guards'
 import { AdminLayout } from '../pages/admin/AdminLayout'
 import { ClientLayout } from '../pages/client/ClientLayout'
 
@@ -107,6 +108,11 @@ export function AppRouter() {
               <Route path="clientes" element={<Suspended><ClientsPage /></Suspended>} />
               <Route path="mensajes" element={<Suspended><MessagesPage /></Suspended>} />
             </Route>
+          </Route>
+
+          {/* Step-up MFA: solo sesión + rol admin (sin exigir AAL2 todavía). */}
+          <Route element={<RequireAdminMfa />}>
+            <Route path="/admin/mfa" element={<AdminMfaPage />} />
           </Route>
 
           <Route element={<RequireAuth />}>

@@ -1,14 +1,8 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { isSupabaseConfigured, supabase } from './supabase'
 import type { Profile } from './types'
-import { AuthContext, type AuthContextValue } from './auth-context'
+import { AuthContext, type AalLevel, type AuthContextValue } from './auth-context'
 
 function assertConfigured(): void {
   if (!isSupabaseConfigured) {
@@ -25,6 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile: null,
   })
   const [authResolved, setAuthResolved] = useState(!isSupabaseConfigured)
+  const [aalLevel, setAalLevel] = useState<AalLevel | null>(null)
+  const [aalResolving, setAalResolving] = useState(false)
 
   // Suscripción a cambios de auth (solo setState: no hacer awaits adentro del
   // callback, Supabase lo desaconseja para evitar deadlocks).
@@ -36,10 +32,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setAuthResolved(true)
-      // Sin sesión no queda perfil. Se limpia acá (callback de la
-      // suscripción) y no en los effects para no setear estado sincrónicamente.
       if (!nextSession) {
+        // Sin sesión no queda perfil ni nivel AAL. Se limpia acá (callback de la
+        // suscripción) y no en los effects para no setear estado sincrónicamente.
         setProfileState({ userId: null, profile: null })
+        setAalLevel(null)
+        setAalResolving(false)
+      } else {
+        // Con sesión, el effect de AAL resuelve el nivel (async).
+        setAalResolving(true)
       }
     })
 
@@ -77,6 +78,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const profile = userId !== null && profileState.userId === userId ? profileState.profile : null
   const profileLoading = userId !== null && profileState.userId !== userId
 
+  // Nivel de assurance (AAL). Depende del objeto `session`: al verificar MFA,
+  // Supabase refresca la sesión (TOKEN_REFRESHED), el objeto cambia y el effect
+  // vuelve a consultar el nivel, que pasa a `aal2` y desbloquea RequireAdmin.
+  // El estado se setea solo después del `await` (patrón del efecto de perfil).
+  useEffect(() => {
+    let cancelled = false
+
+    async function resolveAal() {
+      if (!session) return
+      try {
+        const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        if (cancelled) return
+        // Solo `aal2` cuenta como segundo factor verificado; cualquier otro
+        // valor (incluidos valores desconocidos a futuro) queda en AAL1.
+        setAalLevel(data?.currentLevel === 'aal2' ? 'aal2' : 'aal1')
+      } catch {
+        // Error de red indescifrable: bloqueando a AAL1 se mantiene a los
+        // admins fuera de /admin hasta que la verificación quede clara.
+        if (!cancelled) setAalLevel('aal1')
+      } finally {
+        if (!cancelled) setAalResolving(false)
+      }
+    }
+
+    void resolveAal()
+
+    return () => {
+      cancelled = true
+    }
+  }, [session])
+
   const signInWithMagicLink = useCallback(async (email: string) => {
     assertConfigured()
     const { error } = await supabase.auth.signInWithOtp({
@@ -102,24 +134,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw new Error(error.message)
   }, [])
 
+  const listMfaFactors = useCallback(async (): Promise<string[]> => {
+    assertConfigured()
+    const { data, error } = await supabase.auth.mfa.listFactors()
+    if (error) throw new Error(error.message)
+    return data.totp.map((factor) => factor.id)
+  }, [])
+
+  const enrollMfa = useCallback(async () => {
+    assertConfigured()
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
+    if (error) throw new Error(error.message)
+    return { factorId: data.id, qrCode: data.totp.qr_code }
+  }, [])
+
+  const challengeMfa = useCallback(async (factorId: string): Promise<string> => {
+    assertConfigured()
+    const { data, error } = await supabase.auth.mfa.challenge({ factorId })
+    if (error) throw new Error(error.message)
+    return data.id
+  }, [])
+
+  const verifyMfa = useCallback(
+    async (factorId: string, challengeId: string, code: string): Promise<void> => {
+      assertConfigured()
+      const { error } = await supabase.auth.mfa.verify({ factorId, challengeId, code })
+      if (error) throw new Error(error.message)
+      // Al verificar, Supabase renueva la sesión en segundo plano y el effect de
+      // AAL detecta el nuevo objeto `session` con currentLevel = aal2.
+    },
+    [],
+  )
+
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
       profile,
       loading: !authResolved || profileLoading,
       configured: isSupabaseConfigured,
+      aalLevel,
+      aalResolving,
       signInWithMagicLink,
       signInWithPassword,
       signOut,
+      listMfaFactors,
+      enrollMfa,
+      challengeMfa,
+      verifyMfa,
     }),
     [
       session,
       profile,
       authResolved,
       profileLoading,
+      aalLevel,
+      aalResolving,
       signInWithMagicLink,
       signInWithPassword,
       signOut,
+      listMfaFactors,
+      enrollMfa,
+      challengeMfa,
+      verifyMfa,
     ],
   )
 

@@ -24,6 +24,24 @@ export const panelCopy = {
     notConfigured: 'El panel todavía no está configurado en este entorno.',
     backToSite: 'Volver al sitio',
   },
+  adminMfa: {
+    title: 'Verificación en dos pasos',
+    subtitle: 'Protegé el acceso de gestión con un segundo factor.',
+    checking: 'Preparando la verificación…',
+    enrollIntro:
+      'Escaneá el código QR con tu app de autenticación (Google Authenticator, 1Password o similar) y después ingresá el código de 6 dígitos para activarlo.',
+    verifyIntro: 'Ingresá el código de 6 dígitos que genera tu aplicación de autenticación.',
+    qrAlt: 'Código QR de configuración de autenticación en dos pasos',
+    codeLabel: 'Código de verificación',
+    enable: 'Activar',
+    verify: 'Verificar',
+    verifying: 'Verificando…',
+    invalidCode: 'Código inválido o expirado. Revisalo e intentá de nuevo.',
+    error: 'No se pudo preparar la verificación. Probá de nuevo en unos minutos.',
+    recoveryHint:
+      'Guardá los códigos de recuperación de tu app de autenticación: si perdés el dispositivo, son la única vía para volver a entrar.',
+    backToSite: 'Volver al sitio',
+  },
   loading: 'Cargando…',
   error: {
     generic: 'Algo salió mal. Probá de nuevo en unos minutos.',

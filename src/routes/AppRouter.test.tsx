@@ -30,6 +30,12 @@ afterEach(() => {
     profile: null,
     loading: false,
     configured: true,
+    aalLevel: null,
+    aalResolving: false,
+    listMfaFactors: vi.fn(async () => ['factor-1']),
+    challengeMfa: vi.fn(async () => 'challenge-1'),
+    verifyMfa: vi.fn(),
+    enrollMfa: vi.fn(),
     signOut: vi.fn(),
   })
 })
@@ -91,6 +97,8 @@ describe('AppRouter', () => {
       session: { user: { id: 'u-admin' } },
       profile: { role: 'admin' },
       loading: false,
+      aalLevel: 'aal2',
+      aalResolving: false,
     })
     window.history.pushState({}, '', '/admin')
     render(<AppRouter />)
@@ -102,6 +110,22 @@ describe('AppRouter', () => {
     )
     expect(
       await screen.findByRole('heading', { name: panelCopy.nav.dashboard }),
+    ).toBeInTheDocument()
+  })
+
+  it('intercepta a un admin con AAL1 llevándolo a la verificación MFA', async () => {
+    h.useAuth.mockReturnValue({
+      session: { user: { id: 'u-admin' } },
+      profile: { role: 'admin' },
+      loading: false,
+      aalLevel: 'aal1',
+      aalResolving: false,
+    })
+    window.history.pushState({}, '', '/admin')
+    render(<AppRouter />)
+
+    expect(
+      await screen.findByRole('heading', { name: panelCopy.adminMfa.title }),
     ).toBeInTheDocument()
   })
 

@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_admin_mfa_20261011`
 > **Fuente:** Hallazgo **SEC-002 (Media)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🚧 En implementación (código listo y verificado; pendiente config dashboard del owner).
 
 ---
 
@@ -28,11 +28,11 @@
 
 ## 4. Acceptance Criteria
 
-- [ ] Admin con sesión AAL1 es redirigido a enrolar/verificar MFA.
-- [ ] Admin con AAL2 accede normalmente a `/admin/*`.
-- [ ] Leaked Password Protection activada (verificable en dashboard/API).
-- [ ] Rate-limit de auth configurado; documentado.
-- [ ] `npm run test` / `typecheck` / `lint` verdes.
+- [x] Admin con sesión AAL1 es redirigido a enrolar/verificar MFA. *(implementado + test)*
+- [x] Admin con AAL2 accede normalmente a `/admin/*`. *(implementado + test)*
+- [x] `npm run test` / `typecheck` / `lint` verdes. *(69 archivos / 459 tests)*
+- [ ] Leaked Password Protection activada (verificable en dashboard/API). *(pendiente owner)*
+- [ ] Rate-limit de auth configurado; documentado. *(pendiente owner — ver `CHECKLIST-OWNER.md`)*
 
 ## 5. Out of Scope
 

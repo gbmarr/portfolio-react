@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../lib/auth-context', () => ({ useAuth: mocks.useAuth }))
 
-import { RequireAdmin, RequireAuth, RequireClient } from './guards'
+import { RequireAdmin, RequireAdminMfa, RequireAuth, RequireClient } from './guards'
 
 function renderGuard(guard: ReactNode, path = '/protegido') {
   return render(
@@ -22,6 +22,8 @@ function renderGuard(guard: ReactNode, path = '/protegido') {
         <Route path="/acceso-admin" element={<div>pantalla-acceso-admin</div>} />
         <Route path="/panel" element={<div>pantalla-panel</div>} />
         <Route path="/admin" element={<div>pantalla-admin</div>} />
+        <Route path="/admin/mfa" element={<div>pantalla-mfa</div>} />
+        <Route path="/admin/proyectos" element={<div>pantalla-proyectos</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -69,14 +71,39 @@ describe('RequireAdmin', () => {
     expect(screen.getByText('pantalla-panel')).toBeInTheDocument()
   })
 
-  it('permite el paso con rol admin', () => {
+  it('permite el paso con rol admin y sesión AAL2', () => {
     mocks.useAuth.mockReturnValue({
       session: { user: {} },
       profile: { role: 'admin' },
       loading: false,
+      aalLevel: 'aal2',
+      aalResolving: false,
     })
     renderGuard(<RequireAdmin />)
     expect(screen.getByText('contenido protegido')).toBeInTheDocument()
+  })
+
+  it('redirige a /admin/mfa cuando el admin está en AAL1 (step-up pendiente)', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalLevel: 'aal1',
+      aalResolving: false,
+    })
+    renderGuard(<RequireAdmin />)
+    expect(screen.getByText('pantalla-mfa')).toBeInTheDocument()
+  })
+
+  it('muestra el estado de carga mientras se resuelve el nivel AAL', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalResolving: true,
+    })
+    renderGuard(<RequireAdmin />)
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('muestra el estado de carga mientras resuelve', () => {
@@ -116,6 +143,107 @@ describe('RequireClient', () => {
   it('muestra el estado de carga mientras resuelve', () => {
     mocks.useAuth.mockReturnValue({ session: null, profile: null, loading: true })
     renderGuard(<RequireClient />)
+    expect(screen.getByRole('status')).toBeInTheDocument()
+  })
+})
+
+describe('RequireAdminMfa', () => {
+  // El guard renderiza la pantalla MFA como hijo: solo un render dedicado con
+  // la ruta anidada puede probar el Outlet + los redireccionamientos.
+  function renderMfaRoute() {
+    return render(
+      <MemoryRouter initialEntries={['/admin/mfa']}>
+        <Routes>
+          <Route element={<RequireAdminMfa />}>
+            <Route path="/admin/mfa" element={<div>pantalla-mfa</div>} />
+          </Route>
+          <Route path="/acceso-admin" element={<div>pantalla-acceso-admin</div>} />
+          <Route path="/panel" element={<div>pantalla-panel</div>} />
+          <Route path="/admin" element={<div>pantalla-admin</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+  }
+
+  it('redirige a /acceso-admin sin sesión', () => {
+    mocks.useAuth.mockReturnValue({
+      session: null,
+      profile: null,
+      loading: false,
+      aalLevel: null,
+      aalResolving: false,
+    })
+    renderMfaRoute()
+    expect(screen.getByText('pantalla-acceso-admin')).toBeInTheDocument()
+  })
+
+  it('redirige a /panel cuando el rol es client', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'client' },
+      loading: false,
+      aalLevel: 'aal1',
+      aalResolving: false,
+    })
+    renderMfaRoute()
+    expect(screen.getByText('pantalla-panel')).toBeInTheDocument()
+  })
+
+  it('muestra la pantalla MFA cuando el admin está en AAL1', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalLevel: 'aal1',
+      aalResolving: false,
+    })
+    renderMfaRoute()
+    expect(screen.getByText('pantalla-mfa')).toBeInTheDocument()
+  })
+
+  it('redirige a /admin cuando ya hay AAL2', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalLevel: 'aal2',
+      aalResolving: false,
+    })
+    renderMfaRoute()
+    expect(screen.getByText('pantalla-admin')).toBeInTheDocument()
+  })
+
+  it('redirige a la ruta guardada en `from` cuando ya hay AAL2', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalLevel: 'aal2',
+      aalResolving: false,
+    })
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/admin/mfa', state: { from: '/admin/proyectos' } }]}
+      >
+        <Routes>
+          <Route element={<RequireAdminMfa />}>
+            <Route path="/admin/mfa" element={<div>pantalla-mfa</div>} />
+          </Route>
+          <Route path="/admin/proyectos" element={<div>pantalla-proyectos</div>} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    expect(screen.getByText('pantalla-proyectos')).toBeInTheDocument()
+  })
+
+  it('muestra el estado de carga mientras se resuelve el nivel AAL', () => {
+    mocks.useAuth.mockReturnValue({
+      session: { user: {} },
+      profile: { role: 'admin' },
+      loading: false,
+      aalResolving: true,
+    })
+    renderMfaRoute()
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 })
