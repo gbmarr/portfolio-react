@@ -2,7 +2,6 @@ import {
   arsRate,
   estimateExtras,
   estimateTiers,
-  expressTimeline,
   type EstimateExtra,
   type EstimateTier,
   type EstimateTierId,
@@ -14,8 +13,6 @@ export interface EstimateInput {
   sections: number
   /** Ids de extras; los desconocidos se ignoran. */
   extras: string[]
-  /** Urgencia "menos de una semana" (multiplica el total ×1.3). */
-  express: boolean
 }
 
 export interface EstimateBreakdownRow {
@@ -35,7 +32,6 @@ export interface EstimateResult {
 const MIN_SECTIONS = 3
 const MAX_SECTIONS = 8
 const SECTION_EXTRA_USD = 80
-const EXPRESS_MULTIPLIER = 1.3
 const MAX_RANGE_MULTIPLIER = 1.2
 
 function roundTo10(value: number): number {
@@ -50,13 +46,7 @@ function findTier(tier: EstimateTierId): EstimateTier {
   return estimateTiers.find((item) => item.id === tier) ?? estimateTiers[0]
 }
 
-function buildTimeline(
-  tier: EstimateTier,
-  sections: number,
-  extrasCount: number,
-  express: boolean,
-): string {
-  if (express) return expressTimeline
+function buildTimeline(tier: EstimateTier, sections: number, extrasCount: number): string {
   let maxWeeks = tier.timeline.maxWeeks
   // Más de 5 secciones o muchos extras alargan el plazo base.
   if (tier.id === 'institucional' && sections > 5) maxWeeks += 1
@@ -107,20 +97,15 @@ export function computeEstimate(input: EstimateInput): EstimateResult {
     })
   }
 
-  const total = input.express ? subtotal * EXPRESS_MULTIPLIER : subtotal
-  if (input.express) {
-    breakdown.push({ label: 'Urgencia exprés (×1.3)', amountUsd: total - subtotal })
-  }
-
-  const minUsd = roundTo10(total)
-  const maxUsd = roundTo10(total * MAX_RANGE_MULTIPLIER)
+  const minUsd = roundTo10(subtotal)
+  const maxUsd = roundTo10(subtotal * MAX_RANGE_MULTIPLIER)
 
   return {
     minUsd,
     maxUsd,
     minArs: minUsd * arsRate,
     maxArs: maxUsd * arsRate,
-    timeline: buildTimeline(tier, sections, input.extras.length, input.express),
+    timeline: buildTimeline(tier, sections, input.extras.length),
     breakdown,
   }
 }
@@ -137,9 +122,6 @@ export function buildEstimateWhatsAppMessage(input: EstimateInput, result: Estim
     .filter((label): label is string => Boolean(label))
   if (extraLabels.length > 0) {
     message += ` con extras: ${extraLabels.join(', ')}`
-  }
-  if (input.express) {
-    message += ' con urgencia exprés (menos de una semana)'
   }
   message += `. El rango estimado es USD ${result.minUsd} – USD ${result.maxUsd}.`
   message += ' ¿Charlamos para armar el presupuesto cerrado?'

@@ -25,11 +25,10 @@ export function Estimator() {
   const [tier, setTier] = useState<EstimateTierId>('landing')
   const [sections, setSections] = useState(5)
   const [selectedExtras, setSelectedExtras] = useState<string[]>([])
-  const [express, setExpress] = useState(false)
 
   const input: EstimateInput = useMemo(
-    () => ({ tier, sections, extras: selectedExtras, express }),
-    [tier, sections, selectedExtras, express],
+    () => ({ tier, sections, extras: selectedExtras }),
+    [tier, sections, selectedExtras],
   )
   const result = useMemo(() => computeEstimate(input), [input])
   const whatsappUrl = useMemo(() => {
@@ -126,16 +125,6 @@ export function Estimator() {
               })}
             </div>
           </fieldset>
-
-          <label className="flex items-center gap-3 text-sm font-semibold text-text">
-            <input
-              type="checkbox"
-              checked={express}
-              onChange={(event) => setExpress(event.target.checked)}
-              className="h-4 w-4 accent-accent"
-            />
-            {copy.estimator.expressLabel}
-          </label>
 
           <div
             data-testid="estimate-result"

@@ -59,9 +59,6 @@ export const estimateExtras: EstimateExtra[] = [
 
 export const ecommerceExtraId = 'ecommerce'
 
-/** Texto del plazo cuando se elige la urgencia exprés (prevalece sobre las reglas). */
-export const expressTimeline = 'Exprés: hasta 1 semana'
-
 /**
  * Cotización USD→ARS usada solo para la aproximación en pesos del estimador.
  * TODO: ajustar a la cotización vigente antes de cada publicación relevante.

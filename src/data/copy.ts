@@ -108,7 +108,6 @@ export const copy = {
     tierLegend: '¿Qué tipo de proyecto necesitás?',
     sectionsLabel: '¿Cuántas secciones querés?',
     extrasLegend: 'Extras opcionales',
-    expressLabel: 'Lo necesito en menos de una semana (exprés)',
     resultLabel: 'Rango orientativo',
     arsApproxLabel: 'Aprox. en pesos',
     timelineLabel: 'Plazo estimado',

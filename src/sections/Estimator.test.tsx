@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Estimator } from './Estimator'
 import { copy } from '../data/copy'
-import { expressTimeline } from '../data/estimate'
 
 function resultPanel() {
   return screen.getByTestId('estimate-result')
@@ -59,14 +58,6 @@ describe('Estimator', () => {
     expect(resultPanel()).toHaveTextContent('USD 480')
   })
 
-  it('applies express urgency', async () => {
-    const user = userEvent.setup()
-    render(<Estimator />)
-    await user.click(screen.getByRole('checkbox', { name: copy.estimator.expressLabel }))
-    expect(resultPanel()).toHaveTextContent('USD 330')
-    expect(resultPanel()).toHaveTextContent(expressTimeline)
-  })
-
   it('disables the ecommerce extra on the medida tier with an included note', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
@@ -91,5 +82,11 @@ describe('Estimator', () => {
     render(<Estimator />)
     const chip = screen.getByRole('link', { name: copy.estimator.maintenanceChip })
     expect(chip).toHaveAttribute('href', '#contacto')
+  })
+
+  it('does not render the express urgency option', () => {
+    render(<Estimator />)
+    expect(screen.queryByText(/menos de una semana/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /exprés/i })).not.toBeInTheDocument()
   })
 })
