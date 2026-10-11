@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_brief_status_guard_20261011",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "SEC-006 (Baja). El trigger guard_brief_admin_columns (0005:21-42) impide que un cliente no-admin modifique service_type o extra_ids de project_briefs, pero NO protege status. La app calcula status en cliente (briefs.ts:81-99), asi que un cliente podria fijar status=completado sin cumplir los requisitos, o viceversa, alterando la logica de negocio del brief.",
+  "severity": "low",
+  "cwe": ["CWE-602", "CWE-863"],
+  "owasp": ["A01:2021", "A04:2021"],
+  "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
+  "decisions": {
+    "D1": "Extender el guard para que status sea admin-only, o derivarlo server-side en un trigger."
+  },
+  "results": {}
+}

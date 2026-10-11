@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_session_hardening_20261011",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "SEC-008 (Baja). La sesion de Supabase se persiste en localStorage (storageKey 'portfolio-auth'), accesible a JS; no se usan cookies httpOnly. Un XSS exfiltra el token de refresco. No hay sinks XSS conocidos hoy, por lo que el riesgo efectivo es bajo, pero es hardening de defensa en profundidad.",
+  "severity": "low",
+  "cwe": ["CWE-522", "CWE-539"],
+  "owasp": ["A07:2021"],
+  "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
+  "decisions": {
+    "D1": "Evaluar cookies httpOnly (posible con Supabase si se ajusta el flujo) junto con endurecimiento de CSP."
+  },
+  "results": {}
+}

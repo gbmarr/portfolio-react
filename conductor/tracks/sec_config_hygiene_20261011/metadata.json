@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_config_hygiene_20261011",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "SEC-009 (Info). Elementos de higiene de configuracion de seguridad: (1) Strict-Transport-Security se sirve en prod (Vercel) pero NO esta declarado en vercel.json, por lo que no es reproducible/versionado; (2) style-src usa 'unsafe-inline' y connect-src incluye *.supabase.co (amplio); (3) documentacion de Web3Forms desactualizada en conductor/; (4) envPrefix amplio (DATABASE_/ARS_/TURNSTILE_).",
+  "severity": "info",
+  "cwe": ["CWE-693"],
+  "owasp": ["A05:2021"],
+  "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
+  "decisions": {
+    "D1": "Declarar HSTS explicitamente en vercel.json/netlify.toml; actualizar docs; revisar envPrefix."
+  },
+  "results": {}
+}

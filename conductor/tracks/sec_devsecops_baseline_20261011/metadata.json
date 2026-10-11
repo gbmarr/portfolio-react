@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_devsecops_baseline_20261011",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "SEC-007 (Baja). El repo no tiene CI (.github/ ausente), ni SAST, ni SCA/SBOM, ni Dependabot; las dependencias usan rangos ^. Tampoco publica /.well-known/security.txt. Falta de controles de cadena de suministro y de canal de reporte de vulnerabilidades.",
+  "severity": "low",
+  "cwe": ["CWE-1104", "CWE-1395"],
+  "owasp": ["A06:2021", "A08:2021"],
+  "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
+  "decisions": {
+    "D1": "Empezar con lo barato: Dependabot/renovate + npm audit en CI + security.txt; SAST/SBOM como fase posterior."
+  },
+  "results": {}
+}

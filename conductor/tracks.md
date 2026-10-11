@@ -42,4 +42,29 @@ Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (anál
 - [x] **Track: Endurecer tests — cobertura Turnstile y velocidad de la suite**
       _Link: [./tracks/test_hardening_20261011/](./tracks/test_hardening_20261011/)_ — Gap 6: subir branches de `Turnstile.tsx` de ~50% a ≥80% (tests de callbacks/ausencia de widget) + acelerar suite (~98s) con pool `vmThreads` de Vitest 5. Decisiones confirmadas con el usuario. **Implementado 2026-10-11** (issue #6): Turnstile 100% branches, suite 73.39s → 15.61s.
 
+---
+
+## Backlog de seguridad — Auditoría run-2 (2026-10-11)
+
+Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** (`.scratch/security-audit/run-2/REPORT.md`). Referencia **ASVS L2–L3**. Estado: `pending` (sin implementar). Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`, etiqueta `security`). Orden sugerido de ejecución: T1 → T2 → T5 → T3 → T4 → T6 → T7 → T8 → T9.
+
+- [~] **Track: Cerrar INSERT anónimo en `contact_messages` (SEC-001, Media)**
+      _Link: [./tracks/sec_contact_anon_insert_20261011/](./tracks/sec_contact_anon_insert_20261011/)_ — la policy `with check (true)` a `anon` permite insertar directo por PostgREST esquivando Turnstile. (issue #7) — **código implementado 2026-10-11** (migración `0009` + retiro de `saveContactMessage`); pendiente aplicar `0009` en Supabase y verificar el bloqueo de anon.
+- [ ] **Track: MFA / step-up para el acceso admin (SEC-002, Media)**
+      _Link: [./tracks/sec_admin_mfa_20261011/](./tracks/sec_admin_mfa_20261011/)_ — exigir AAL2 en `/admin/*`, leaked-password protection y rate-limit de auth. (issue #8)
+- [ ] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
+      _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — dependencia de `x-forwarded-for` falsificable y fail-open; verificar passthrough vía service_role. (issue #9)
+- [ ] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
+      _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10)
+- [ ] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
+      _Link: [./tracks/sec_magiclink_signup_20261011/](./tracks/sec_magiclink_signup_20261011/)_ — `shouldCreateUser: false` / allowlist sin romper invitaciones. (issue #11)
+- [ ] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**
+      _Link: [./tracks/sec_brief_status_guard_20261011/](./tracks/sec_brief_status_guard_20261011/)_ — extender el guard o derivar `status` server-side. (issue #12)
+- [ ] **Track: Línea base DevSecOps y cadena de suministro (SEC-007, Baja)**
+      _Link: [./tracks/sec_devsecops_baseline_20261011/](./tracks/sec_devsecops_baseline_20261011/)_ — Dependabot, CI con `npm audit`, `security.txt`, (fase 2) SAST/SBOM. (issue #13)
+- [ ] **Track: Endurecer el almacenamiento de sesión (SEC-008, Baja)**
+      _Link: [./tracks/sec_session_hardening_20261011/](./tracks/sec_session_hardening_20261011/)_ — evaluar cookies httpOnly y acotar `connect-src`. (issue #14)
+- [ ] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
+      _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado, docs, `envPrefix`, `connect-src`. (issue #15)
+
 
