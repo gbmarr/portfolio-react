@@ -27,14 +27,14 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## Backlog — Tracks preparados (2026-10-11)
 
-Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (análisis 2026-10-11). Estado: `pending` (sin implementar). Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`).
+Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (análisis 2026-10-11). Estado: `pending` (sin implementar) salvo los marcados. Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`).
 
 - [ ] **Track: Documentar README del proyecto**
       _Link: [./tracks/readme_docs_20261011/](./tracks/readme_docs_20261011/)_ — Gap 1 del reporte MVP: reemplazar el README default de Vite por docs reales (producto, stack, setup, scripts, superficies, deploy). Docs-only.
 - [ ] **Track: Code-splitting de paneles admin/cliente**
       _Link: [./tracks/code_splitting_20261011/](./tracks/code_splitting_20261011/)_ — Gap 2 (bundle 574 kB > 500 kB): React.lazy + Suspense para `/admin/*` y `/panel/*` en `AppRouter.tsx`. Decisión: lazy de paneles (confirmada con el usuario).
-- [ ] **Track: Cotización arsRate configurable del estimador**
-      _Link: [./tracks/ars_rate_config_20261011/](./tracks/ars_rate_config_20261011/)_ — Gap 3: env var pública `ARS_RATE` con prefijo `ARS_` en `vite.config.ts`, fallback 1400, helper `resolveArsRate` testeado. Decisión: env var con fallback (confirmada con el usuario).
+- [x] **Track: Cotización arsRate configurable del estimador**
+      _Link: [./tracks/ars_rate_config_20261011/](./tracks/ars_rate_config_20261011/)_ — Gap 3: env var pública `ARS_RATE` con prefijo `ARS_` en `vite.config.ts`, fallback 1400, helper `resolveArsRate` testeado. Decisión: env var con fallback (confirmada con el usuario). **Implementado 2026-10-11** (issue #3).
 - [ ] **Track: Sincronizar documentación de producto**
       _Link: [./tracks/docs_sync_20261011/](./tracks/docs_sync_20261011/)_ — Gap 4: retirar el requisito bilingüe ES/EN de `product-guidelines.md` (el sitio es solo español) y corregir `product.md` (dominio `gabrielmarrero.com.ar`, estado 2026-10-11, Lighthouse fechado).
 - [ ] **Track: Eliminar warnings de react-refresh/only-export-components**

@@ -1,9 +1,10 @@
 {
   "track_id": "ars_rate_config_20261011",
   "type": "feature",
-  "status": "pending",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
   "updated_at": "2026-10-11T00:00:00Z",
+  "completed_at": "2026-10-11T00:00:00Z",
   "description": "Hacer configurable la cotización USD→ARS del estimador (arsRate, hoy hardcodeada en 1400 con TODO en src/data/estimate.ts) vía env var pública ARS_RATE del bundle de Vite, con fallback a 1400. Evita tocar código cada vez que se mueve el dólar.",
   "decisions": {
     "D1": "Env var con fallback (opción recomendada por el usuario en planificación 2026-10-11)",

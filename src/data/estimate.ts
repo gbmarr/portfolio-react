@@ -141,8 +141,24 @@ export function isExtraAllowed(tier: EstimateTierId, extraId: string): boolean {
   return Boolean(extra?.tiers.includes(tier))
 }
 
+/** Cotización USD→ARS por defecto usada cuando `ARS_RATE` no está definida o es inválida. */
+export const DEFAULT_ARS_RATE = 1400
+
+/**
+ * Resuelve la cotización USD→ARS a partir de la env pública `ARS_RATE`.
+ *
+ * La env llega del bundle de Vite como string (o undefined si no está
+ * definida). Solo un número positivo es aceptado; cualquier otro valor
+ * (vacío, no numérico, cero, negativo, NaN) cae al fallback.
+ */
+export function resolveArsRate(raw?: string): number {
+  const value = Number(raw?.trim())
+  return value > 0 ? value : DEFAULT_ARS_RATE
+}
+
 /**
  * Cotización USD→ARS usada solo para la aproximación en pesos del estimador.
- * TODO: ajustar a la cotización vigente antes de cada publicación relevante.
+ * Configurable vía `ARS_RATE` en el host (sin redeploy) para no editar código
+ * cada vez que cambia la cotización.
  */
-export const arsRate = 1400
+export const arsRate = resolveArsRate(import.meta.env.ARS_RATE)

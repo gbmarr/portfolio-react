@@ -11,22 +11,22 @@
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T0.1 | Escribir tests de `resolveArsRate(raw)`: válido, vacío, no numérico, negativo, NaN → fallback 1400 (rojo) | `src/data/estimate.test.ts` | ⬜ |
-| T0.2 | Implementar `resolveArsRate` y `arsRate = resolveArsRate(import.meta.env.ARS_RATE)` | `src/data/estimate.ts` | ⬜ |
+| T0.1 | Escribir tests de `resolveArsRate(raw)`: válido, vacío, no numérico, negativo, NaN → fallback 1400 (rojo) | `src/data/estimate.test.ts` | ☑️ |
+| T0.2 | Implementar `resolveArsRate` y `arsRate = resolveArsRate(import.meta.env.ARS_RATE)` | `src/data/estimate.ts` | ☑️ |
 
 ## Fase T1 — Integración de Vite
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T1.1 | Agregar `'ARS_'` a `envPrefix` | `vite.config.ts` | ⬜ |
-| T1.2 | Documentar `ARS_RATE=` en `.env.example` (opcional, default 1400, público por diseño) | `.env.example` | ⬜ |
+| T1.1 | Agregar `'ARS_'` a `envPrefix` | `vite.config.ts` | ☑️ |
+| T1.2 | Documentar `ARS_RATE=` en `.env.example` (opcional, default 1400, público por diseño) + tipado `ImportMetaEnv` | `.env.example`, `src/vite-env.d.ts` | ☑️ |
 
 ## Fase V — Verificación final
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| V.1 | `npm run typecheck` / `npm run lint` | — | ⬜ |
-| V.2 | `npm run test` y `npm run coverage` (≥80%) | Vitest | ⬜ |
+| V.1 | `npm run typecheck` / `npm run lint` | — | ☑️ |
+| V.2 | `npm run test` y `npm run coverage` (≥80%) | Vitest | ☑️ |
 | V.3 | (opcional) `npm run build` con `ARS_RATE=1450` y verificar el estimador | `npm run build` + preview | ⬜ |
 | V.4 | Commit `feat(estimator): arsRate configurable vía env ARS_RATE con fallback` + docs del track | git | ⬜ |
 
