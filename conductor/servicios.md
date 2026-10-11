@@ -81,7 +81,7 @@ Un **electricista** (rubro real de `industries.ts`, "Oficios y reparaciones"): l
 | **Dónde se ofrece** | Card pública (`ServiceCard`) + tier del estimador |
 
 **Qué es / función**
-Sitio permanente multi-sección para un negocio o estudio que quiere presencia seria y completa: servicios, sobre nosotros, contacto, FAQ, etc. **Hasta 5 secciones** en el precio base (el estimador permite 3–8 secciones, +USD 80 por sección extra sobre la base).
+Sitio permanente multi-sección para un negocio o estudio que quiere presencia seria y completa: servicios, sobre nosotros, contacto, FAQ, etc. **3 secciones base** en el precio base (el estimador permite 3–8 secciones, +USD 80 por sección extra sobre la base).
 
 **Qué hace / qué aporta**
 - Posiciona al negocio como establecido y confiable antes de la primera consulta.

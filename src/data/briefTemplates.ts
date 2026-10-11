@@ -237,46 +237,6 @@ const medidaSections: BriefSection[] = [
     ],
   },
   {
-    id: 'catalogo',
-    title: 'Catálogo',
-    fields: [
-      {
-        id: 'cantidad_items',
-        label: '¿Cuántos productos o servicios vas a publicar?',
-        hint: 'Número aproximado.',
-        kind: 'text',
-        required: true,
-      },
-      { id: 'tiene_precios', label: '¿Ya tenés precios definidos?', kind: 'yesno', required: false },
-      {
-        id: 'precios_detalle',
-        label: '¿Dónde están los precios y descripciones?',
-        hint: 'Link a Drive/Dropbox o texto.',
-        kind: 'longtext',
-        required: false,
-      },
-    ],
-  },
-  {
-    id: 'cobro',
-    title: 'Cobro',
-    fields: [
-      {
-        id: 'cuenta_cobro',
-        label: 'Cuenta de Mercado Pago u otro medio de cobro',
-        kind: 'text',
-        required: true,
-      },
-      { id: 'necesita_envios', label: '¿Necesitás gestionar envíos?', kind: 'yesno', required: false },
-      {
-        id: 'envios_detalle',
-        label: 'Detalle de envíos (zonas, costos, formas)',
-        kind: 'longtext',
-        required: false,
-      },
-    ],
-  },
-  {
     id: 'usuarios',
     title: 'Usuarios y roles (si es app)',
     fields: [

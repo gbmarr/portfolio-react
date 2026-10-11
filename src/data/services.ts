@@ -33,7 +33,7 @@ export const services: Service[] = [
       'Ideal para un negocio o estudio que quiere un sitio permanente con varias secciones: servicios, sobre nosotros, contacto.',
     includes: [
       'Diseño personalizado, a tu medida',
-      'Hasta 5 secciones',
+      '3 secciones base (hasta 8 con secciones extra)',
       'Se ve perfecto en el celular',
       'Formulario de contacto',
       'SEO básico para que te encuentren',

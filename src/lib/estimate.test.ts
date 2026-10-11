@@ -37,19 +37,40 @@ describe('computeEstimate', () => {
   })
 
   it('adds fixed extras to the subtotal', () => {
-    const result = computeEstimate({ tier: 'landing', sections: 3, extras: ['blog', 'seo'] })
-    expect(result.minUsd).toBe(250 + 150 + 100)
-    expect(result.maxUsd).toBe(600)
+    const result = computeEstimate({ tier: 'landing', sections: 3, extras: ['logo', 'seo'] })
+    expect(result.minUsd).toBe(250 + 200 + 100)
+    expect(result.maxUsd).toBe(660)
   })
 
   it('applies multidioma as 40% over the subtotal including other extras', () => {
     const result = computeEstimate({
       tier: 'landing',
       sections: 3,
-      extras: ['blog', 'multidioma'],
+      extras: ['logo', 'multidioma'],
     })
-    expect(result.minUsd).toBe(560) // (250 + 150) × 1.4
-    expect(result.maxUsd).toBe(670) // 672 redondeado a múltiplo de 10
+    expect(result.minUsd).toBe(630) // (250 + 200) × 1.4
+    expect(result.maxUsd).toBe(760) // 756 redondeado a múltiplo de 10
+  })
+
+  it('ignora la tienda online en una landing (no aplica al tier)', () => {
+    const result = computeEstimate({ tier: 'landing', sections: 3, extras: ['ecommerce'] })
+    expect(result.minUsd).toBe(250)
+    expect(result.maxUsd).toBe(300)
+  })
+
+  it('no cobra la tienda en medida: viene incluida en el plan', () => {
+    const result = computeEstimate({ tier: 'medida', sections: 3, extras: ['ecommerce'] })
+    expect(result.minUsd).toBe(1200)
+    expect(result.maxUsd).toBe(1440)
+  })
+
+  it('no deja que extras inválidos alarguen el plazo', () => {
+    const result = computeEstimate({
+      tier: 'landing',
+      sections: 3,
+      extras: ['no-existe', 'nope', 'x', 'y'],
+    })
+    expect(result.timeline).toBe('1 a 2 semanas')
   })
 
   it('ignores unknown extra ids', () => {
@@ -106,5 +127,19 @@ describe('buildEstimateWhatsAppMessage', () => {
     expect(message).not.toContain('exprés')
     expect(message).toContain(`USD ${result.minUsd}`)
     expect(message).toContain(`USD ${result.maxUsd}`)
+  })
+
+  it('no menciona extras que no aplican al tier', () => {
+    const input = { tier: 'landing' as const, sections: 3, extras: ['ecommerce'] }
+    const result = computeEstimate(input)
+    const message = buildEstimateWhatsAppMessage(input, result)
+    expect(message).not.toContain('tienda online')
+  })
+
+  it('acota las secciones al rango 3–8 en el mensaje', () => {
+    const input = { tier: 'institucional' as const, sections: 99, extras: [] }
+    const result = computeEstimate(input)
+    const message = buildEstimateWhatsAppMessage(input, result)
+    expect(message).toContain('8 secciones')
   })
 })

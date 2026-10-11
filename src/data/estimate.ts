@@ -11,9 +11,22 @@ export interface EstimateTier {
   timeline: { minWeeks: number; maxWeeks: number }
 }
 
-export type EstimateExtra =
-  | { id: string; label: string; kind: 'fixed'; amountUsd: number }
-  | { id: string; label: string; kind: 'percent'; percent: number }
+/** Campos comunes a todo extra del estimador. */
+export interface EstimateExtraBase {
+  id: string
+  label: string
+  /** Tiers donde el extra es seleccionable y cobrable. */
+  tiers: EstimateTierId[]
+  /** Tiers donde el extra viene incluido (no seleccionable; se muestra deshabilitado). */
+  includedFor?: EstimateTierId[]
+}
+
+export type EstimateExtraFixed = EstimateExtraBase & { kind: 'fixed'; amountUsd: number }
+export type EstimateExtraPercent = EstimateExtraBase & { kind: 'percent'; percent: number }
+
+export type EstimateExtra = EstimateExtraFixed | EstimateExtraPercent
+
+const allTiers: EstimateTierId[] = ['landing', 'institucional', 'medida']
 
 const landingService = services.find((service) => service.id === 'landing')
 const institucionalService = services.find((service) => service.id === 'institucional')
@@ -41,23 +54,92 @@ export const estimateTiers: EstimateTier[] = [
   },
 ]
 
-/** Extras seleccionables (checkboxes) del estimador. */
+/**
+ * Extras del estimador (checkboxes).
+ *
+ * `tiers` define dónde el extra es seleccionable; `includedFor` dónde viene
+ * incluido en el plan (no seleccionable). Esto evita combinaciones incoherentes
+ * (p. ej. una tienda online dentro de una landing de una sola página) y el
+ * arbitraje de precio entre "institucional + tienda" y el tier `medida`.
+ */
 export const estimateExtras: EstimateExtra[] = [
-  { id: 'blog', label: 'Blog / CMS editable', kind: 'fixed', amountUsd: 150 },
+  {
+    id: 'blog',
+    label: 'Blog / CMS editable',
+    tiers: ['institucional', 'medida'],
+    kind: 'fixed',
+    amountUsd: 150,
+  },
   {
     id: 'integraciones',
     label: 'Formularios e integraciones (APIs, Mercado Pago, CRM)',
+    tiers: allTiers,
     kind: 'fixed',
     amountUsd: 120,
   },
-  { id: 'multidioma', label: 'Sitio en 2 idiomas', kind: 'percent', percent: 0.4 },
-  { id: 'logo', label: 'Diseño de logo / identidad', kind: 'fixed', amountUsd: 200 },
-  { id: 'copy', label: 'Redacción de textos', kind: 'fixed', amountUsd: 150 },
-  { id: 'ecommerce', label: 'Módulo de tienda online', kind: 'fixed', amountUsd: 600 },
-  { id: 'seo', label: 'SEO técnico avanzado + analytics', kind: 'fixed', amountUsd: 100 },
+  {
+    id: 'multidioma',
+    label: 'Sitio en 2 idiomas',
+    tiers: allTiers,
+    kind: 'percent',
+    percent: 0.4,
+  },
+  {
+    id: 'logo',
+    label: 'Diseño de logo / identidad',
+    tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 200,
+  },
+  {
+    id: 'copy',
+    label: 'Redacción de textos',
+    tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 150,
+  },
+  {
+    // La tienda solo tiene sentido en el tier de e-commerce/proyecto a medida.
+    id: 'ecommerce',
+    label: 'Módulo de tienda online',
+    tiers: [],
+    includedFor: ['medida'],
+    kind: 'fixed',
+    amountUsd: 600,
+  },
+  {
+    id: 'seo',
+    label: 'SEO técnico avanzado + analytics',
+    tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 100,
+  },
 ]
 
 export const ecommerceExtraId = 'ecommerce'
+
+/** Extras seleccionables (cobrables) para un tier, en orden de catálogo. */
+export function getSelectableExtras(tier: EstimateTierId): EstimateExtra[] {
+  return estimateExtras.filter((extra) => extra.tiers.includes(tier))
+}
+
+/** Extras incluidos en el plan de un tier (no seleccionables), en orden de catálogo. */
+export function getIncludedExtras(tier: EstimateTierId): EstimateExtra[] {
+  return estimateExtras.filter((extra) => extra.includedFor?.includes(tier))
+}
+
+/** Extras visibles para un tier: seleccionables + incluidos, en orden de catálogo. */
+export function getVisibleExtras(tier: EstimateTierId): EstimateExtra[] {
+  return estimateExtras.filter(
+    (extra) => extra.tiers.includes(tier) || extra.includedFor?.includes(tier),
+  )
+}
+
+/** ¿El extra es seleccionable (cobrable) para este tier? */
+export function isExtraAllowed(tier: EstimateTierId, extraId: string): boolean {
+  const extra = estimateExtras.find((item) => item.id === extraId)
+  return Boolean(extra?.tiers.includes(tier))
+}
 
 /**
  * Cotización USD→ARS usada solo para la aproximación en pesos del estimador.

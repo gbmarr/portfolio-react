@@ -7,7 +7,13 @@ import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { statusLabels, panelCopy } from '../../data/panel'
-import { estimateTiers, estimateExtras, type EstimateTierId } from '../../data/estimate'
+import {
+  estimateTiers,
+  getIncludedExtras,
+  getVisibleExtras,
+  isExtraAllowed,
+  type EstimateTierId,
+} from '../../data/estimate'
 import type { ProjectStatus, ProjectType } from '../../lib/types'
 
 const typeOptions = (
@@ -44,6 +50,12 @@ const emptyForm: FormState = {
   extra_ids: [],
 }
 
+/** Asegura que los extras incluidos en el servicio (p. ej. tienda en medida) estén presentes. */
+function withIncludedExtras(serviceType: EstimateTierId, extraIds: string[]): string[] {
+  const included = getIncludedExtras(serviceType).map((extra) => extra.id)
+  return Array.from(new Set([...extraIds, ...included]))
+}
+
 /** Alta y edición de proyectos. `/admin/proyectos/nuevo` y `.../:id/editar`. */
 export function ProjectFormPage() {
   const { id } = useParams<{ id: string }>()
@@ -69,6 +81,18 @@ export function ProjectFormPage() {
     }))
   }
 
+  /** Al cambiar de servicio, descarta extras incompatibles y agrega los incluidos. */
+  function handleServiceChange(value: EstimateTierId) {
+    setForm((current) => ({
+      ...current,
+      service_type: value,
+      extra_ids: withIncludedExtras(
+        value,
+        current.extra_ids.filter((id) => isExtraAllowed(value, id)),
+      ),
+    }))
+  }
+
   useEffect(() => {
     let cancelled = false
 
@@ -91,7 +115,10 @@ export function ProjectFormPage() {
             deadline: project.deadline ?? '',
             description: project.description ?? '',
             service_type: brief?.service_type ?? 'landing',
-            extra_ids: brief?.extra_ids ?? [],
+            extra_ids: withIncludedExtras(
+              brief?.service_type ?? 'landing',
+              brief?.extra_ids ?? [],
+            ),
           })
         }
         setLoading(false)
@@ -228,7 +255,7 @@ export function ProjectFormPage() {
             id="project-service"
             label="Servicio"
             value={form.service_type}
-            onValueChange={(value) => set('service_type', value as EstimateTierId)}
+            onValueChange={(value) => handleServiceChange(value as EstimateTierId)}
             options={serviceOptions}
           />
           <fieldset>
@@ -240,17 +267,25 @@ export function ProjectFormPage() {
               servicio o los extras reinicia lo que el cliente ya haya completado.
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
-              {estimateExtras.map((extra) => (
-                <label key={extra.id} className="flex items-center gap-2 text-sm text-text-muted">
-                  <input
-                    type="checkbox"
-                    checked={form.extra_ids.includes(extra.id)}
-                    onChange={() => toggleExtra(extra.id)}
-                    className="h-4 w-4 accent-accent"
-                  />
-                  {extra.label}
-                </label>
-              ))}
+              {getVisibleExtras(form.service_type).map((extra) => {
+                const isIncluded = extra.includedFor?.includes(form.service_type) ?? false
+                return (
+                  <label
+                    key={extra.id}
+                    className="flex items-center gap-2 text-sm text-text-muted"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isIncluded || form.extra_ids.includes(extra.id)}
+                      disabled={isIncluded}
+                      onChange={() => toggleExtra(extra.id)}
+                      className="h-4 w-4 accent-accent"
+                    />
+                    {extra.label}
+                    {isIncluded && <span className="text-accent">— incluido</span>}
+                  </label>
+                )
+              })}
             </div>
           </fieldset>
         </div>

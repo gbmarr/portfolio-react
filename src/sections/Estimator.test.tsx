@@ -52,20 +52,36 @@ describe('Estimator', () => {
   it('adds a fixed extra when checked', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
-    const blog = screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ })
-    await user.click(blog)
-    expect(resultPanel()).toHaveTextContent('USD 400')
-    expect(resultPanel()).toHaveTextContent('USD 480')
+    const logo = screen.getByRole('checkbox', { name: /Diseño de logo/ })
+    await user.click(logo)
+    expect(resultPanel()).toHaveTextContent('USD 450')
+    expect(resultPanel()).toHaveTextContent('USD 540')
   })
 
-  it('disables the ecommerce extra on the medida tier with an included note', async () => {
+  it('oculta la tienda en landing y la muestra incluida en medida', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
-    const ecommerce = screen.getByRole('checkbox', { name: /tienda online/i })
-    expect(ecommerce).toBeEnabled()
+    expect(screen.queryByRole('checkbox', { name: /tienda online/i })).not.toBeInTheDocument()
     await user.click(screen.getByRole('radio', { name: /proyecto a medida/i }))
+    const ecommerce = screen.getByRole('checkbox', { name: /tienda online/i })
     expect(ecommerce).toBeDisabled()
+    expect(ecommerce).toBeChecked()
     expect(screen.getByText(/Incluido en este plan/)).toBeInTheDocument()
+  })
+
+  it('descarta extras que dejan de aplicar al cambiar de tier', async () => {
+    const user = userEvent.setup()
+    render(<Estimator />)
+    await user.click(screen.getByRole('radio', { name: /sitio institucional/i }))
+    await user.click(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ }))
+    // Institucional: 450 + 2 secciones extra (de 5) = 610, + blog 150 = 760.
+    expect(resultPanel()).toHaveTextContent('USD 760')
+
+    await user.click(screen.getByRole('radio', { name: /landing page/i }))
+    expect(resultPanel()).toHaveTextContent('USD 250')
+    expect(
+      screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ })
+    ).not.toBeInTheDocument()
   })
 
   it('links the WhatsApp CTA with a preloaded estimate message', () => {

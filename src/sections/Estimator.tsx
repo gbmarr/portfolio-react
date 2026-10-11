@@ -5,9 +5,9 @@ import { SectionHeading } from '../components/SectionHeading'
 import { Button } from '../components/Button'
 import { copy } from '../data/copy'
 import {
-  ecommerceExtraId,
-  estimateExtras,
   estimateTiers,
+  getVisibleExtras,
+  isExtraAllowed,
   type EstimateTierId,
 } from '../data/estimate'
 import { buildEstimateWhatsAppMessage, computeEstimate, type EstimateInput } from '../lib/estimate'
@@ -31,6 +31,7 @@ export function Estimator() {
     [tier, sections, selectedExtras]
   )
   const result = useMemo(() => computeEstimate(input), [input])
+  const visibleExtras = useMemo(() => getVisibleExtras(tier), [tier])
   const whatsappUrl = useMemo(() => {
     const message = buildEstimateWhatsAppMessage(input, result)
     return `https://wa.me/${profile.whatsappNumber}?text=${encodeURIComponent(message)}`
@@ -40,6 +41,12 @@ export function Estimator() {
     setSelectedExtras((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
     )
+  }
+
+  /** Al cambiar de tier, descarta los extras que dejan de aplicar. */
+  function handleTierChange(nextTier: EstimateTierId) {
+    setTier(nextTier)
+    setSelectedExtras((current) => current.filter((id) => isExtraAllowed(nextTier, id)))
   }
 
   const rangeLabel = `USD ${result.minUsd.toLocaleString('es-AR')} – USD ${result.maxUsd.toLocaleString('es-AR')}`
@@ -66,7 +73,7 @@ export function Estimator() {
                     name="estimate-tier"
                     value={item.id}
                     checked={tier === item.id}
-                    onChange={() => setTier(item.id)}
+                    onChange={() => handleTierChange(item.id)}
                     className="h-4 w-4 accent-accent"
                   />
                   {item.name}
@@ -101,8 +108,8 @@ export function Estimator() {
               {copy.estimator.extrasLegend}
             </legend>
             <div className="space-y-2">
-              {estimateExtras.map((extra) => {
-                const isIncluded = tier === 'medida' && extra.id === ecommerceExtraId
+              {visibleExtras.map((extra) => {
+                const isIncluded = extra.includedFor?.includes(tier) ?? false
                 const priceLabel =
                   extra.kind === 'fixed'
                     ? `+USD ${extra.amountUsd}`

@@ -2,7 +2,8 @@ import {
   arsRate,
   estimateExtras,
   estimateTiers,
-  type EstimateExtra,
+  isExtraAllowed,
+  type EstimateExtraPercent,
   type EstimateTier,
   type EstimateTierId,
 } from '../data/estimate'
@@ -74,9 +75,13 @@ export function computeEstimate(input: EstimateInput): EstimateResult {
   }
 
   let subtotal = tier.baseUsd + extraSections * SECTION_EXTRA_USD
-  const percentExtras: Array<Extract<EstimateExtra, { kind: 'percent' }>> = []
+  const percentExtras: EstimateExtraPercent[] = []
 
-  for (const id of input.extras) {
+  // Solo se aplican extras válidos para el tier (defensa en profundidad: la UI
+  // ya filtra, pero el cálculo no debe depender de eso).
+  const validExtras = input.extras.filter((id) => isExtraAllowed(tier.id, id))
+
+  for (const id of validExtras) {
     const extra = estimateExtras.find((item) => item.id === id)
     if (!extra) continue
     if (extra.kind === 'fixed') {
@@ -105,7 +110,7 @@ export function computeEstimate(input: EstimateInput): EstimateResult {
     maxUsd,
     minArs: minUsd * arsRate,
     maxArs: maxUsd * arsRate,
-    timeline: buildTimeline(tier, sections, input.extras.length),
+    timeline: buildTimeline(tier, sections, validExtras.length),
     breakdown,
   }
 }
@@ -115,9 +120,10 @@ export function buildEstimateWhatsAppMessage(input: EstimateInput, result: Estim
   const tier = findTier(input.tier)
   let message = `Hola Gabriel, hice una estimación en tu web para un proyecto tipo "${tier.name}"`
   if (tier.id === 'institucional') {
-    message += ` de ${input.sections} secciones`
+    message += ` de ${clamp(input.sections, MIN_SECTIONS, MAX_SECTIONS)} secciones`
   }
   const extraLabels = input.extras
+    .filter((id) => isExtraAllowed(tier.id, id))
     .map((id) => estimateExtras.find((item) => item.id === id)?.label)
     .filter((label): label is string => Boolean(label))
   if (extraLabels.length > 0) {

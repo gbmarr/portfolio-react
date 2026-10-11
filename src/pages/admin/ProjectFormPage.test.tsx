@@ -156,13 +156,30 @@ describe('ProjectFormPage', () => {
     expect(option).toHaveAttribute('value', 'cliente@example.com')
   })
 
-  it('renderiza el selector de servicio y los extras', async () => {
+  it('renderiza el selector de servicio y solo los extras que aplican al tier', async () => {
     h.listClients.mockResolvedValue([])
     renderAt('/admin/proyectos/nuevo')
 
     expect(await screen.findByLabelText('Servicio')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ })).toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: /Módulo de tienda online/ })).toBeInTheDocument()
+    // Landing: blog y tienda no aplican.
+    expect(
+      screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('checkbox', { name: /Módulo de tienda online/ }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /SEO técnico avanzado/ })).toBeInTheDocument()
+  })
+
+  it('incluye la tienda automáticamente (deshabilitada) al elegir medida', async () => {
+    const user = userEvent.setup()
+    h.listClients.mockResolvedValue([])
+    renderAt('/admin/proyectos/nuevo')
+
+    await user.selectOptions(await screen.findByLabelText('Servicio'), 'medida')
+    const ecommerce = screen.getByRole('checkbox', { name: /tienda online/i })
+    expect(ecommerce).toBeDisabled()
+    expect(ecommerce).toBeChecked()
   })
 
   it('envía el servicio y los extras seleccionados al crear', async () => {
@@ -178,7 +195,9 @@ describe('ProjectFormPage', () => {
     await user.click(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ }))
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'medida', ['blog']))
+    await waitFor(() =>
+      expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'medida', ['ecommerce', 'blog']),
+    )
   })
 
   it('precarga el brief existente en modo edición', async () => {
