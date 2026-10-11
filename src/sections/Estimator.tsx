@@ -28,7 +28,7 @@ export function Estimator() {
 
   const input: EstimateInput = useMemo(
     () => ({ tier, sections, extras: selectedExtras }),
-    [tier, sections, selectedExtras],
+    [tier, sections, selectedExtras]
   )
   const result = useMemo(() => computeEstimate(input), [input])
   const whatsappUrl = useMemo(() => {
@@ -38,7 +38,7 @@ export function Estimator() {
 
   function toggleExtra(id: string) {
     setSelectedExtras((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
     )
   }
 
@@ -104,7 +104,9 @@ export function Estimator() {
               {estimateExtras.map((extra) => {
                 const isIncluded = tier === 'medida' && extra.id === ecommerceExtraId
                 const priceLabel =
-                  extra.kind === 'fixed' ? `+USD ${extra.amountUsd}` : `+${Math.round(extra.percent * 100)}%`
+                  extra.kind === 'fixed'
+                    ? `+USD ${extra.amountUsd}`
+                    : `+${Math.round(extra.percent * 100)}%`
                 return (
                   <label key={extra.id} className="flex items-center gap-3 text-sm text-text-muted">
                     <input
@@ -136,8 +138,8 @@ export function Estimator() {
             </p>
             <p className="font-display text-3xl font-semibold text-text">{rangeLabel}</p>
             <p className="text-sm text-text-muted">
-              {copy.estimator.arsApproxLabel}:{' '}
-              {formatMoney(result.minArs, 'ARS')} – {formatMoney(result.maxArs, 'ARS')}
+              {copy.estimator.arsApproxLabel}: {formatMoney(result.minArs, 'ARS')} –{' '}
+              {formatMoney(result.maxArs, 'ARS')}
             </p>
             <p className="text-sm text-text-muted">
               {copy.estimator.timelineLabel}: {result.timeline}
@@ -148,7 +150,9 @@ export function Estimator() {
                 {result.breakdown.map((row) => (
                   <li key={row.label} className="flex justify-between gap-4">
                     <span>{row.label}</span>
-                    <span>USD {row.amountUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}</span>
+                    <span>
+                      USD {row.amountUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                    </span>
                   </li>
                 ))}
               </ul>

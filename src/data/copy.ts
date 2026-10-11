@@ -95,8 +95,7 @@ export const copy = {
       submit: 'Enviar',
       sending: 'Enviando…',
       success: '¡Gracias! Te respondo dentro de las 24 horas.',
-      error:
-        'Algo salió mal al enviar. Escribime por WhatsApp y lo resolvemos al toque.',
+      error: 'Algo salió mal al enviar. Escribime por WhatsApp y lo resolvemos al toque.',
     },
     // [en uso] enlace mailto en la sección Contacto
     sendEmail: 'Enviar email',
