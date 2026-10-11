@@ -20,7 +20,7 @@
 |---|-------|-------------|--------|
 | V.1 | Tests: `user_not_found` en login; `shouldCreateUser:false`/`true` en auth layer; invitación admin | Vitest | ☑️ |
 | V.2 | `npm run test` (463 ✓) / `typecheck` / `lint` | npm | ☑️ |
-| V.3 | Commit `fix(security): restringir auto-registro por magic link (SEC-005)` + docs | git | ☐ |
+| V.3 | Commit `fix(security): restringir auto-registro por magic link (SEC-005)` + docs | git | ☑️ (`5b4bbdc`) |
 
 ---
 
