@@ -8,8 +8,14 @@ const TURNSTILE_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?ren
  * `render` devuelve un id estable para poder verificar `remove`.
  */
 function makeTurnstileMock() {
-  const render = vi.fn((_el: HTMLElement, _options: TurnstileOptions): string => 'widget-123')
-  const remove = vi.fn((_widgetId: string) => undefined)
+  const render = vi.fn((_el: HTMLElement, _options: TurnstileOptions): string => {
+    void _el
+    void _options
+    return 'widget-123'
+  })
+  const remove = vi.fn((_widgetId: string): void => {
+    void _widgetId
+  })
   return { render, remove }
 }
 

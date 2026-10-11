@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect, type ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import App from '../App'
 import { AuthProvider } from '../lib/auth'
@@ -7,15 +7,37 @@ import { LoginPage } from '../pages/LoginPage'
 import { AdminLoginPage } from '../pages/AdminLoginPage'
 import { RequireAdmin, RequireAuth, RequireClient } from './guards'
 import { AdminLayout } from '../pages/admin/AdminLayout'
-import { AdminDashboard } from '../pages/admin/AdminDashboard'
-import { ProjectsListPage } from '../pages/admin/ProjectsListPage'
-import { ProjectFormPage } from '../pages/admin/ProjectFormPage'
-import { ProjectDetailPage } from '../pages/admin/ProjectDetailPage'
-import { ClientsPage } from '../pages/admin/ClientsPage'
-import { MessagesPage } from '../pages/admin/MessagesPage'
 import { ClientLayout } from '../pages/client/ClientLayout'
-import { ClientProjectsPage } from '../pages/client/ClientProjectsPage'
-import { ClientProjectDetailPage } from '../pages/client/ClientProjectDetailPage'
+
+// Code-splitting: las páginas de gestión se cargan bajo demanda. El sitio
+// público no descarga los chunks de /admin ni /panel hasta que se navega a
+// ellos; los layouts y guards siguen estáticos (contexto compartido liviano).
+const AdminDashboard = lazy(() =>
+  import('../pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })),
+)
+const ProjectsListPage = lazy(() =>
+  import('../pages/admin/ProjectsListPage').then((m) => ({ default: m.ProjectsListPage })),
+)
+const ProjectFormPage = lazy(() =>
+  import('../pages/admin/ProjectFormPage').then((m) => ({ default: m.ProjectFormPage })),
+)
+const ProjectDetailPage = lazy(() =>
+  import('../pages/admin/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage })),
+)
+const ClientsPage = lazy(() =>
+  import('../pages/admin/ClientsPage').then((m) => ({ default: m.ClientsPage })),
+)
+const MessagesPage = lazy(() =>
+  import('../pages/admin/MessagesPage').then((m) => ({ default: m.MessagesPage })),
+)
+const ClientProjectsPage = lazy(() =>
+  import('../pages/client/ClientProjectsPage').then((m) => ({ default: m.ClientProjectsPage })),
+)
+const ClientProjectDetailPage = lazy(() =>
+  import('../pages/client/ClientProjectDetailPage').then((m) => ({
+    default: m.ClientProjectDetailPage,
+  })),
+)
 
 /** Aplica la meta robots según la ruta actual (noindex en superficies privadas). */
 function RobotsMeta() {
@@ -26,6 +48,32 @@ function RobotsMeta() {
   }, [pathname])
 
   return null
+}
+
+/** Fallback accesible mientras se carga un chunk lazy (spinner sin fuga de diseño). */
+export function RouteFallback() {
+  return (
+    <div
+      role="status"
+      aria-label="Cargando panel"
+      className="flex min-h-[40vh] items-center justify-center text-text-muted"
+    >
+      <span className="sr-only">Cargando…</span>
+      <span
+        aria-hidden="true"
+        className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent"
+      />
+    </div>
+  )
+}
+
+/**
+ * Envuelve una página lazy en su propio `Suspense`. Usar un boundary por ruta
+ * mantiene los layouts (AdminLayout/ClientLayout) montados mientras se carga el
+ * chunk hijo, evitando pantallas en blanco a nivel pantalla completa.
+ */
+function Suspended({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<RouteFallback />}>{children}</Suspense>
 }
 
 /**
@@ -51,21 +99,21 @@ export function AppRouter() {
 
           <Route element={<RequireAdmin />}>
             <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="proyectos" element={<ProjectsListPage />} />
-              <Route path="proyectos/nuevo" element={<ProjectFormPage />} />
-              <Route path="proyectos/:id" element={<ProjectDetailPage />} />
-              <Route path="proyectos/:id/editar" element={<ProjectFormPage />} />
-              <Route path="clientes" element={<ClientsPage />} />
-              <Route path="mensajes" element={<MessagesPage />} />
+              <Route index element={<Suspended><AdminDashboard /></Suspended>} />
+              <Route path="proyectos" element={<Suspended><ProjectsListPage /></Suspended>} />
+              <Route path="proyectos/nuevo" element={<Suspended><ProjectFormPage /></Suspended>} />
+              <Route path="proyectos/:id" element={<Suspended><ProjectDetailPage /></Suspended>} />
+              <Route path="proyectos/:id/editar" element={<Suspended><ProjectFormPage /></Suspended>} />
+              <Route path="clientes" element={<Suspended><ClientsPage /></Suspended>} />
+              <Route path="mensajes" element={<Suspended><MessagesPage /></Suspended>} />
             </Route>
           </Route>
 
           <Route element={<RequireAuth />}>
             <Route element={<RequireClient />}>
               <Route path="/panel" element={<ClientLayout />}>
-                <Route index element={<ClientProjectsPage />} />
-                <Route path=":id" element={<ClientProjectDetailPage />} />
+                <Route index element={<Suspended><ClientProjectsPage /></Suspended>} />
+                <Route path=":id" element={<Suspended><ClientProjectDetailPage /></Suspended>} />
               </Route>
             </Route>
           </Route>

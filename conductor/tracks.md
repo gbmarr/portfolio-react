@@ -31,8 +31,8 @@ Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (anál
 
 - [x] **Track: Documentar README del proyecto**
       _Link: [./tracks/readme_docs_20261011/](./tracks/readme_docs_20261011/)_ — Gap 1 del reporte MVP: reemplazar el README default de Vite por docs reales (producto, stack, setup, scripts, superficies, deploy). Docs-only. **Implementado 2026-10-11** (issue #1).
-- [ ] **Track: Code-splitting de paneles admin/cliente**
-      _Link: [./tracks/code_splitting_20261011/](./tracks/code_splitting_20261011/)_ — Gap 2 (bundle 574 kB > 500 kB): React.lazy + Suspense para `/admin/*` y `/panel/*` en `AppRouter.tsx`. Decisión: lazy de paneles (confirmada con el usuario).
+- [x] **Track: Code-splitting de paneles admin/cliente**
+      _Link: [./tracks/code_splitting_20261011/](./tracks/code_splitting_20261011/)_ — Gap 2 (bundle 574 kB > 500 kB): React.lazy + Suspense para `/admin/*` y `/panel/*` en `AppRouter.tsx`. Decisión: lazy de paneles (confirmada con el usuario). **Implementado 2026-10-11** (issue #2): 8 chunks lazy, bundle público 574.28 → 518.08 kB, 437 tests, coverage ≥80%. Follow-up: vendor splitting (chunk principal sigue >500 kB).
 - [x] **Track: Cotización arsRate configurable del estimador**
       _Link: [./tracks/ars_rate_config_20261011/](./tracks/ars_rate_config_20261011/)_ — Gap 3: env var pública `ARS_RATE` con prefijo `ARS_` en `vite.config.ts`, fallback 1400, helper `resolveArsRate` testeado. Decisión: env var con fallback (confirmada con el usuario). **Implementado 2026-10-11** (issue #3).
 - [x] **Track: Sincronizar documentación de producto**

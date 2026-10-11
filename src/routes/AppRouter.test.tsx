@@ -1,10 +1,45 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { AppRouter } from './AppRouter'
+import { AppRouter, RouteFallback } from './AppRouter'
 import { copy } from '../data/copy'
+import { panelCopy } from '../data/panel'
+
+const h = vi.hoisted(() => ({
+  useAuth: vi.fn(),
+}))
+
+vi.mock('../lib/auth-context', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../lib/auth-context')>()),
+  useAuth: h.useAuth,
+}))
+
+// Las páginas de gestión cargan datos vía Supabase; en el test del router se
+// mockean los repositorios para que los chunks lazy rendericen contenido estable.
+vi.mock('../lib/projects', () => ({
+  listProjects: vi.fn(async () => []),
+  listStages: vi.fn(async () => []),
+  computeProgress: vi.fn(() => ({ done: 0, total: 0 })),
+}))
+vi.mock('../lib/messages', () => ({ listMessages: vi.fn(async () => []) }))
+vi.mock('../lib/briefs', () => ({ listBriefs: vi.fn(async () => []) }))
 
 afterEach(() => {
   document.head.querySelector('meta[name="robots"]')?.remove()
+  h.useAuth.mockReset().mockReturnValue({
+    session: null,
+    profile: null,
+    loading: false,
+    configured: true,
+    signOut: vi.fn(),
+  })
+})
+
+describe('RouteFallback', () => {
+  it('es un indicador de carga accesible', () => {
+    render(<RouteFallback />)
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(screen.getByLabelText('Cargando panel')).toBeInTheDocument()
+  })
 })
 
 describe('AppRouter', () => {
@@ -34,5 +69,54 @@ describe('AppRouter', () => {
     window.history.pushState({}, '', '/')
     render(<AppRouter />)
     expect(document.querySelector('meta[name="robots"]')).toBeNull()
+  })
+
+  it('redirige a /acceso-admin si un visitante entra a /admin sin sesión', async () => {
+    h.useAuth.mockReturnValue({
+      session: null,
+      profile: null,
+      loading: false,
+      configured: true,
+    })
+    window.history.pushState({}, '', '/admin')
+    render(<AppRouter />)
+
+    expect(
+      await screen.findByRole('heading', { name: 'Acceso de gestión' }),
+    ).toBeInTheDocument()
+  })
+
+  it('carga bajo demanda el panel admin para un administrador', async () => {
+    h.useAuth.mockReturnValue({
+      session: { user: { id: 'u-admin' } },
+      profile: { role: 'admin' },
+      loading: false,
+    })
+    window.history.pushState({}, '', '/admin')
+    render(<AppRouter />)
+
+    // El layout admin es estático y el chunk lazy del dashboard termina cargando.
+    expect(await screen.findByRole('link', { name: 'Proyectos' })).toHaveAttribute(
+      'href',
+      '/admin/proyectos',
+    )
+    expect(
+      await screen.findByRole('heading', { name: panelCopy.nav.dashboard }),
+    ).toBeInTheDocument()
+  })
+
+  it('carga bajo demanda el panel cliente para un cliente', async () => {
+    h.useAuth.mockReturnValue({
+      session: { user: { id: 'u-client' } },
+      profile: { role: 'cliente' },
+      loading: false,
+    })
+    window.history.pushState({}, '', '/panel')
+    render(<AppRouter />)
+
+    expect(
+      await screen.findByRole('heading', { name: panelCopy.client.projectsTitle }),
+    ).toBeInTheDocument()
+    expect(await screen.findByText(panelCopy.client.emptyProjects)).toBeInTheDocument()
   })
 })
