@@ -32,3 +32,7 @@
     - [x] `grep "express|exprés|EXPRESS" src/` sin referencias residuales de la feature.
 - [x] Task: Commit (`refactor(estimator): remove express urgency option`).
 - [x] Task: Conductor - User Manual Verification 'Fase 3 — Verificación y cierre' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+
+- [x] Task: Apply review suggestions aec42e7
