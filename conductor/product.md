@@ -40,6 +40,7 @@ A modern, polished personal portfolio website for a Junior Fullstack Developer. 
 
 ## Implementation Status
 
-- All 6 implementation phases complete (scaffolding, content model, design system, core sections, bilingual + SEO, QA).
-- Lighthouse scores: Performance 99, Accessibility 100, Best Practices 100, SEO 100.
-- Deployed to Vercel: https://portfolio-blond-beta-46.vercel.app (repo: https://github.com/gbmarr/portfolio-react).
+- **MVP/v1 complete & verified (2026-10-11).** All 6 implementation phases complete (scaffolding, content model, design system, core sections, Spanish-only + SEO, QA); per-phase detail in `conductor/tracks.md`.
+- **Verified 2026-10-11:** 422 tests passing, coverage ~92.7% statements / 85.9% branches (threshold ≥80%), lint 0 errors/0 warnings, typecheck OK, `npm run build` OK — bundle ~574 kB (no code-splitting yet, see track `code_splitting_20261011`).
+- **Lighthouse:** scores 99/100/100/100 (Performance/A11y/Best Practices/SEO) were measured on an earlier release (2026-08-01); **re-verify** against `gabrielmarrero.com.ar` for current numbers.
+- **Production:** https://gabrielmarrero.com.ar (repo: https://github.com/gbmarr/portfolio-react). Site content is Spanish-only (single source: `src/data/copy.ts`).

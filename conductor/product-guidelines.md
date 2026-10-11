@@ -20,11 +20,11 @@
 
 ## Language
 
-- **Bilingual (ES/EN):** All content is available in Spanish and English with a language toggle.
-- Default language based on visitor's browser language (or a default of Spanish).
+- **Español como idioma único del sitio** (decisión de producto): no hay toggle ES/EN ni contenido en inglés.
+- El copy del sitio vive en `src/data/copy.ts` como fuente única de texto (solo español).
 
 ## Accessibility & Consistency
 
 - Semantic HTML, descriptive alt text, and keyboard-navigable menus.
-- Consistent naming and copy style across both languages.
-- Clear calls to action (e.g., "View Project", "Contact Me") in both languages.
+- Consistent naming and copy style across all sections.
+- Clear calls to action in Spanish (e.g., "Ver proyecto", "Contacto").
