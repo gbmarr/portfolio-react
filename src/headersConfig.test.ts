@@ -20,7 +20,17 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
   it('script-src y connect-src incluyen challenges.cloudflare.com', () => {
     for (const csp of cspValues) {
       expect(csp).toContain("script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com;")
-      expect(csp).toContain('connect-src ' + "'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com;")
+      expect(csp).toContain('connect-src ' + "'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com https://jntueibgkfwptigpncmh.supabase.co https://jntueibgkfwptigpncmh.functions.supabase.co;")
+    }
+  })
+
+  it('connect-src está acotado al ref exacto de Supabase (SEC-008): sin comodín *.supabase.co ni wss abierto', () => {
+    const expected =
+      "'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com https://jntueibgkfwptigpncmh.supabase.co https://jntueibgkfwptigpncmh.functions.supabase.co;"
+    for (const csp of cspValues) {
+      expect(csp).toContain('connect-src ' + expected)
+      expect(csp).not.toContain('*.supabase.co')
+      expect(csp).not.toContain('wss://*.supabase.co')
     }
   })
 

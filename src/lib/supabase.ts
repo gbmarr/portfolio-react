@@ -18,5 +18,10 @@ export const supabase = createClient(url ?? 'https://placeholder.supabase.co', p
     persistSession: true,
     detectSessionInUrl: true,
     storageKey: 'portfolio-auth',
+    // SEC-008: PKCE en vez de implicit. Los tokens ya nunca viajan en la URL
+    // del redirect del magic link (solo un code), reduciendo la superficie de
+    // exfiltración. El storage sigue siendo localStorage (las cookies httpOnly
+    // no son viables en SPA estática sin SSR; ver conductor/decisions/0001-*).
+    flowType: 'pkce',
   },
 })

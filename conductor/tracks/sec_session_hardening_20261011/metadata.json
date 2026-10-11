@@ -1,16 +1,23 @@
 {
   "track_id": "sec_session_hardening_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T15:40:00Z",
   "description": "SEC-008 (Baja). La sesion de Supabase se persiste en localStorage (storageKey 'portfolio-auth'), accesible a JS; no se usan cookies httpOnly. Un XSS exfiltra el token de refresco. No hay sinks XSS conocidos hoy, por lo que el riesgo efectivo es bajo, pero es hardening de defensa en profundidad.",
   "severity": "low",
   "cwe": ["CWE-522", "CWE-539"],
   "owasp": ["A07:2021"],
   "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
   "decisions": {
-    "D1": "Evaluar cookies httpOnly (posible con Supabase si se ajusta el flujo) junto con endurecimiento de CSP."
+    "D1": "Evaluar cookies httpOnly (posible con Supabase si se ajusta el flujo) junto con endurecimiento de CSP. Aplicada: cookies httpOnly rechazadas (SPA estática sin SSR; ver conductor/decisions/0001-sesion-spa-sin-cookies-httponly.md); se adoptan flowType pkce + connect-src acotado al ref exacto."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "tests": "70 archivos / 467 tests verdes (supabase.test.ts flowType pkce + headersConfig.test.ts connect-src acotado)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "supabase.ts utiliza flowType: 'pkce' (los tokens no viajan en la URL del redirect); vercel.json/netlify.toml conectan-src solo a jntueibgkfwptigpncmh.supabase.co y .functions.supabase.co (sin *.supabase.co ni wss: la app no usa Realtime); ADR-0001 documenta la decisión.",
+    "pending_owner": "hacer deploy del front y verificar el flujo magic link en prod; en el futuro, si se agrega Realtime, ampliar wss al ref exacto."
+  }
 }
