@@ -38,5 +38,5 @@
     "webfetch": "ask",
     "external_directory": "deny"
   },
-  "plugin": ["opencode-conductor-plugin"]
+  "plugin": ["opencode-conductor-plugin", "@upstash/context7-opencode"]
 }
