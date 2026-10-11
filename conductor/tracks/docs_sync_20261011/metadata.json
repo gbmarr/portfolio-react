@@ -1,0 +1,13 @@
+{
+  "track_id": "docs_sync_20261011",
+  "type": "docs",
+  "status": "pending",
+  "created_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "Sincronizar la documentación de producto de conductor/ con la realidad del sitio: product-guidelines.md todavía exige sitio bilingüe ES/EN (el sitio es solo español según src/data/copy.ts) y product.md conserva URLs y datos del deploy viejo de Vercel.",
+  "decisions": {
+    "D1": "Retirar el requisito bilingüe de product-guidelines.md y declarar 'español como idioma único (decisión de producto)'",
+    "D2": "Corregir product.md: estado de implementación, dominio canónico gabrielmarrero.com.ar y datos verificados en el análisis 2026-10-11",
+    "D3": "No inventar datos nuevos (ej. Lighthouse) si no se pueden reverificar hoy; se marcan como 'medidos en release previo' o se omiten"
+  }
+}

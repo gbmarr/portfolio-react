@@ -23,4 +23,23 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Tooling de agente — Context7, Playwright CLI y SkillUI (--dir)**
       _Link: [./tracks/agent_tooling_20261010/](./tracks/agent_tooling_20261010/)_ — implementado y verificado (2026-10-11). Context7 registrado como plugin (`@upstash/context7-opencode`); Playwright CLI devDep + Chromium + skill en `.agents/skills/playwright-cli/` (smoke OK en localhost:5173); skill de design system curada en `.opencode/skills/portfolio-design/` (SkillUI `--dir`, tokens coherentes con `@theme`); tech-stack.md § Tooling documentado; typecheck/lint/test verdes. Pendiente manual del usuario: reiniciar opencode + auth Context7 (T0.4/V.4)
 
+---
+
+## Backlog — Tracks preparados (2026-10-11)
+
+Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (análisis 2026-10-11). Estado: `pending` (sin implementar). Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`).
+
+- [ ] **Track: Documentar README del proyecto**
+      _Link: [./tracks/readme_docs_20261011/](./tracks/readme_docs_20261011/)_ — Gap 1 del reporte MVP: reemplazar el README default de Vite por docs reales (producto, stack, setup, scripts, superficies, deploy). Docs-only.
+- [ ] **Track: Code-splitting de paneles admin/cliente**
+      _Link: [./tracks/code_splitting_20261011/](./tracks/code_splitting_20261011/)_ — Gap 2 (bundle 574 kB > 500 kB): React.lazy + Suspense para `/admin/*` y `/panel/*` en `AppRouter.tsx`. Decisión: lazy de paneles (confirmada con el usuario).
+- [ ] **Track: Cotización arsRate configurable del estimador**
+      _Link: [./tracks/ars_rate_config_20261011/](./tracks/ars_rate_config_20261011/)_ — Gap 3: env var pública `ARS_RATE` con prefijo `ARS_` en `vite.config.ts`, fallback 1400, helper `resolveArsRate` testeado. Decisión: env var con fallback (confirmada con el usuario).
+- [ ] **Track: Sincronizar documentación de producto**
+      _Link: [./tracks/docs_sync_20261011/](./tracks/docs_sync_20261011/)_ — Gap 4: retirar el requisito bilingüe ES/EN de `product-guidelines.md` (el sitio es solo español) y corregir `product.md` (dominio `gabrielmarrero.com.ar`, estado 2026-10-11, Lighthouse fechado).
+- [ ] **Track: Eliminar warnings de react-refresh/only-export-components**
+      _Link: [./tracks/lint_cleanup_20261011/](./tracks/lint_cleanup_20261011/)_ — Gap 5: separar exports no-componentes de `src/lib/auth.tsx` y `src/pages/client/ClientProjectsPage.tsx`; lint target 0 warnings sin `eslint-disable`.
+- [ ] **Track: Endurecer tests — cobertura Turnstile y velocidad de la suite**
+      _Link: [./tracks/test_hardening_20261011/](./tracks/test_hardening_20261011/)_ — Gap 6: subir branches de `Turnstile.tsx` de ~50% a ≥80% (tests de callbacks/ausencia de widget) + acelerar suite (~98s) con pool `vmThreads` de Vitest 5. Decisiones confirmadas con el usuario.
+
 
