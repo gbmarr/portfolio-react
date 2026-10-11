@@ -36,3 +36,10 @@ certificaciones/
 # Respaldos de DB (contienen datos personales; nunca se versionan)
 supabase/backups/
 supabase/.temp/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+.playwright/
+
+# SkillUI heavy/regenerable artifacts (solo se versiona texto: SKILL.md/DESIGN.md/tokens)
+.opencode/skills/**/*.skill
+.opencode/skills/**/screens/
