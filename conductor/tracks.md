@@ -19,7 +19,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Email propio + Turnstile (reemplazo de Web3Forms)**
       _Link: [./tracks/own_email_notifications_20261009/](./tracks/own_email_notifications_20261009/)_ — implementado y verificado en producción (2026-10-10). Edge Function `contact-notify` (Deno) + Cloudflare Turnstile + Resend API desde `hola@gabrielmarrero.com.ar` (dominio verificado; Zoho Mail sigue como receptor); rate-limit DB endurecido a 1/min (`0008`); Web3Forms retirado. Cierra leads #4 y #7 de la auditoría `portfolio-run-1`
 
----
 
-- [x] **Track: Eliminar la urgencia exprés del estimador**
-*Link: [./tracks/remove_express_urgency_20261010/](./tracks/remove_express_urgency_20261010/)*
