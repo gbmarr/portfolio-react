@@ -14,7 +14,7 @@ vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 beforeEach(() => {
   h.useAuth.mockReturnValue({
-    signInWithMagicLink: vi.fn<() => Promise<void>>(async () => {}),
+    inviteByMagicLink: vi.fn<() => Promise<void>>(async () => {}),
   })
 })
 
@@ -67,8 +67,8 @@ describe('ClientsPage', () => {
 
   it('envía la invitación por magic link', async () => {
     const user = userEvent.setup()
-    const signInWithMagicLink = vi.fn<() => Promise<void>>(async () => {})
-    h.useAuth.mockReturnValue({ signInWithMagicLink })
+    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
+    h.useAuth.mockReturnValue({ inviteByMagicLink })
     h.listClients.mockResolvedValue([client({ email: 'nuevo@example.com' })])
 
     renderPage()
@@ -76,7 +76,7 @@ describe('ClientsPage', () => {
     const inviteButton = await screen.findByRole('button', { name: 'Invitar' })
     await user.click(inviteButton)
 
-    await waitFor(() => expect(signInWithMagicLink).toHaveBeenCalledWith('nuevo@example.com'))
+    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('nuevo@example.com'))
     expect(await screen.findByText('Invitación enviada ✓')).toBeInTheDocument()
   })
 
@@ -90,7 +90,7 @@ describe('ClientsPage', () => {
   it('avisa si falla la invitación', async () => {
     const user = userEvent.setup()
     h.useAuth.mockReturnValue({
-      signInWithMagicLink: vi.fn(async () => {
+      inviteByMagicLink: vi.fn(async () => {
         throw new Error('boom')
       }),
     })

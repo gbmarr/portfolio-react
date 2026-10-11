@@ -10,6 +10,13 @@ function assertConfigured(): void {
   }
 }
 
+/** Error de auth que conserva el `code` de GoTrue (p. ej. `user_not_found`). */
+function toAuthError(error: { message: string; code?: string }): Error {
+  const err = new Error(error.message) as Error & { code?: string }
+  err.code = error.code
+  return err
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   // Perfil junto al usuario al que pertenece: permite derivar "cargando"
@@ -117,6 +124,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // El enlace aterriza en /login: ahí se detecta la sesión y se redirige
         // al panel correspondiente según el rol.
         emailRedirectTo: `${window.location.origin}/login`,
+        // SEC-005: el login NO crea cuentas. Solo pueden entrar clients
+        // preexistentes (cargados por el admin a través de `inviteByMagicLink`).
+        shouldCreateUser: false,
+      },
+    })
+    if (error) throw toAuthError(error)
+  }, [])
+
+  const inviteByMagicLink = useCallback(async (email: string) => {
+    assertConfigured()
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        // Invitación del admin: si el cliente no tiene cuenta todavía, la crea.
+        shouldCreateUser: true,
       },
     })
     if (error) throw new Error(error.message)
@@ -175,6 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       aalLevel,
       aalResolving,
       signInWithMagicLink,
+      inviteByMagicLink,
       signInWithPassword,
       signOut,
       listMfaFactors,
@@ -190,6 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       aalLevel,
       aalResolving,
       signInWithMagicLink,
+      inviteByMagicLink,
       signInWithPassword,
       signOut,
       listMfaFactors,

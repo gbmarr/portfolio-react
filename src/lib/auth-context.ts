@@ -15,7 +15,17 @@ export type AuthContextValue = {
   aalLevel: AalLevel | null
   /** `true` mientras se resuelve el nivel AAL de la sesión actual. */
   aalResolving: boolean
+  /**
+   * Pide un enlace mágico para una cuenta existente. NO crea usuarios nuevos
+   * (`shouldCreateUser: false`): si el email no tiene cuenta, el error tiene
+   * `code === 'user_not_found'` (la UI lo trata como envío genérico).
+   */
   signInWithMagicLink: (email: string) => Promise<void>
+  /**
+   * Invitación del admin: envía un enlace mágico y, si el cliente todavía no
+   * tiene cuenta, la crea (`shouldCreateUser: true`). Uso exclusivo del panel.
+   */
+  inviteByMagicLink: (email: string) => Promise<void>
   signInWithPassword: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
   /** IDs de los factores TOTP enrolados por el usuario actual. */

@@ -1,9 +1,9 @@
 {
   "track_id": "sec_magiclink_signup_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T16:05:00Z",
   "description": "SEC-005 (Baja). La pagina /login solicita magic link con signInWithOtp sin shouldCreateUser, por lo que Supabase crea un usuario auth para cualquier email (registro abierto). Esto permite que cualquiera genere cuentas (y perfiles via handle_new_user), ampliando superficie y carga. El acceso legitimo de clientes se provisiona por invitacion del admin.",
   "severity": "low",
   "cwe": ["CWE-1188", "CWE-799"],
@@ -12,5 +12,11 @@
   "decisions": {
     "D1": "Evaluar shouldCreateUser:false o allowlist; confirmar que las invitaciones del admin (magic link a email) siguen funcionando."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "tests": "69 archivos / 463 tests verdes",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "signInWithMagicLink con shouldCreateUser:false + user_not_found indistinguible en LoginPage; inviteByMagicLink (shouldCreateUser:true) para invitaciones admin (ClientsPage/ProjectDetailPage). Pendiente commit."
+  }
 }

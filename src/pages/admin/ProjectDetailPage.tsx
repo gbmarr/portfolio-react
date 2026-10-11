@@ -37,7 +37,7 @@ type State =
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { signInWithMagicLink } = useAuth()
+  const { inviteByMagicLink } = useAuth()
 
   const [state, setState] = useState<State>({ loading: true, error: null, detail: null })
   const [inviteStatus, setInviteStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
@@ -108,7 +108,7 @@ export function ProjectDetailPage() {
     if (!detail) return
     setInviteStatus('sending')
     try {
-      await signInWithMagicLink(detail.project.client_email)
+      await inviteByMagicLink(detail.project.client_email)
       setInviteStatus('sent')
     } catch {
       setInviteStatus('error')

@@ -67,7 +67,13 @@ export function LoginPage() {
     try {
       await signInWithMagicLink(trimmed)
       setStatus('magic-sent')
-    } catch {
+    } catch (err) {
+      // SEC-005: no revelar si el email tiene cuenta. Un email no autorizado
+      // (user_not_found) responde igual que un envío exitoso: misma confirmación.
+      if ((err as { code?: string } | null)?.code === 'user_not_found') {
+        setStatus('magic-sent')
+        return
+      }
       setError(panelCopy.error.generic)
       setStatus('idle')
     }

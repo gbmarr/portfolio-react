@@ -84,6 +84,31 @@ describe('LoginPage (cliente)', () => {
     expect(await screen.findByRole('status')).toHaveTextContent(panelCopy.login.magicSent)
   })
 
+  it('muestra la misma confirmación cuando el email no está autorizado (SEC-005)', async () => {
+    const signInWithMagicLink = vi.fn().mockRejectedValue(
+      Object.assign(new Error('Email not found'), { code: 'user_not_found' }),
+    )
+    authOverrides({ signInWithMagicLink })
+    renderLogin()
+
+    await userEvent.type(screen.getByLabelText(panelCopy.login.email), 'no-invitado@test.com')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.login.magicLink }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent(panelCopy.login.magicSent)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('muestra error genérico ante fallos que no son user_not_found', async () => {
+    const signInWithMagicLink = vi.fn().mockRejectedValue(new Error('rate limit'))
+    authOverrides({ signInWithMagicLink })
+    renderLogin()
+
+    await userEvent.type(screen.getByLabelText(panelCopy.login.email), 'cliente@test.com')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.login.magicLink }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(panelCopy.error.generic)
+  })
+
   it('el enlace mágico sin email muestra error y no llama al backend', async () => {
     const signInWithMagicLink = vi.fn()
     authOverrides({ signInWithMagicLink })

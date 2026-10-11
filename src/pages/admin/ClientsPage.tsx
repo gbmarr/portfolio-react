@@ -10,7 +10,7 @@ type State =
 
 /** Clientes detectados (proyectos + perfiles) con invitación por magic link. */
 export function ClientsPage() {
-  const { signInWithMagicLink } = useAuth()
+  const { inviteByMagicLink } = useAuth()
   const [state, setState] = useState<State>({ loading: true, error: null, clients: null })
   const [invited, setInvited] = useState<Set<string>>(new Set())
   const [sending, setSending] = useState<string | null>(null)
@@ -34,7 +34,7 @@ export function ClientsPage() {
     setSending(email)
     setActionError(null)
     try {
-      await signInWithMagicLink(email)
+      await inviteByMagicLink(email)
       setInvited((current) => new Set(current).add(email))
     } catch {
       setActionError(`No se pudo enviar la invitación a ${email}.`)

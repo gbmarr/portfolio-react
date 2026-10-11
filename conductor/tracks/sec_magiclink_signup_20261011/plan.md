@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_magiclink_signup_20261011`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** 🔜 Pendiente
+> **Status:** 🚧 En implementación (código listo y verificado; falta commit)
 
 ---
 
@@ -10,16 +10,16 @@
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T1.1 | Aplicar `shouldCreateUser: false` (o allowlist) en `signInWithMagicLink` | `src/lib/auth.tsx` | ☐ |
-| T1.2 | Ajustar mensaje/UX del resultado | `src/pages/LoginPage.tsx` | ☐ |
-| T1.3 | Verificar que la invitación del admin sigue creando/accediendo correctamente | `ProjectDetailPage.tsx`, `ClientsPage.tsx` | ☐ |
+| T1.1 | Aplicar `shouldCreateUser: false` en el login y exponer `inviteByMagicLink` (crea cuenta) para el admin | `src/lib/auth.tsx`, `src/lib/auth-context.ts` | ☑️ |
+| T1.2 | `user_not_found` sin revelar existencia (misma confirmación de éxito) | `src/pages/LoginPage.tsx` | ☑️ |
+| T1.3 | Migrar invitaciones del admin a `inviteByMagicLink` | `ProjectDetailPage.tsx`, `ClientsPage.tsx` | ☑️ |
 
 ## Fase V — Verificación
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| V.1 | Test: email no invitado no crea usuario | Vitest/manual | ☐ |
-| V.2 | `npm run test` / `typecheck` / `lint` | npm | ☐ |
+| V.1 | Tests: `user_not_found` en login; `shouldCreateUser:false`/`true` en auth layer; invitación admin | Vitest | ☑️ |
+| V.2 | `npm run test` (463 ✓) / `typecheck` / `lint` | npm | ☑️ |
 | V.3 | Commit `fix(security): restringir auto-registro por magic link (SEC-005)` + docs | git | ☐ |
 
 ---
@@ -28,4 +28,4 @@
 
 | Riesgo | Mitigación |
 |--------|-----------|
-| Romper la primera invitación de un cliente que aun no tiene cuenta | Confirmar que el admin usa `inviteUserByEmail` o que el email se pre-crea; ajustar el flujo de invitacion si hace falta |
+| Romper la primera invitación de un cliente que aún no tiene cuenta | RESUELTO: las invitaciones del admin usan `inviteByMagicLink` con `shouldCreateUser: true` (crea la cuenta), mientras el login público no crea (`shouldCreateUser: false`). |

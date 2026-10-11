@@ -92,7 +92,7 @@ describe('AuthProvider', () => {
     expect(mocks.maybeSingle).not.toHaveBeenCalled()
   })
 
-  it('envuelve signInWithOtp y agrega el redirect a /login', async () => {
+  it('envuelve signInWithOtp con redirect y sin crear usuario (SEC-005)', async () => {
     mocks.signInWithOtp.mockResolvedValue({ error: null })
     const { result } = renderHook(() => useAuth(), { wrapper })
 
@@ -102,7 +102,27 @@ describe('AuthProvider', () => {
 
     expect(mocks.signInWithOtp).toHaveBeenCalledWith({
       email: 'cliente@test.com',
-      options: { emailRedirectTo: `${window.location.origin}/login` },
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        shouldCreateUser: false,
+      },
+    })
+  })
+
+  it('inviteByMagicLink envía con shouldCreateUser true (invitación del admin)', async () => {
+    mocks.signInWithOtp.mockResolvedValue({ error: null })
+    const { result } = renderHook(() => useAuth(), { wrapper })
+
+    await act(async () => {
+      await result.current.inviteByMagicLink('nuevo@test.com')
+    })
+
+    expect(mocks.signInWithOtp).toHaveBeenCalledWith({
+      email: 'nuevo@test.com',
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        shouldCreateUser: true,
+      },
     })
   })
 
@@ -111,6 +131,21 @@ describe('AuthProvider', () => {
     const { result } = renderHook(() => useAuth(), { wrapper })
 
     await expect(result.current.signInWithMagicLink('a@b.com')).rejects.toThrow('rate limit')
+  })
+
+  it('propaga el code user_not_found al llamar por un email sin cuenta', async () => {
+    mocks.signInWithOtp.mockResolvedValue({
+      error: { message: 'Email not found', code: 'user_not_found' },
+    })
+    const { result } = renderHook(() => useAuth(), { wrapper })
+
+    const err = (await result.current.signInWithMagicLink('sin-cuenta@test.com').catch((e: unknown) => e)) as {
+      message: string
+      code?: string
+    }
+    expect(err).toBeInstanceOf(Error)
+    expect(err.message).toBe('Email not found')
+    expect(err.code).toBe('user_not_found')
   })
 
   it('signInWithPassword propaga el error del servidor', async () => {

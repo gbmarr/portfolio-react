@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_magiclink_signup_20261011`
 > **Fuente:** Hallazgo **SEC-005 (Baja)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🚧 En implementación (código implementado 2026-10-11, tests verdes).
 
 ---
 
@@ -25,9 +25,10 @@
 
 ## 4. Acceptance Criteria
 
-- [ ] Email no invitado no crea usuario/perfil al pedir magic link.
-- [ ] Cliente invitado entra normalmente.
-- [ ] `npm run test` / `typecheck` / `lint` verdes.
+- [X] Email no invitado no crea usuario/perfil al pedir magic link (`shouldCreateUser: false`; GoTrue devuelve `user_not_found`).
+- [X] Cliente invitado entra normalmente (el admin usa `inviteByMagicLink` con `shouldCreateUser: true`).
+- [X] `npm run test` / `typecheck` / `lint` verdes (463 tests).
+- [X] `user_not_found` no revela existencia: la UI responde igual que un envío exitoso (FR3).
 
 ## 5. Out of Scope
 

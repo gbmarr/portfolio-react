@@ -35,7 +35,7 @@ vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 beforeEach(() => {
   h.useAuth.mockReturnValue({
-    signInWithMagicLink: vi.fn<() => Promise<void>>(async () => {}),
+    inviteByMagicLink: vi.fn<() => Promise<void>>(async () => {}),
   })
 })
 
@@ -183,21 +183,21 @@ describe('ProjectDetailPage', () => {
 
   it('envía invitación por magic link al cliente', async () => {
     const user = userEvent.setup()
-    const signInWithMagicLink = vi.fn<() => Promise<void>>(async () => {})
-    h.useAuth.mockReturnValue({ signInWithMagicLink })
+    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
+    h.useAuth.mockReturnValue({ inviteByMagicLink })
     mockDetailData()
     renderDetail()
 
     await user.click(await screen.findByRole('button', { name: 'Enviar invitación' }))
 
-    await waitFor(() => expect(signInWithMagicLink).toHaveBeenCalledWith('cliente@example.com'))
+    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('cliente@example.com'))
     expect(screen.getByText(/Se envió un enlace mágico/)).toBeInTheDocument()
   })
 
   it('avisa si falla la invitación', async () => {
     const user = userEvent.setup()
     h.useAuth.mockReturnValue({
-      signInWithMagicLink: vi.fn(async () => {
+      inviteByMagicLink: vi.fn(async () => {
         throw new Error('boom')
       }),
     })
