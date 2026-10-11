@@ -1,0 +1,14 @@
+{
+  "track_id": "agent_tooling_20261010",
+  "type": "chore",
+  "status": "completed",
+  "created_at": "2026-10-10T00:00:00Z",
+  "updated_at": "2026-10-11T00:00:00Z",
+  "description": "Integración de tooling de agente sobre el stack actual (React 19/Vite 8/Tailwind 4/Vitest 5/TS 6): Context7 como MCP de documentación viva (plugin @upstash/context7-opencode en opencode.json), Playwright CLI como control de navegador real (devDependency + Chromium + skill en .agents/skills/playwright-cli/) y SkillUI en modo --dir para generar la skill de design system .opencode/skills/portfolio-design/ (curada contra @theme de src/index.css). Sin cambios en código de la app, sin impacto en fair-use. Strix queda fuera (deprioritizado). Pendiente manual del usuario: reiniciar opencode + auth Context7 (T0.4) y checkpoint de confirmación (V.4).",
+  "decisions": {
+    "D1": "Context7 como plugin @upstash/context7-opencode en el array plugin de opencode.json (opencode v1), no MCP manual",
+    "D2": "Playwright CLI como devDependency del repo (reproducible); skillui global (npm i -g skillui) — confirmado por usuario",
+    "D3": "SkillUI solo en modo --dir . sobre el repo propio; nunca --url de terceros (ética/fair-use)",
+    "D4": "Skill de design system versionada en .opencode/skills/portfolio-design/ (auto-descubierta por opencode, sin skills.paths); solo texto (SKILL.md/DESIGN.md/CLAUDE.md/references), zip .skill y screens/ gitignored — confirmado por usuario"
+  }
+}
