@@ -1,0 +1,16 @@
+{
+  "track_id": "estimator_tier_extras_20261010",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-10-10T00:00:00Z",
+  "updated_at": "2026-10-10T00:00:00Z",
+  "description": "Matriz de compatibilidad tier↔extra como fuente única en src/data/estimate.ts: landing ya no ofrece blog ni tienda online, institucional no ofrece tienda (elimina el arbitraje de precio respecto a medida), y medida incluye el módulo de tienda sin cobro extra. Incluye filtrado por tier en el estimador público y en el admin, poda de extras al cambiar de tier, defensa en profundidad en computeEstimate y en el mensaje de WhatsApp, y reasignación de las secciones de catálogo/cobro/envíos del brief al extra ecommerce. Reconciliado el copy de '3 secciones base' en services.ts y conductor/servicios.md.",
+  "decisions": {
+    "D1": "Matriz de compatibilidad tier↔extra como fuente única (en lugar de ramas condicionales por tier)",
+    "D2": "landing sin blog ni tienda online (página única no e-commerce)",
+    "D3": "institucional sin tienda online: evita el arbitraje institucional+tienda (1050) vs. medida (1200)",
+    "D4": "medida incluye el módulo de tienda sin cobro extra (includedFor: ['medida'], tiers: [])",
+    "D5": "El brief de 'medida' no fuerza preguntas de catálogo/cobro: pasan a depender del extra ecommerce",
+    "D6": "Defensa en profundidad: computeEstimate y WhatsApp filtran por isExtraAllowed"
+  }
+}
