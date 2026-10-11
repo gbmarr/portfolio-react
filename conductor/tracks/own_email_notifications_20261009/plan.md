@@ -2,9 +2,9 @@
 
 > **Track ID:** `own_email_notifications_20261009`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** ✅ Aprobado (2026-10-09) — Fases A y B completas. Sigue C (Edge Function). El front ya apunta a `contact-notify`; Web3Forms fuera del bundle. **Checklist del dueño pendiente para la Fase E.** Nota: la parte de envPrefix/.env.example/vite-env.d.ts de la Fase D quedó adelantada en B.
+> **Status:** ✅ **Completado** (2026-10-10). Provisión: pivote a **Resend API** (`4fa0f2a`) tras descartar el canje OAuth de Zoho; CSP `frame-src` arregló el widget de Turnstile (`f9b68a9`); rate-limit endurecido a **1/min** con `0008_contact_rate_limit_strict.sql` (`97ea6cf`). Prueba real OK: Turnstile + email a `hola@` (SPF/DKIM/DMARC PASS) + fila en panel; 2º envío en el mismo minuto → 429.
 > **Reglas:** TDD en lógica pura y en interacciones del front; Edge Function con smoke test local. Commits convencionales; build verde en cada commit.
-> **Gate:** Fase E (deploy+envíos reales) requiere confirmación del dueño y sus credenciales/requisitos.
+> **Gate:** Fase E (deploy+envíos reales) requiere confirmación del dueño y sus credenciales/requisitos — **cumplido 2026-10-10**.
 
 ---
 
@@ -62,11 +62,11 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| E.1 | Deploy de la función + secrets (`supabase functions deploy contact-notify` + dashboard) | Supabase | ⬜ |
-| E.2 | Prueba real: mensaje → email a `hola@` (SPF/DKIM/DMARC PASS) + fila en panel | form real | ⬜ |
-| E.3 | Verificar rate-limit (7º intento en 1 min rechazado) | form real | ⬜ |
+| E.1 | Deploy de la función + secrets (`supabase functions deploy contact-notify` + dashboard) | Supabase | ✅ |
+| E.2 | Prueba real: mensaje → email a `hola@` (SPF/DKIM/DMARC PASS) + fila en panel | form real | ✅ |
+| E.3 | Verificar rate-limit (2º intento en 1 min rechazado con `0008` 1/min) | form real | ✅ |
 | E.4 | Rotar/eliminar la access key de Web3Forms | Web3Forms | ✅ |
-| E.5 | Checklist final build/lint/test/typecheck | — | ⬜ |
+| E.5 | Checklist final build/lint/test/typecheck | — | ✅ |
 
 ---
 
@@ -74,8 +74,8 @@ Reemplaza Web3Forms por una Supabase Edge Function (`contact-notify`) que valida
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| F.1 | `tech-stack.md` (formulario → función + Turnstile; secretos), `tracks.md` | docs | ⬜ |
-| F.2 | Commit docs + resumen al usuario | — | ⬜ |
+| F.1 | `tech-stack.md` (formulario → función + Turnstile; secretos), `tracks.md` | docs | ✅ |
+| F.2 | Commit docs + resumen al usuario | — | ✅ |
 
 ---
 
