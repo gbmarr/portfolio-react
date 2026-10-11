@@ -1,7 +1,7 @@
 {
   "track_id": "remove_express_urgency_20261010",
   "type": "chore",
-  "status": "new",
+  "status": "completed",
   "created_at": "2026-10-10T00:00:00Z",
   "updated_at": "2026-10-10T00:00:00Z",
   "description": "Eliminar por completo la opcion de urgencia expres ('Lo necesito en menos de una semana (expres)') del estimador: checkbox, multiplicador x1.3, plazo expres, fila de desglose, mencion en el mensaje de WhatsApp y tests asociados. Sin tocar specs historicos ni el fair-use."

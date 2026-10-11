@@ -21,5 +21,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Eliminar la urgencia exprés del estimador**
+- [x] **Track: Eliminar la urgencia exprés del estimador**
 *Link: [./tracks/remove_express_urgency_20261010/](./tracks/remove_express_urgency_20261010/)*
