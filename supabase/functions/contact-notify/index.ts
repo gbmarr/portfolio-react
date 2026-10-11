@@ -56,6 +56,19 @@ function cors(origin: string | null): Record<string, string> {
   return base;
 }
 
+// SEC-003: IP real del cliente. `cf-connecting-ip` / `x-real-ip` los pone la
+// plataforma en el borde (Cloudflare/Supabase) y NO son falsificables por el
+// browser (se reescriben/limpian en el gateway); `x-forwarded-for` queda como
+// fallback documentado, tomando el primer valor de la cadena.
+function clientIp(req: Request): string {
+  return (
+    req.headers.get("cf-connecting-ip") ??
+    req.headers.get("x-real-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    ""
+  );
+}
+
 function json(
   body: unknown,
   status: number,
@@ -98,7 +111,7 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
   const form = new URLSearchParams();
   form.set("secret", secret);
   form.set("response", token);
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const ip = clientIp(req);
   if (ip) form.set("remoteip", ip);
   try {
     const res = await fetch(
@@ -184,20 +197,28 @@ serve(async (req) => {
     const mailFrom = Deno.env.get("MAIL_FROM") ?? "hola@gabrielmarrero.com.ar";
     const mailTo = Deno.env.get("MAIL_TO") ?? "hola@gabrielmarrero.com.ar";
 
-    // 1) Copia en contact_messages PRIMERO: el trigger 0007 (rate limit) corta con
-    // 429 sin gastar API de email, y un fallo de DB no deja email huérfano.
+    // 1) Copia en contact_messages PRIMERO: el trigger 0010 (rate limit endurecido
+    // SEC-003) corta con 429 sin gastar API de email, y un fallo de DB no deja
+    // email huérfano.
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!supabaseUrl || !serviceKey) {
       return json({ ok: false, error: "db-misconfigured" }, 500, headers);
     }
     const supabase = createClient(supabaseUrl, serviceKey);
-    const { error } = await supabase
+    // SEC-003: propagar la IP real del cliente a PostgREST en un header propio
+    // (`x-client-ip`). El trigger throttle_contact_messages (0010) lo lee desde
+    // `current_setting('request.headers')` y falla cerrado si no llega.
+    const ip = clientIp(req);
+    const query = supabase
       .from("contact_messages")
       .insert({ name, email, message, subject: null });
+    const { error } = ip
+      ? await query.setHeader("x-client-ip", ip.slice(0, 64))
+      : await query;
 
     if (error) {
-      // El trigger 0007 (throttle_contact_messages) lanza una excepción.
+      // El trigger 0010 (throttle_contact_messages) lanza una excepción.
       const msg = String(error.message ?? "");
       if (msg.includes("Demasiados envíos") || msg.toLowerCase().includes("too many")) {
         return json({ ok: false, error: "rate-limited" }, 429, headers);

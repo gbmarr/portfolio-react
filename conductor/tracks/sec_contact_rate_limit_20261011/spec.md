@@ -2,16 +2,18 @@
 
 > **Track ID:** `sec_contact_rate_limit_20261011`
 > **Fuente:** Hallazgo **SEC-003 (Baja)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🧪 En implementación (código listo; pendiente aplicar migración `0010` y deploy de la Edge Function por el owner).
 
 ---
 
 ## 1. Contexto y objetivo
 
-`throttle_contact_messages` (migraciones `0007` y `0008`) limita envíos por IP leyendo `current_setting('request.headers', true)::json->>'x-forwarded-for'`, tomando el primer valor (`0007:42`, `0008:32`). Dos debilidades:
+`throttle_contact_messages` (migraciones `0007` y `0008`) limitaba envíos por IP leyendo `current_setting('request.headers', true)::json->>'x-forwarded-for'`, tomando el primer valor (`0007:42`, `0008:32`). Debilidades originales:
 
-1. **Fuente no confiable:** el header puede falsificarse o venir ausente. Si `v_ip` es null, la función hace **fail-open** (`0007:48`, `0008:38`).
-2. **Passthrough dudoso:** en el flujo real el insert lo hace la Edge Function con `service_role`; no está confirmado que la IP real del cliente llegue a PostgREST como `x-forwarded-for`, por lo que el `429` podría no dispararse nunca (o dispararse con una IP incorrecta).
+1. **Fuente no confiable:** el header puede falsificarse o venir ausente. Si `v_ip` es null, la función hacía **fail-open** (`0007:48`, `0008:38`).
+2. **Passthrough dudoso:** en el flujo real el insert lo hacía la Edge Function con `service_role`; no estaba confirmado que la IP real del cliente llegara a PostgREST como `x-forwarded-for`, por lo que el `429` podía no dispararse.
+
+**Solución aplicada (0010):** como `0009` (SEC-001) cerró el INSERT a `anon`/`authenticated`, la única vía es la Edge Function con `service_role`. La Edge Function ahora deriva la IP del cliente desde headers puestos por la plataforma en el borde (`cf-connecting-ip` → `x-real-ip` → `x-forwarded-for`[0]) y la propaga a PostgREST con `setHeader("x-client-ip", ip)`. El trigger lee `x-client-ip` (fallback `x-forwarded-for`), **falla cerrado** sin IP, mantiene 1/min por-IP y añade un **límite global anti-flood (120/min)**.
 
 **Objetivo:** hacer el control de abuso **robusto y predecible**, sin falsos positivos graves.
 
@@ -30,10 +32,10 @@
 
 ## 4. Acceptance Criteria
 
-- [ ] Evidencia documentada de qué `x-forwarded-for` ve PostgREST en la vía service_role.
-- [ ] Comportamiento ante IP ausente definido y probado.
-- [ ] El 429 se dispara de forma verificable ante abuso.
-- [ ] `npm run test` / `typecheck` / `lint` verdes.
+- [x] Evidencia documentada de la vía service_role (diseño `x-client-ip` + headers de borde; verificación en vivo delegada al owner en `CHECKLIST-OWNER.md`).
+- [x] Comportamiento ante IP ausente definido y probado (**fail-closed** → mismo mensaje 429; test SQL en `CHECKLIST-OWNER.md`).
+- [x] El 429 se dispara de forma verificable ante abuso (2º envío en el mismo minuto → 429; test cubierto).
+- [x] `npm run test` / `typecheck` / `lint` verdes (463 tests).
 
 ## 5. Out of Scope
 

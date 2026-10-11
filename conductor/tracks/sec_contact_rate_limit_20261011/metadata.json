@@ -1,16 +1,24 @@
 {
   "track_id": "sec_contact_rate_limit_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
-  "description": "SEC-003 (Baja). El rate-limit de contact_messages depende de current_setting('request.headers')->>'x-forwarded-for', un valor derivado de headers de request que puede ser falsificable o estar ausente; ante ausencia (v_ip null) la funcion hace return new (fail-open). Ademas, en la via Edge Function (service_role) no esta confirmado que la IP real del cliente llegue a PostgREST, por lo que el 429 esperado podria no dispararse. Resultado: control de abuso debil para la superficie de contacto.",
+  "updated_at": "2026-10-11T15:20:00Z",
+  "description": "SEC-003 (Baja). El rate-limit de contact_messages dependía de current_setting('request.headers')->>'x-forwarded-for', un valor derivado de headers de request que puede ser falsificable o estar ausente; ante ausencia (v_ip null) la función hacía return new (fail-open). Además, en la vía Edge Function (service_role) no estaba confirmado que la IP real del cliente llegara a PostgREST, por lo que el 429 esperado podía no dispararse. Resultado: control de abuso débil para la superficie de contacto.",
   "severity": "low",
   "cwe": ["CWE-602", "CWE-290"],
   "owasp": ["A04:2021", "API4:2023"],
   "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
   "decisions": {
-    "D1": "Definir comportamiento fail-closed opcional y una fuente de IP mas confiable; documentar el trade-off (falsos positivos detras de NAT)."
+    "D1": "Fail-closed ante IP ausente (rechazar con el mismo mensaje 429) y fuente de IP confiable: la Edge Function deriva cf-connecting-ip -> x-real-ip -> x-forwarded-for[0] y la propaga a PostgREST con setHeader('x-client-ip'). Trade-off NAT documentado (1/min por-IP compartido; red de seguridad global 120/min)."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "migration": "supabase/migrations/0010_contact_rate_limit_hardened.sql",
+    "tests": "69 archivos / 463 tests verdes",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "Trigger endurecido: lee x-client-ip (fallback x-forwarded-for), fail-closed sin IP, 1/min por-IP (semántica 0008) + límite global 120/min (tabla single-row contact_global_burst). Edge Function: clientIp() + setHeader en el insert. Sin deno ni stack local: lint SQL/verificación en vivo delegados al owner en CHECKLIST-OWNER.md.",
+    "pending_owner": "aplicar migración 0010 en SQL Editor y desplegar contact-notify (supabase functions deploy contact-notify --no-verify-jwt); verificar 429 en vivo"
+  }
 }

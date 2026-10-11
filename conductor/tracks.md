@@ -52,8 +52,8 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
       _Link: [./tracks/sec_contact_anon_insert_20261011/](./tracks/sec_contact_anon_insert_20261011/)_ — la policy `with check (true)` a `anon` permite insertar directo por PostgREST esquivando Turnstile. (issue #7) — **código implementado 2026-10-11** (migración `0009` + retiro de `saveContactMessage`); pendiente aplicar `0009` en Supabase y verificar el bloqueo de anon.
 - [~] **Track: MFA / step-up para el acceso admin (SEC-002, Media)**
       _Link: [./tracks/sec_admin_mfa_20261011/](./tracks/sec_admin_mfa_20261011/)_ — exigir AAL2 en `/admin/*`, leaked-password protection y rate-limit de auth. (issue #8) — **código implementado 2026-10-11** (step-up AAL2 en `RequiereAdmin`, `AdminMfaPage`, tests 459 ✓); pendiente config dashboard del owner (`CHECKLIST-OWNER.md`).
-- [ ] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
-      _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — dependencia de `x-forwarded-for` falsificable y fail-open; verificar passthrough vía service_role. (issue #9)
+- [~] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
+      _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — dependencia de `x-forwarded-for` falsificable y fail-open; verificar passthrough vía service_role. (issue #9) — **código implementado 2026-10-11** (migración `0010`: fail-closed sin IP + límite global 120/min; Edge Function `clientIp()` + `setHeader("x-client-ip")`; tests 463 ✓); pendiente aplicar `0010` en Supabase y desplegar `contact-notify` (`CHECKLIST-OWNER.md`).
 - [ ] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
       _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10)
 - [~] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
