@@ -14,6 +14,10 @@ export default defineConfig({
   envPrefix: ['DATABASE_', 'ARS_', 'TURNSTILE_'],
   test: {
     environment: 'jsdom',
+    // Vitest 5: 'vmThreads' reutiliza una instancia jsdom por worker manteniendo
+    // aislamiento por archivo (verificado contra doc oficial v5.0.3). Antes se
+    // creaban 67 instancias jsdom (~98s); con este pool se usa 1 por worker.
+    pool: 'vmThreads',
     setupFiles: ['./src/test/setup.ts'],
     // `.agents/` contiene skills/scripts ajenos al repo (no versionados) que
     // Vitest levanta como si fueran suites. Los excluimos del test run.
