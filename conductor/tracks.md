@@ -54,8 +54,8 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
       _Link: [./tracks/sec_admin_mfa_20261011/](./tracks/sec_admin_mfa_20261011/)_ — exigir AAL2 en `/admin/*`, leaked-password protection y rate-limit de auth. (issue #8) — **código implementado 2026-10-11** (step-up AAL2 en `RequiereAdmin`, `AdminMfaPage`, tests 459 ✓); pendiente config dashboard del owner (`CHECKLIST-OWNER.md`).
 - [~] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
       _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — dependencia de `x-forwarded-for` falsificable y fail-open; verificar passthrough vía service_role. (issue #9) — **código implementado 2026-10-11** (migración `0010`: fail-closed sin IP + límite global 120/min; Edge Function `clientIp()` + `setHeader("x-client-ip")`; tests 463 ✓); pendiente aplicar `0010` en Supabase y desplegar `contact-notify` (`CHECKLIST-OWNER.md`).
-- [ ] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
-      _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10)
+- [~] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
+      _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10) — **código implementado 2026-10-11** (`email-result.ts` puro + test; respuesta al cliente `{ok:false,error:'mail-send'}` sin detail; `logMailError` server-side; tests 465 ✓); pendiente deploy de `contact-notify` con el lote final.
 - [~] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
       _Link: [./tracks/sec_magiclink_signup_20261011/](./tracks/sec_magiclink_signup_20261011/)_ — `shouldCreateUser: false` sin romper invitaciones. (issue #11) — **código implementado 2026-10-11** (`signInWithMagicLink` sin auto-registro + `user_not_found` indistinguible; `inviteByMagicLink` crea cuenta para invitaciones; tests 463 ✓).
 - [ ] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**

@@ -23,6 +23,8 @@
 
 import { serve } from "https://deno.land/std@0.219.1/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.117.3";
+// SEC-004: helpers de error del envío (puros, testeados con Vitest).
+import { logMailError, mailSendErrorBody } from "./email-result.ts";
 
 const ALLOWED_ORIGINS = new Set([
   "https://gabrielmarrero.com.ar",
@@ -125,8 +127,8 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
   }
 }
 
-// Envía por Resend API (Bearer key). Devuelve el detalle del error para que un
-// fallo de `mail-send` sea diagnosticable desde el browser.
+// Envía por Resend API (Bearer key). Devuelve el detalle del error al caller
+// interno para logging server-side (SEC-004): NO se expone al browser.
 async function sendResendMail(
   apiKey: string,
   opts: { from: string; to: string; subject: string; text: string; replyTo: string },
@@ -240,11 +242,9 @@ serve(async (req) => {
       replyTo: email,
     });
     if (!sent.ok) {
-      return json(
-        { ok: false, error: "mail-send", detail: sent.detail },
-        500,
-        headers,
-      );
+      // SEC-004: el detalle del proveedor queda solo en logs server-side.
+      logMailError(sent.detail);
+      return json(mailSendErrorBody(), 500, headers);
     }
 
     return json({ ok: true }, 200, headers);

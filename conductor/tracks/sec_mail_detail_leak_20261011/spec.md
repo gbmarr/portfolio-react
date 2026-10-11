@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_mail_detail_leak_20261011`
 > **Fuente:** Hallazgo **SEC-004 (Baja)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🧪 En implementación (código listo y verificado; pendiente deploy de la Edge Function con el lote final).
 
 ---
 
@@ -31,9 +31,9 @@ El `detail` proviene del cuerpo de error de Resend (config, cuota, dominios no v
 
 ## 4. Acceptance Criteria
 
-- [ ] Respuesta al cliente sin `detail`.
-- [ ] `detail` presente en logs server-side.
-- [ ] Test unitario de la ruta de error que asegura ausencia de `detail` en la respuesta.
+- [x] Respuesta al cliente sin `detail` (solo `{ ok:false, error:"mail-send" }`) — cubierto por `mailSendErrorBody()` + test.
+- [x] `detail` presente en logs server-side — `logMailError()` con `console.error`.
+- [x] Test unitario de la ruta de error que asegura ausencia de `detail` en la respuesta — `email-result.test.ts` (2 tests).
 
 ## 5. Out of Scope
 

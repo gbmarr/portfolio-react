@@ -1,16 +1,23 @@
 {
   "track_id": "sec_mail_detail_leak_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
-  "description": "SEC-004 (Baja). La Edge Function contact-notify, ante un fallo del proveedor de email (Resend), devuelve al cliente { error: 'mail-send', detail } con el mensaje del proveedor recortado a 200 chars (index.ts:221-227). Expone informacion interna del proveedor de correo (config, cuota, dominios) que puede facilitar reconocimiento.",
+  "updated_at": "2026-10-11T15:30:00Z",
+  "description": "SEC-004 (Baja). La Edge Function contact-notify, ante un fallo del proveedor de email (Resend), devolvía al cliente { error: 'mail-send', detail } con el mensaje del proveedor recortado a 200 chars (index.ts:221-227). Exponía información interna del proveedor de correo (config, cuota, dominios) que puede facilitar reconocimiento.",
   "severity": "low",
   "cwe": ["CWE-209"],
   "owasp": ["A05:2021"],
   "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
   "decisions": {
-    "D1": "Responder con error generico al cliente; registrar el detail server-side (console.error)."
+    "D1": "Responder con error generico al cliente; registrar el detail server-side (console.error). Implementado con modulo puro email-result.ts (mailSendErrorBody + logMailError), testeado con Vitest (sin deno local)."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "tests": "70 archivos / 465 tests verdes (email-result.test.ts: 2)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "index.ts responde { ok:false, error:'mail-send' } sin detail; detalle registrado con logMailError (console.error server-side).",
+    "pending_owner": "desplegar contact-notify con el lote final de migraciones/deploy (no requiere cambio de dashboard)"
+  }
 }
