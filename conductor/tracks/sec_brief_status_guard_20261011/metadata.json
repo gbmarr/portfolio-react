@@ -1,9 +1,9 @@
 {
   "track_id": "sec_brief_status_guard_20261011",
   "type": "security",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T15:35:00Z",
+  "updated_at": "2026-10-11T17:30:00Z",
   "description": "SEC-006 (Baja). El trigger guard_brief_admin_columns (0005:21-42) impide que un cliente no-admin modifique service_type o extra_ids de project_briefs, pero NO protege status. La app calculaba status en cliente (briefs.ts), asi que un cliente podia fijar status=completado sin cumplir los requisitos, o viceversa, alterando la logica de negocio del brief.",
   "severity": "low",
   "cwe": ["CWE-602", "CWE-863"],

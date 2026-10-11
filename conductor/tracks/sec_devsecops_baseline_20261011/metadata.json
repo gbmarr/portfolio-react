@@ -1,9 +1,9 @@
 {
   "track_id": "sec_devsecops_baseline_20261011",
   "type": "security",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T16:20:00Z",
+  "updated_at": "2026-10-11T17:30:00Z",
   "description": "SEC-007 (Baja). El repo no tiene CI (.github/ ausente), ni SAST, ni SCA/SBOM, ni Dependabot; las dependencias usan rangos ^. Tampoco publica /.well-known/security.txt. Falta de controles de cadena de suministro y de canal de reporte de vulnerabilidades.",
   "severity": "low",
   "cwe": ["CWE-1104", "CWE-1395"],

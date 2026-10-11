@@ -46,25 +46,25 @@ Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (anál
 
 ## Backlog de seguridad — Auditoría run-2 (2026-10-11)
 
-Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** (`.scratch/security-audit/run-2/REPORT.md`). Referencia **ASVS L2–L3**. Estado: `pending` (sin implementar). Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`, etiqueta `security`). Orden sugerido de ejecución: T1 → T2 → T5 → T3 → T4 → T6 → T7 → T8 → T9.
+Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** (`.scratch/security-audit/run-2/REPORT.md`). Referencia **ASVS L2–L3**. Estado: `completed` — ciclo completo cerrado el 2026-10-11 (código implementado, pasos de owner aplicados y verificación en producción). Cada uno tuvo su issue en GitHub (`gbmarr/portfolio-react`, etiqueta `security`) — issues #7–#15 cerrados.
 
-- [~] **Track: Cerrar INSERT anónimo en `contact_messages` (SEC-001, Media)**
-      _Link: [./tracks/sec_contact_anon_insert_20261011/](./tracks/sec_contact_anon_insert_20261011/)_ — la policy `with check (true)` a `anon` permite insertar directo por PostgREST esquivando Turnstile. (issue #7) — **código implementado 2026-10-11** (migración `0009` + retiro de `saveContactMessage`); pendiente aplicar `0009` en Supabase y verificar el bloqueo de anon.
-- [~] **Track: MFA / step-up para el acceso admin (SEC-002, Media)**
-      _Link: [./tracks/sec_admin_mfa_20261011/](./tracks/sec_admin_mfa_20261011/)_ — exigir AAL2 en `/admin/*`, leaked-password protection y rate-limit de auth. (issue #8) — **código implementado 2026-10-11** (step-up AAL2 en `RequiereAdmin`, `AdminMfaPage`, tests 459 ✓); pendiente config dashboard del owner (`CHECKLIST-OWNER.md`).
-- [~] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
-      _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — dependencia de `x-forwarded-for` falsificable y fail-open; verificar passthrough vía service_role. (issue #9) — **código implementado 2026-10-11** (migración `0010`: fail-closed sin IP + límite global 120/min; Edge Function `clientIp()` + `setHeader("x-client-ip")`; tests 463 ✓); pendiente aplicar `0010` en Supabase y desplegar `contact-notify` (`CHECKLIST-OWNER.md`).
-- [~] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
-      _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10) — **código implementado 2026-10-11** (`email-result.ts` puro + test; respuesta al cliente `{ok:false,error:'mail-send'}` sin detail; `logMailError` server-side; tests 465 ✓); pendiente deploy de `contact-notify` con el lote final.
-- [~] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
-      _Link: [./tracks/sec_magiclink_signup_20261011/](./tracks/sec_magiclink_signup_20261011/)_ — `shouldCreateUser: false` sin romper invitaciones. (issue #11) — **código implementado 2026-10-11** (`signInWithMagicLink` sin auto-registro + `user_not_found` indistinguible; `inviteByMagicLink` crea cuenta para invitaciones; tests 463 ✓).
-- [~] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**
-      _Link: [./tracks/sec_brief_status_guard_20261011/](./tracks/sec_brief_status_guard_20261011/)_ — extender el guard o derivar `status` server-side. (issue #12) — **código implementado 2026-10-11** (migración `0011`: `compute_brief_status` SQL espejo de `computeBriefStatus`; guard fuerza el valor derivado para no-admin; `updateBriefAnswers` ya no envía `status`; tests 465 ✓); pendiente aplicar `0011` en Supabase (`CHECKLIST-OWNER.md`).
-- [~] **Track: Línea base DevSecOps y cadena de suministro (SEC-007, Baja)**
-      _Link: [./tracks/sec_devsecops_baseline_20261011/](./tracks/sec_devsecops_baseline_20261011/)_ — Dependabot, CI con `npm audit`, `security.txt`, (fase 2) SAST/SBOM. (issue #13) — **código implementado 2026-10-11** (`.github/dependabot.yml` npm+actions weekly; `ci.yml` install/lint/typecheck/test/build + `npm audit --audit-level=high` + SBOM CycloneDX artefacto; `codeql.yml` SAST main+semanal; `public/.well-known/security.txt` + Cache-Control no-store; verificado `npm sbom` y YAML/JSON válidos); pendiente push a `main` para CI verde y verificar `security.txt` en prod (`CHECKLIST-OWNER.md`).
-- [~] **Track: Endurecer el almacenamiento de sesión (SEC-008, Baja)**
-      _Link: [./tracks/sec_session_hardening_20261011/](./tracks/sec_session_hardening_20261011/)_ — ADR-0001 (cookie httpOnly inviable en SPA estática); PKCE + `connect-src` acotado al ref. Código implementado 2026-10-11; pendiente deploy. (issue #14)
-- [~] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
-      _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado, docs, `envPrefix`, `connect-src`. (issue #15) — **código implementado 2026-10-11** (HSTS `max-age=63072000` en `vercel.json`/`netlify.toml` + test; `envPrefix` → `['PUBLIC_']` y envs renombradas a `PUBLIC_*` — cierra follow-up D4; docs Web3Forms retiradas de `servicios.md`/`tech-stack.md`/`README`; tests 468 ✓); pendiente renombrar env vars en Vercel/Netlify + `.env.local` (CHECKLIST-OWNER §2.1) junto con el deploy y verificar HSTS con `HEAD`.
+- [x] **Track: Cerrar INSERT anónimo en `contact_messages` (SEC-001, Media)**
+      _Link: [./tracks/sec_contact_anon_insert_20261011/](./tracks/sec_contact_anon_insert_20261011/)_ — migración `0009` (drop policy anon + revoke insert) aplicada en Supabase; `saveContactMessage` retirado; bloqueo de INSERT anónimo verificado. (issue #7, commit `08deb60`)
+- [x] **Track: MFA / step-up para el acceso admin (SEC-002, Media)**
+      _Link: [./tracks/sec_admin_mfa_20261011/](./tracks/sec_admin_mfa_20261011/)_ — AAL2 en `/admin/*` + `AdminMfaPage`; TOTP y Leaked Password Protection activados en dashboard; flujo verificado en prod (incluye hotfix `b6b742f` para el challenge desde el QR de enrolamiento). (issue #8, commits `1aa27a4` + `b6b742f`)
+- [x] **Track: Endurecer el rate-limit de contacto (SEC-003, Baja)**
+      _Link: [./tracks/sec_contact_rate_limit_20261011/](./tracks/sec_contact_rate_limit_20261011/)_ — migración `0010` (fail-closed sin IP + límite global 120/min) aplicada; Edge Function `contact-notify` desplegada con `clientIp()`/`x-client-ip`. (issue #9, commit `b2d2d8a`)
+- [x] **Track: No exponer `detail` del proveedor de email (SEC-004, Baja)**
+      _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — `email-result.ts` puro (respuesta sin detail) + `logMailError` server-side; Edge Function desplegada. (issue #10, commit `048873c`)
+- [x] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
+      _Link: [./tracks/sec_magiclink_signup_20261011/](./tracks/sec_magiclink_signup_20261011/)_ — `signInWithMagicLink` sin auto-registro + `user_not_found` indistinguible; `inviteByMagicLink` conserva las invitaciones del admin. (issue #11, commit `5b4bbdc`)
+- [x] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**
+      _Link: [./tracks/sec_brief_status_guard_20261011/](./tracks/sec_brief_status_guard_20261011/)_ — migración `0011` (`compute_brief_status` SQL espejo + guard fuerza el valor derivado para no-admin) aplicada; el cliente deja de enviar `status`. (issue #12, commit `4c75c50`)
+- [x] **Track: Línea base DevSecOps y cadena de suministro (SEC-007, Baja)**
+      _Link: [./tracks/sec_devsecops_baseline_20261011/](./tracks/sec_devsecops_baseline_20261011/)_ — push a main realizado; CI (install/lint/typecheck/test/build + `npm audit --audit-level=high` + SBOM CycloneDX) verde; CodeQL + Dependabot activos; `/.well-known/security.txt` 200 con `Cache-Control: no-store`. (issue #13, commit `6ede026`)
+- [x] **Track: Endurecer el almacenamiento de sesión (SEC-008, Baja)**
+      _Link: [./tracks/sec_session_hardening_20261011/](./tracks/sec_session_hardening_20261011/)_ — ADR-0001 (cookie httpOnly inviable en SPA estática); PKCE + `connect-src` acotado al ref verificados en producción (CSP en curl HEAD). (issue #14, commit `17bf50a`)
+- [x] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
+      _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado y verificado en prod (`max-age=63072000`); envs renombradas a `PUBLIC_*` en Vercel/Netlify + `.env.local`; docs Web3Forms retiradas. (issue #15, commit `420532c`)
 
 

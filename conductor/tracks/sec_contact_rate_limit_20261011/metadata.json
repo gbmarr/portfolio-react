@@ -1,9 +1,9 @@
 {
   "track_id": "sec_contact_rate_limit_20261011",
   "type": "security",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T15:20:00Z",
+  "updated_at": "2026-10-11T17:30:00Z",
   "description": "SEC-003 (Baja). El rate-limit de contact_messages dependía de current_setting('request.headers')->>'x-forwarded-for', un valor derivado de headers de request que puede ser falsificable o estar ausente; ante ausencia (v_ip null) la función hacía return new (fail-open). Además, en la vía Edge Function (service_role) no estaba confirmado que la IP real del cliente llegara a PostgREST, por lo que el 429 esperado podía no dispararse. Resultado: control de abuso débil para la superficie de contacto.",
   "severity": "low",
   "cwe": ["CWE-602", "CWE-290"],

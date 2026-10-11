@@ -1,9 +1,9 @@
 {
   "track_id": "sec_admin_mfa_20261011",
   "type": "security",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T15:00:00Z",
+  "updated_at": "2026-10-11T17:30:00Z",
   "description": "SEC-002 (Media). El acceso admin (/acceso-admin) usa solo email+contraseña (signInWithPassword) sin un segundo factor ni step-up de sesión; las passkeys se desactivaron. Sin MFA, el compromiso de una contraseña admin da control total del panel. Objetivo ASVS L2-L3: exigir AAL2 para rutas admin, protección de contraseñas filtradas y rate-limit del proveedor de auth.",
   "severity": "medium",
   "cwe": ["CWE-308"],

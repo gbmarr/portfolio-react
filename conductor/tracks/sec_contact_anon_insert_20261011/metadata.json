@@ -1,9 +1,9 @@
 {
   "track_id": "sec_contact_anon_insert_20261011",
   "type": "security",
-  "status": "in_progress",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T17:30:00Z",
   "description": "SEC-001 (Media). La policy 'cualquiera envía mensaje' permite INSERT a anon/authenticated en contact_messages con WITH CHECK (true), de modo que un actor puede insertar directo por PostgREST con la publishable key, esquivando Turnstile y el flujo de la Edge Function contact-notify. Habilita spam/flood/DoS de la tabla y del panel admin.",
   "severity": "medium",
   "cwe": ["CWE-602", "CWE-770"],
