@@ -90,6 +90,27 @@ describe('AdminMfaPage (verificación en dos pasos)', () => {
     expect(verifyMfa).toHaveBeenCalledWith('factor-1', 'challenge-1', '123456')
   })
 
+  it('abre el desafío al activar desde el QR de enrolamiento (fix 400/no-op)', async () => {
+    const challengeMfa = vi.fn(async () => 'challenge-from-submit')
+    const verifyMfa = vi.fn(async () => undefined)
+    authOverrides({
+      listMfaFactors: vi.fn(async () => []),
+      enrollMfa: vi.fn(async () => ({
+        factorId: 'f-1',
+        qrCode: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"/>',
+      })),
+      challengeMfa,
+      verifyMfa,
+    })
+    renderMfaPage()
+
+    await userEvent.type(await screen.findByLabelText(panelCopy.adminMfa.codeLabel), '123456')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminMfa.enable }))
+
+    expect(challengeMfa).toHaveBeenCalledWith('f-1')
+    expect(verifyMfa).toHaveBeenCalledWith('f-1', 'challenge-from-submit', '123456')
+  })
+
   it('muestra error cuando el código es inválido', async () => {
     authOverrides({
       listMfaFactors: vi.fn(async () => ['factor-1']),

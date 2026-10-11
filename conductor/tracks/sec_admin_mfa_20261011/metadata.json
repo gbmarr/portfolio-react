@@ -15,9 +15,10 @@
   },
   "results": {
     "code_implemented": "2026-10-11",
-    "tests": "69 archivos / 459 tests verdes",
+    "tests": "70 archivos / 469 tests verdes",
     "typecheck": "ok",
     "lint": "ok",
-    "pending_owner": "habilitar MFA TOTP, Leaked Password Protection y rate-limit en dashboard Supabase (ver CHECKLIST-OWNER.md)"
+    "pending_owner": "habilitar MFA TOTP, Leaked Password Protection y rate-limit en dashboard Supabase (ver CHECKLIST-OWNER.md)",
+    "hotfix": "2026-10-11 T2 follow-up: en el flujo de enrolamiento (sin factor previo) falta abrir el challenge antes de verificar (la doc exige enroll → challenge → verify); el clic en 'Activar' era un no-op (challengeId null) y GoTrue respondía 400 al verificar sin challenge válido. Arreglado en AdminMfaPage.handleSubmit (challenge abierto al enviar) + test nuevo 'abre el desafío al activar desde el QR de enrolamiento (fix 400/no-op)' (8 tests en AdminMfaPage.test.tsx)."
   }
 }

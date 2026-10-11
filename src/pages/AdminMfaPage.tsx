@@ -66,13 +66,21 @@ export function AdminMfaPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!factorId || !challengeId) return
+    if (!factorId) return
     setStatus('submitting')
     setError(null)
     try {
-      await verifyMfa(factorId, challengeId, code.trim())
+      // En el enrolamiento (sin factor previo) todavía no existe challenge:
+      // se abre uno al enviar, tras escanear el QR. Sin esto, "Activar" era
+      // un no-op (challengeId null) y la verificación nunca se completaba
+      // quedando el TOTP sin verificar y el server respondiendo 400.
+      const activeChallengeId = challengeId ?? (await challengeMfa(factorId))
+      await verifyMfa(factorId, activeChallengeId, code.trim())
       // La sesión pasa a AAL2: RequireAdminMfa redirige al panel.
-    } catch {
+    } catch (err) {
+      // Se mantiene la copia amigable, pero se registra el error real de
+      // GoTrue para diagnosticar un 400 (TOTP incorrecto, desafío vencido…).
+      console.error('[mfa] verify falló:', err)
       setError(panelCopy.adminMfa.invalidCode)
       setStatus('idle')
     }
