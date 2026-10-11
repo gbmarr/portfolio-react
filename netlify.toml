@@ -23,6 +23,7 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=63072000"
 
 # Superficies privadas: no indexar (complementa la meta robots de la SPA)
 [[headers]]

@@ -54,4 +54,10 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
       expect(csp).not.toContain('api.web3forms.com')
     }
   })
+
+  it('declara HSTS explícitamente en vercel.json y netlify.toml (SEC-009)', () => {
+    expect(vercelRaw).toContain('"Strict-Transport-Security"')
+    expect(vercelRaw).toContain('"max-age=63072000"')
+    expect(netlifyRaw).toContain('Strict-Transport-Security = "max-age=63072000"')
+  })
 })

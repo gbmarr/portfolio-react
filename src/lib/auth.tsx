@@ -6,7 +6,7 @@ import { AuthContext, type AalLevel, type AuthContextValue } from './auth-contex
 
 function assertConfigured(): void {
   if (!isSupabaseConfigured) {
-    throw new Error('Supabase no está configurado (faltan DATABASE_URL / DATABASE_PUBLISHABLE_KEY)')
+    throw new Error('Supabase no está configurado (faltan PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_PUBLISHABLE_KEY)')
   }
 }
 

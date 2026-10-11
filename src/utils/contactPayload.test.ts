@@ -79,16 +79,16 @@ describe('buildContactPayload', () => {
 })
 
 describe('contactFunctionUrl', () => {
-  it('deriva la URL de funciones desde DATABASE_URL', () => {
-    vi.stubEnv('DATABASE_URL', 'https://jntueibgkfwptigpncmh.supabase.co')
+  it('deriva la URL de funciones desde PUBLIC_SUPABASE_URL', () => {
+    vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://jntueibgkfwptigpncmh.supabase.co')
     expect(contactFunctionUrl()).toBe(
       'https://jntueibgkfwptigpncmh.functions.supabase.co/contact-notify',
     )
     vi.unstubAllEnvs()
   })
 
-  it('devuelve null sin DATABASE_URL', () => {
-    vi.stubEnv('DATABASE_URL', '')
+  it('devuelve null sin PUBLIC_SUPABASE_URL', () => {
+    vi.stubEnv('PUBLIC_SUPABASE_URL', '')
     expect(contactFunctionUrl()).toBeNull()
     vi.unstubAllEnvs()
   })

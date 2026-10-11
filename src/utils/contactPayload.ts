@@ -48,12 +48,12 @@ export function buildContactPayload(
 }
 
 /**
- * URL de la Edge Function `contact-notify`, derivada de DATABASE_URL:
+ * URL de la Edge Function `contact-notify`, derivada de PUBLIC_SUPABASE_URL:
  * `https://<ref>.supabase.co` → `https://<ref>.functions.supabase.co/contact-notify`.
- * Devuelve null si DATABASE_URL no está configurada o no parece un proyecto Supabase.
+ * Devuelve null si PUBLIC_SUPABASE_URL no está configurada o no parece un proyecto Supabase.
  */
 export function contactFunctionUrl(): string | null {
-  const url = import.meta.env.DATABASE_URL
+  const url = import.meta.env.PUBLIC_SUPABASE_URL
   if (!url) return null
   const match = url.match(/^https:\/\/([a-z0-9-]+)\.supabase\.co\/?/)
   return match ? `https://${match[1]}.functions.supabase.co/contact-notify` : null

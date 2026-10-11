@@ -1,16 +1,42 @@
 {
   "track_id": "sec_config_hygiene_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T16:30:00Z",
   "description": "SEC-009 (Info). Elementos de higiene de configuracion de seguridad: (1) Strict-Transport-Security se sirve en prod (Vercel) pero NO esta declarado en vercel.json, por lo que no es reproducible/versionado; (2) style-src usa 'unsafe-inline' y connect-src incluye *.supabase.co (amplio); (3) documentacion de Web3Forms desactualizada en conductor/; (4) envPrefix amplio (DATABASE_/ARS_/TURNSTILE_).",
   "severity": "info",
   "cwe": ["CWE-693"],
   "owasp": ["A05:2021"],
   "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
   "decisions": {
-    "D1": "Declarar HSTS explicitamente en vercel.json/netlify.toml; actualizar docs; revisar envPrefix."
+    "D1": "Declarar HSTS explicitamente en vercel.json/netlify.toml; actualizar docs; revisar envPrefix.",
+    "D2": "envPrefix migrado a un unico prefijo PUBLIC_ (follow-up D4 comentado en vite.config.ts): elimina el riesgo de inlinear secretos con prefijos coincidentes (el caso TURNSTILE_SECRET con prefijo TURNSTILE_). require rename en hosts a PUBLIC_SUPABASE_URL/PUBLIC_SUPABASE_PUBLISHABLE_KEY/PUBLIC_TURNSTILE_SITE_KEY/PUBLIC_ARS_RATE."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "files": [
+      "vercel.json",
+      "netlify.toml",
+      "vite.config.ts",
+      "src/vite-env.d.ts",
+      "src/lib/supabase.ts",
+      "src/lib/auth.tsx",
+      "src/utils/contactPayload.ts",
+      "src/data/estimate.ts",
+      "src/components/ContactForm.tsx",
+      ".env.example",
+      "README.md",
+      "conductor/tech-stack.md",
+      "conductor/servicios.md",
+      "src/headersConfig.test.ts",
+      "src/utils/contactPayload.test.ts",
+      "src/components/ContactForm.test.tsx"
+    ],
+    "tests": "70 archivos / 468 tests verdes (nuevo test HSTS en headersConfig.test.ts)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "HSTS max-age=63072000 declarado en ambos hosts; envPrefix=['PUBLIC_'] y envs renombradas a PUBLIC_*; docs Web3Forms retiradas de servicios.md/tech-stack.md/README; connect-src ya acotado en SEC-008 (solo se documento); style-src 'unsafe-inline' conservado a proposito.",
+    "pending_owner": "renombrar env vars en Vercel/Netlify y .env.local a PUBLIC_* (CHECKLIST-OWNER §2.1) junto con el deploy; verificar HSTS con HEAD tras deploy"
+  }
 }

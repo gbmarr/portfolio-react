@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.DATABASE_URL
-const publishableKey = import.meta.env.DATABASE_PUBLISHABLE_KEY
+const url = import.meta.env.PUBLIC_SUPABASE_URL
+const publishableKey = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY
 
 /**
  * `false` cuando faltan las variables de entorno: el sitio público sigue

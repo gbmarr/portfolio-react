@@ -36,7 +36,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
   const [status, setStatus] = useState<Status>('idle')
   const lastSubmitAt = useRef(0)
   const [turnstileToken, setTurnstileToken] = useState('')
-  const siteKey = import.meta.env.TURNSTILE_SITE_KEY ?? ''
+  const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

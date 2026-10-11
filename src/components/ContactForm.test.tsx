@@ -26,8 +26,8 @@ async function fillForm(user: ReturnType<typeof userEvent.setup>) {
 
 describe('ContactForm', () => {
   beforeEach(() => {
-    vi.stubEnv('DATABASE_URL', 'https://abc.supabase.co')
-    vi.stubEnv('TURNSTILE_SITE_KEY', '1x00000000000000000000AA')
+    vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://abc.supabase.co')
+    vi.stubEnv('PUBLIC_TURNSTILE_SITE_KEY', '1x00000000000000000000AA')
     vi.stubGlobal('fetch', h.fetchMock)
     h.fetchMock.mockReset()
     h.turnstileOnChange = null

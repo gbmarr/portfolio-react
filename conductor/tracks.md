@@ -64,7 +64,7 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
       _Link: [./tracks/sec_devsecops_baseline_20261011/](./tracks/sec_devsecops_baseline_20261011/)_ — Dependabot, CI con `npm audit`, `security.txt`, (fase 2) SAST/SBOM. (issue #13) — **código implementado 2026-10-11** (`.github/dependabot.yml` npm+actions weekly; `ci.yml` install/lint/typecheck/test/build + `npm audit --audit-level=high` + SBOM CycloneDX artefacto; `codeql.yml` SAST main+semanal; `public/.well-known/security.txt` + Cache-Control no-store; verificado `npm sbom` y YAML/JSON válidos); pendiente push a `main` para CI verde y verificar `security.txt` en prod (`CHECKLIST-OWNER.md`).
 - [~] **Track: Endurecer el almacenamiento de sesión (SEC-008, Baja)**
       _Link: [./tracks/sec_session_hardening_20261011/](./tracks/sec_session_hardening_20261011/)_ — ADR-0001 (cookie httpOnly inviable en SPA estática); PKCE + `connect-src` acotado al ref. Código implementado 2026-10-11; pendiente deploy. (issue #14)
-- [ ] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
-      _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado, docs, `envPrefix`, `connect-src`. (issue #15)
+- [~] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
+      _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado, docs, `envPrefix`, `connect-src`. (issue #15) — **código implementado 2026-10-11** (HSTS `max-age=63072000` en `vercel.json`/`netlify.toml` + test; `envPrefix` → `['PUBLIC_']` y envs renombradas a `PUBLIC_*` — cierra follow-up D4; docs Web3Forms retiradas de `servicios.md`/`tech-stack.md`/`README`; tests 468 ✓); pendiente renombrar env vars en Vercel/Netlify + `.env.local` (CHECKLIST-OWNER §2.1) junto con el deploy y verificar HSTS con `HEAD`.
 
 

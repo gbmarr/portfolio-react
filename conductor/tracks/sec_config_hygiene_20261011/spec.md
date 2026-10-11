@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_config_hygiene_20261011`
 > **Fuente:** Hallazgo **SEC-009 (Info)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🧪 En implementación (código listo; pendiente deploy + rename de env vars en los hosts).
 
 ---
 
@@ -31,10 +31,10 @@ Hallazgos menores de configuración:
 
 ## 4. Acceptance Criteria
 
-- [ ] `vercel.json`/`netlify.toml` declaran HSTS.
-- [ ] Docs sin referencias a Web3Forms.
-- [ ] `envPrefix` justificado o acotado.
-- [ ] Test de headers verde tras los cambios.
+- [x] `vercel.json`/`netlify.toml` declaran HSTS (`max-age=63072000`).
+- [x] Docs sin referencias a Web3Forms en el estado actual (`servicios.md`); los tracks históricos quedan como registro.
+- [x] `envPrefix` acotado a un único prefijo explícito `PUBLIC_` (closes follow-up D4).
+- [x] Test de headers verde tras los cambios (468 tests).
 
 ## 5. Out of Scope
 

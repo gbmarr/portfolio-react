@@ -61,9 +61,9 @@ Prerrequisitos: Node.js y `npm`, cuenta de [Supabase](https://supabase.com), [Cl
    ```
 
    Completá en `.env.local`:
-   - `DATABASE_URL` y `DATABASE_PUBLISHABLE_KEY`: valores *publishable* de tu proyecto Supabase (Settings → API). Estos prefijos se inlinean en el bundle: **son públicos por diseño**; los secretos nunca van acá.
-   - `TURNSTILE_SITE_KEY`: Site Key de Cloudflare Turnstile (hostnames del sitio + `localhost:5173`).
-   - `ARS_RATE` (opcional): cotización USD→ARS para el estimador; default `1400`.
+   - `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_PUBLISHABLE_KEY`: valores *publishable* de tu proyecto Supabase (Settings → API). Estas variables se inlinean en el bundle (prefijo `PUBLIC_`): **son públicas por diseño**; los secretos nunca van acá.
+   - `PUBLIC_TURNSTILE_SITE_KEY`: Site Key de Cloudflare Turnstile (hostnames del sitio + `localhost:5173`).
+   - `PUBLIC_ARS_RATE` (opcional): cotización USD→ARS para el estimador; default `1400`.
 
    Referencia completa y aviso de seguridad: [`.env.example`](.env.example).
 
@@ -87,7 +87,7 @@ Prerrequisitos: Node.js y `npm`, cuenta de [Supabase](https://supabase.com), [Cl
 
 ## Deploy
 
-- **Vercel** (primario): `vercel.json` ya define el rewrite SPA para todas las rutas y los headers de seguridad (CSP + noindex de superficies privadas). Variables de entorno del host: mismas de `.env.local` (publicables por diseño: `DATABASE_*`, `TURNSTILE_SITE_KEY`, `ARS_RATE`). Las secrets de producción (`TURNSTILE_SECRET`, `MAIL_PROVIDER_API_KEY`) viven solo en Supabase.
+- **Vercel** (primario): `vercel.json` ya define el rewrite SPA para todas las rutas y los headers de seguridad (CSP + HSTS + noindex de superficies privadas). Variables de entorno del host: mismas de `.env.local` (públicas por diseño, prefijo `PUBLIC_*`: `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `PUBLIC_TURNSTILE_SITE_KEY`, `PUBLIC_ARS_RATE`). Las secrets de producción (`TURNSTILE_SECRET`, `MAIL_PROVIDER_API_KEY`) viven solo en Supabase.
 - **Netlify**: `netlify.toml` es alternativo equivalente (rewrite + headers).
 
 ## Documentación de referencia

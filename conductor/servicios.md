@@ -54,7 +54,7 @@ Página única diseñada para una sola acción: conseguir contactos, vender un p
 **Procedimiento de desarrollo**
 1. **Charla:** definir la oferta, el público y la acción única que se busca. Entregables del cliente: textos, fotos, logo y datos de contacto (si no los tiene → extras copy/logo).
 2. **Presupuesto cerrado:** estructura típica (Hero → problema → beneficios → prueba social → FAQ → CTA → contacto) y fuentes de contenido.
-3. **Diseño y desarrollo:** diseño único y a medida, maquetado responsive, formulario de contacto (Web3Forms + copia a Supabase para no perder mensajes), SEO básico (meta, OG) y carga rápida (assets optimizados, cero functions).
+3. **Diseño y desarrollo:** diseño único y a medida, maquetado responsive, formulario de contacto (Turnstile anti-bot + Edge Function `contact-notify` de Supabase → `contact_messages` + email), SEO básico (meta, OG) y carga rápida (assets optimizados, cero functions).
 4. **Publicación y explicación:** deploy estático en Vercel, conexión del dominio del cliente, instrucciones de edición de textos simples.
 
 **Complejidad: baja.**
@@ -64,7 +64,7 @@ Una sola página, estática, sin navegación ni estado. El riesgo es de copy/dis
 - Dominio propio del cliente (o subdominio) — costo aparte.
 - Hosting estático (Vercel Hobby alcanza; 0 functions).
 - Contenido: textos, fotos, logo (o encargar extras).
-- Formulario: clave de Web3Forms (`FORM_ACCESS_KEY`) + Supabase opcional para copia de seguridad de mensajes.
+- Formulario: Turnstile anti-bot + Edge Function `contact-notify` (Supabase) → `contact_messages` + email. Sin claves en el bundle (Web3Forms retirado).
 - Sin DB propia, sin auth, sin pagos.
 
 **Ejemplo aplicado**
@@ -281,7 +281,7 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 
 | Necesidad | Cómo se resuelve (y cómo NO) |
 |-----------|------------------------------|
-| Formularios | Web3Forms (`FORM_ACCESS_KEY`) + copia a Supabase `contact_messages`. Nunca serverless propio. |
+| Formularios | Turnstile client-side + Edge Function `contact-notify` en Supabase (única serverless permitida por `fair-use`): inserta en `contact_messages` y envía el email. Web3Forms retirado. |
 | Datos / DB | Supabase (Postgres + RLS). Todo client-side vía SDK. |
 | Auth / roles | Supabase Auth + tabla `profiles` + RLS (`is_admin()`). Patrón ya implementado en `/admin` y `/panel`. |
 | Pagos | Mercado Pago Checkout Pro / link de pago (redirección). Nunca procesar transacciones en serverless de este deploy. |

@@ -6,12 +6,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // envPrefix inlinea en el bundle del cliente toda variable DATABASE_*,
-  // ARS_* o TURNSTILE_* (sin prefijo VITE_ para evitar el warning de "public
-  // vars" de Vercel). SOLO valores públicos pueden usar estos prefijos; la
-  // protección real es Turnstile + las políticas RLS de Supabase, no el secreto.
-  // Un prefijo explícito `PUBLIC_*` reemplazará esta convención (follow-up D4).
-  envPrefix: ['DATABASE_', 'ARS_', 'TURNSTILE_'],
+  // envPrefix inlinea en el bundle del cliente SOLO las variables que
+  // empiezan con PUBLIC_ (convención segura por diseño: ningún secreto usa ese
+  // prefijo). Antes eran DATABASE_/ARS_/TURNSTILE_: cualquier secreto con esos
+  // prefijos (ej. TURNSTILE_SECRET si se definía en el build) se habría
+  // inlineado al cliente. La protección real del formulario es Turnstile
+  // (verificación server-side) + las políticas RLS de Supabase, no el secreto.
+  envPrefix: ['PUBLIC_'],
   test: {
     environment: 'jsdom',
     // Vitest 5: 'vmThreads' reutiliza una instancia jsdom por worker manteniendo
