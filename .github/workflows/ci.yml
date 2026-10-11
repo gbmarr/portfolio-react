@@ -1,0 +1,59 @@
+# CI de seguridad y calidad (SEC-007).
+# Política audit: rompe el build solo ante vulnerabilidades HIGH/CRITICAL.
+# En `main` y en cada pull request.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: install / lint / typecheck / test / build / audit / sbom
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install (lockfile exacto)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit de dependencias (SCA) — falla en high/critical
+        run: npm audit --audit-level=high
+
+      - name: Generar SBOM (CycloneDX) de producción
+        run: npm sbom --omit=dev --sbom-format=cyclonedx > sbom.cyclonedx.json
+
+      - name: Publicar SBOM como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cyclonedx.json
+          if-no-files-found: error

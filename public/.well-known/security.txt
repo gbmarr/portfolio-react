@@ -1,0 +1,8 @@
+# Security contact for gabrielmarrero.com.ar (RFC 9116)
+# SEC-007. Contacto temporal basado en el inbox general del sitio.
+# Reemplazar por un canal dedicado de seguridad si la operación lo requiere.
+
+Contact: mailto:hola@gabrielmarrero.com.ar
+Expires: 2027-10-11T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://gabrielmarrero.com.ar/.well-known/security.txt

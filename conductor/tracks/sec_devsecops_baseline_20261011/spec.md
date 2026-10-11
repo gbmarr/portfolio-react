@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_devsecops_baseline_20261011`
 > **Fuente:** Hallazgo **SEC-007 (Baja)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🧪 En implementación (código listo; V.1 pendiente de push/CI en GitHub).
 
 ---
 
@@ -27,10 +27,10 @@ El proyecto no tiene integración continua (`.github/` ausente), ni análisis de
 
 ## 4. Acceptance Criteria
 
-- [ ] Dependabot activo y con PRs (o config verificable).
-- [ ] CI verde en `main` corriendo tests + `npm audit`.
-- [ ] `https://gabrielmarrero.com.ar/.well-known/security.txt` accesible.
-- [ ] (Fase 2) SAST/SBOM documentado.
+- [x] Dependabot activo y con PRs (config `.github/dependabot.yml` verificable; PRs automáticos tras push a main).
+- [ ] CI verde en `main` corriendo tests + `npm audit` (requiere push + ejecución de GitHub Actions).
+- [ ] `https://gabrielmarrero.com.ar/.well-known/security.txt` accesible (requiere deploy de `public/.well-known/security.txt`).
+- [x] (Fase 2) SAST/SBOM: CodeQL en `codeql.yml` + SBOM CycloneDX como artefacto en `ci.yml`.
 
 ## 5. Out of Scope
 

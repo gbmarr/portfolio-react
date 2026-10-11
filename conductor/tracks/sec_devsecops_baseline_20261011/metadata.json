@@ -1,9 +1,9 @@
 {
   "track_id": "sec_devsecops_baseline_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
+  "updated_at": "2026-10-11T16:20:00Z",
   "description": "SEC-007 (Baja). El repo no tiene CI (.github/ ausente), ni SAST, ni SCA/SBOM, ni Dependabot; las dependencias usan rangos ^. Tampoco publica /.well-known/security.txt. Falta de controles de cadena de suministro y de canal de reporte de vulnerabilidades.",
   "severity": "low",
   "cwe": ["CWE-1104", "CWE-1395"],
@@ -12,5 +12,18 @@
   "decisions": {
     "D1": "Empezar con lo barato: Dependabot/renovate + npm audit en CI + security.txt; SAST/SBOM como fase posterior."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "files": [
+      ".github/dependabot.yml",
+      ".github/workflows/ci.yml",
+      ".github/workflows/codeql.yml",
+      "public/.well-known/security.txt",
+      "vercel.json",
+      "netlify.toml"
+    ],
+    "notes": "Dependabot npm+github-actions semanal; CI (npm ci, lint, typecheck, test, build, npm audit --audit-level=high, SBOM CycloneDX vía npm sbom publicado como artefacto); CodeQL SAST js/ts (main+semanal); security.txt RFC 9116 con Cache-Control no-store en vercel.json y netlify.toml. Verificado localmente: npm audit 0 vulnerabilidades, npm sbom genera CycloneDX, YAML/JSON validados.",
+    "pending_owner": "push a main para CI verde (ci + codeql) y verificar https://gabrielmarrero.com.ar/.well-known/security.txt",
+    "tests": "no aplica (configuración; npm sbom y sintaxis YAML/JSON verificados)"
+  }
 }

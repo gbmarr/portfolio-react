@@ -8,6 +8,12 @@
   to = "/index.html"
   status = 200
 
+# security.txt (RFC 9116): no cachear
+[[headers]]
+  for = "/.well-known/security.txt"
+  [headers.values]
+    Cache-Control = "no-store"
+
 # Security headers (misma política CSP que vercel.json)
 [[headers]]
   for = "/*"
