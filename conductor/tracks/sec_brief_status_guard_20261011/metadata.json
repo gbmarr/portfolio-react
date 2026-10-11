@@ -1,16 +1,24 @@
 {
   "track_id": "sec_brief_status_guard_20261011",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-11T00:00:00Z",
-  "updated_at": "2026-10-11T00:00:00Z",
-  "description": "SEC-006 (Baja). El trigger guard_brief_admin_columns (0005:21-42) impide que un cliente no-admin modifique service_type o extra_ids de project_briefs, pero NO protege status. La app calcula status en cliente (briefs.ts:81-99), asi que un cliente podria fijar status=completado sin cumplir los requisitos, o viceversa, alterando la logica de negocio del brief.",
+  "updated_at": "2026-10-11T15:35:00Z",
+  "description": "SEC-006 (Baja). El trigger guard_brief_admin_columns (0005:21-42) impide que un cliente no-admin modifique service_type o extra_ids de project_briefs, pero NO protege status. La app calculaba status en cliente (briefs.ts), asi que un cliente podia fijar status=completado sin cumplir los requisitos, o viceversa, alterando la logica de negocio del brief.",
   "severity": "low",
   "cwe": ["CWE-602", "CWE-863"],
   "owasp": ["A01:2021", "A04:2021"],
   "source": "auditoría de seguridad run-2 (.scratch/security-audit/run-2/REPORT.md)",
   "decisions": {
-    "D1": "Extender el guard para que status sea admin-only, o derivarlo server-side en un trigger."
+    "D1": "Derivar status en la base: compute_brief_status(service_type, extra_ids, answers) espeja computeBriefStatus() del frontend; guard_brief_admin_columns fuerza el valor derivado para no-admin; updateBriefAnswers solo envia { answers }."
   },
-  "results": {}
+  "results": {
+    "code_implemented": "2026-10-11",
+    "migration": "supabase/migrations/0011_brief_status_derive.sql",
+    "tests": "70 archivos / 465 tests verdes (briefs.test.ts: payload sin status)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "compute_brief_status + brief_answer_ok en SQL; el cliente ya no envia status (src/lib/briefs.ts). Admin conserva control de status. Espejo TS/SQL documentado para mantenimiento conjunto.",
+    "pending_owner": "aplicar migración 0011 en SQL Editor (CHECKLIST-OWNER.md §1)"
+  }
 }

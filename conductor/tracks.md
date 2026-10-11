@@ -58,8 +58,8 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
       _Link: [./tracks/sec_mail_detail_leak_20261011/](./tracks/sec_mail_detail_leak_20261011/)_ — devolver error genérico y loguear server-side. (issue #10) — **código implementado 2026-10-11** (`email-result.ts` puro + test; respuesta al cliente `{ok:false,error:'mail-send'}` sin detail; `logMailError` server-side; tests 465 ✓); pendiente deploy de `contact-notify` con el lote final.
 - [~] **Track: Restringir el auto-registro por magic link (SEC-005, Baja)**
       _Link: [./tracks/sec_magiclink_signup_20261011/](./tracks/sec_magiclink_signup_20261011/)_ — `shouldCreateUser: false` sin romper invitaciones. (issue #11) — **código implementado 2026-10-11** (`signInWithMagicLink` sin auto-registro + `user_not_found` indistinguible; `inviteByMagicLink` crea cuenta para invitaciones; tests 463 ✓).
-- [ ] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**
-      _Link: [./tracks/sec_brief_status_guard_20261011/](./tracks/sec_brief_status_guard_20261011/)_ — extender el guard o derivar `status` server-side. (issue #12)
+- [~] **Track: Proteger `project_briefs.status` (SEC-006, Baja)**
+      _Link: [./tracks/sec_brief_status_guard_20261011/](./tracks/sec_brief_status_guard_20261011/)_ — extender el guard o derivar `status` server-side. (issue #12) — **código implementado 2026-10-11** (migración `0011`: `compute_brief_status` SQL espejo de `computeBriefStatus`; guard fuerza el valor derivado para no-admin; `updateBriefAnswers` ya no envía `status`; tests 465 ✓); pendiente aplicar `0011` en Supabase (`CHECKLIST-OWNER.md`).
 - [ ] **Track: Línea base DevSecOps y cadena de suministro (SEC-007, Baja)**
       _Link: [./tracks/sec_devsecops_baseline_20261011/](./tracks/sec_devsecops_baseline_20261011/)_ — Dependabot, CI con `npm audit`, `security.txt`, (fase 2) SAST/SBOM. (issue #13)
 - [ ] **Track: Endurecer el almacenamiento de sesión (SEC-008, Baja)**

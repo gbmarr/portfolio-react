@@ -1,7 +1,6 @@
 import { supabase } from './supabase'
 import type { EstimateTierId } from '../data/estimate'
-import { computeBriefStatus, getBriefTemplate } from '../data/briefTemplates'
-import type { BriefAnswers, BriefStatus, ProjectBrief } from './types'
+import type { BriefAnswers, ProjectBrief } from './types'
 
 type Result<T> = { data: T | null; error: { message: string } | null }
 
@@ -77,7 +76,10 @@ export async function upsertBrief(
   return updated.data as ProjectBrief
 }
 
-/** Guarda las respuestas del cliente y recalcula el estado (autocalculado). */
+/**
+ * Guarda las respuestas del cliente. El `status` lo deriva la base
+ * (compute_brief_status, SEC-006): el cliente ya no lo envía.
+ */
 export async function updateBriefAnswers(
   projectId: string,
   answers: BriefAnswers,
@@ -85,12 +87,9 @@ export async function updateBriefAnswers(
   const current = await getBrief(projectId)
   if (!current) throw new Error('Brief no encontrado')
 
-  const template = getBriefTemplate(current.service_type)
-  const status: BriefStatus = computeBriefStatus(template, current.extra_ids, answers)
-
   const updated = await supabase
     .from('project_briefs')
-    .update({ answers, status })
+    .update({ answers })
     .eq('project_id', projectId)
     .select()
     .single()

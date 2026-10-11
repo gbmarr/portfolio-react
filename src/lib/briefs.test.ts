@@ -144,7 +144,7 @@ describe('upsertBrief', () => {
 })
 
 describe('updateBriefAnswers', () => {
-  it('guarda respuestas y marca completado cuando todos los obligatorios están respondidos', async () => {
+  it('envía solo las respuestas y deja el estado al servidor (SEC-006)', async () => {
     h.tableResults.set('project_briefs', { data: briefRow, error: null })
     const answers: Record<string, string> = {
       nombre: 'Mi marca',
@@ -158,10 +158,12 @@ describe('updateBriefAnswers', () => {
     await updateBriefAnswers('p1', answers)
 
     const updateCall = h.calls.find((call) => call.method === 'update')
-    expect(updateCall?.args[0]).toMatchObject({ answers, status: 'completado' })
+    expect(updateCall?.args[0]).toEqual({ answers })
+    // El cliente ya no calcula ni envía status: lo deriva la base.
+    expect(updateCall?.args[0]).not.toHaveProperty('status')
   })
 
-  it('acepta respuestas multi-valor (chips) al calcular el estado', async () => {
+  it('acepta respuestas multi-valor (chips) sin enviar status', async () => {
     h.tableResults.set('project_briefs', { data: briefRow, error: null })
     const answers = {
       nombre: 'Mi marca',
@@ -175,16 +177,17 @@ describe('updateBriefAnswers', () => {
     await updateBriefAnswers('p1', answers)
 
     const updateCall = h.calls.find((call) => call.method === 'update')
-    expect(updateCall?.args[0]).toMatchObject({ answers, status: 'completado' })
+    expect(updateCall?.args[0]).toEqual({ answers })
+    expect(updateCall?.args[0]).not.toHaveProperty('status')
   })
 
-  it('deja el brief en pendiente cuando faltan obligatorios', async () => {
+  it('no envía status aunque el cliente quisiera forzar pendiente', async () => {
     h.tableResults.set('project_briefs', { data: briefRow, error: null })
-    const answers: Record<string, string> = { nombre: 'Mi marca' }
-    await updateBriefAnswers('p1', answers)
+    await updateBriefAnswers('p1', { nombre: 'Mi marca' })
 
     const updateCall = h.calls.find((call) => call.method === 'update')
-    expect(updateCall?.args[0]).toMatchObject({ answers, status: 'pendiente' })
+    expect(updateCall?.args[0]).toEqual({ answers: { nombre: 'Mi marca' } })
+    expect(updateCall?.args[0]).not.toHaveProperty('status')
   })
 
   it('lanza si el proyecto no tiene brief', async () => {

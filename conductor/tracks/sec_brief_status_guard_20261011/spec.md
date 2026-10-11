@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_brief_status_guard_20261011`
 > **Fuente:** Hallazgo **SEC-006 (Baja)** de la auditoría de seguridad run-2.
-> **Estado:** 🔜 Pendiente.
+> **Estado:** 🧪 En implementación — código listo (migración 0011 + `updateBriefAnswers` sin `status`); pendiente aplicar la migración en Supabase.
 
 ---
 
@@ -25,11 +25,17 @@ El trigger `guard_brief_admin_columns` (`0005:21-42`) bloquea cambios de `servic
 
 ## 4. Acceptance Criteria
 
-- [ ] Cliente intentando `status='completado'` sin respuestas válidas no lo logra.
-- [ ] El brief pasa a `completado` por la lógica correcta.
-- [ ] `npm run test` / `typecheck` / `lint` verdes.
+- [x] Cliente intentando `status='completado'` sin respuestas válidas no lo logra (la base lo deriva a `'pendiente'` — migración 0011).
+- [x] El brief pasa a `completado` por la lógica correcta (`compute_brief_status` server-side, espejo de `computeBriefStatus`).
+- [x] `npm run test` / `typecheck` / `lint` verdes.
 
 ## 5. Out of Scope
 
 - Rediseñar el brief o sus preguntas.
 - Otros campos del brief.
+
+---
+
+## 6. Decisión de diseño (D1)
+
+Se eligió **derivar `status` en la base** (alternativa b del plan): nueva función `compute_brief_status(service_type, extra_ids, answers)` (espejo SQL de `src/data/briefTemplates.ts → computeBriefStatus`) y el guard `guard_brief_admin_columns` fuerza el valor derivado para no-admin. El cliente deja de enviar `status` (`updateBriefAnswers` → solo `{ answers }`). El admin conserva control total del `status`.
