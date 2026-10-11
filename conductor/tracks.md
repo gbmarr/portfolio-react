@@ -29,8 +29,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (análisis 2026-10-11). Estado: `pending` (sin implementar) salvo los marcados. Cada uno tiene su issue en GitHub (`gbmarr/portfolio-react`).
 
-- [ ] **Track: Documentar README del proyecto**
-      _Link: [./tracks/readme_docs_20261011/](./tracks/readme_docs_20261011/)_ — Gap 1 del reporte MVP: reemplazar el README default de Vite por docs reales (producto, stack, setup, scripts, superficies, deploy). Docs-only.
+- [x] **Track: Documentar README del proyecto**
+      _Link: [./tracks/readme_docs_20261011/](./tracks/readme_docs_20261011/)_ — Gap 1 del reporte MVP: reemplazar el README default de Vite por docs reales (producto, stack, setup, scripts, superficies, deploy). Docs-only. **Implementado 2026-10-11** (issue #1).
 - [ ] **Track: Code-splitting de paneles admin/cliente**
       _Link: [./tracks/code_splitting_20261011/](./tracks/code_splitting_20261011/)_ — Gap 2 (bundle 574 kB > 500 kB): React.lazy + Suspense para `/admin/*` y `/panel/*` en `AppRouter.tsx`. Decisión: lazy de paneles (confirmada con el usuario).
 - [x] **Track: Cotización arsRate configurable del estimador**

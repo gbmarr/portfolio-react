@@ -1,9 +1,10 @@
 {
   "track_id": "readme_docs_20261011",
   "type": "docs",
-  "status": "pending",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
   "updated_at": "2026-10-11T00:00:00Z",
+  "completed_at": "2026-10-11T00:00:00Z",
   "description": "Reemplazar el README.md por defecto del template Vite por la documentación real del producto: qué es el sitio, stack, setup local (env vars, migraciones Supabase, Edge Function contact-notify, Turnstile), scripts disponibles, deploy y superficies del sistema.",
   "decisions": {
     "D1": "Un único README.md en la raíz (sin duplicar conductor/): enlaza a conductor/product.md, tech-stack.md y .env.example",
