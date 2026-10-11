@@ -1,9 +1,10 @@
 {
   "track_id": "lint_cleanup_20261011",
   "type": "refactor",
-  "status": "pending",
+  "status": "completed",
   "created_at": "2026-10-11T00:00:00Z",
   "updated_at": "2026-10-11T00:00:00Z",
+  "completed_at": "2026-10-11T00:00:00Z",
   "description": "Eliminar los 2 warnings preexistentes de react-refresh/only-export-components en src/lib/auth.tsx (exporta AuthProvider + useAuth) y src/pages/client/ClientProjectsPage.tsx (exporta componente + constante/función). Mover los exports no-componentes a módulos separados sin cambiar la API pública.",
   "decisions": {
     "D1": "Separar en módulos (refactor limpio) en lugar de desactivar la regla con eslint-disable",

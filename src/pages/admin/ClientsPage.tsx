@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listClients, type ClientRow } from '../../lib/clients'
-import { useAuth } from '../../lib/auth'
+import { useAuth } from '../../lib/auth-context'
 import { Badge } from '../../components/ui/Badge'
 import { panelCopy } from '../../data/panel'
 

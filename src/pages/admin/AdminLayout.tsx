@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../lib/auth'
+import { useAuth } from '../../lib/auth-context'
 import { panelCopy } from '../../data/panel'
 
 const navItems = [

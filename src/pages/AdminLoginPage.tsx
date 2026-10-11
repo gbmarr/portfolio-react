@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../lib/auth'
+import { useAuth } from '../lib/auth-context'
 import { Button } from '../components/Button'
 import { Container } from '../components/Container'
 import { FormField } from '../components/ui/FormField'

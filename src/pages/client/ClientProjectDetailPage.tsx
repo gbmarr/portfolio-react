@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { ClientBrief } from './ClientBrief'
-import { useAuth } from '../../lib/auth'
+import { useAuth } from '../../lib/auth-context'
 import { getBrief } from '../../lib/briefs'
 import { formatDate } from '../../lib/format'
 import {

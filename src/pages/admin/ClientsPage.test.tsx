@@ -10,7 +10,7 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock('../../lib/clients', () => ({ listClients: h.listClients }))
-vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
+vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 beforeEach(() => {
   h.useAuth.mockReturnValue({

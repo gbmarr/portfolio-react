@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { ClientProjectsPage, computeProgress } from './ClientProjectsPage'
+import { ClientProjectsPage } from './ClientProjectsPage'
+import { computeProgress } from '../../lib/projects'
 import type { Project, ProjectStage } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
@@ -9,7 +10,11 @@ const h = vi.hoisted(() => ({
   listStages: vi.fn(),
 }))
 
-vi.mock('../../lib/projects', () => ({ listProjects: h.listProjects, listStages: h.listStages }))
+vi.mock('../../lib/projects', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/projects')>()),
+  listProjects: h.listProjects,
+  listStages: h.listStages,
+}))
 
 const project = (over: Partial<Project> = {}): Project => ({
   id: 'p1',

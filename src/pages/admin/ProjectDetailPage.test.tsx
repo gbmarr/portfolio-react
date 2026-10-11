@@ -31,7 +31,7 @@ vi.mock('../../lib/projects', () => ({
   updateProject: h.updateProject,
 }))
 vi.mock('../../lib/briefs', () => ({ getBrief: h.getBrief }))
-vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
+vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 beforeEach(() => {
   h.useAuth.mockReturnValue({

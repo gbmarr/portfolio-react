@@ -1,7 +1,5 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -10,19 +8,7 @@ import {
 import type { Session } from '@supabase/supabase-js'
 import { isSupabaseConfigured, supabase } from './supabase'
 import type { Profile } from './types'
-
-export type AuthContextValue = {
-  session: Session | null
-  profile: Profile | null
-  /** `true` mientras se resuelve la sesión o el perfil. */
-  loading: boolean
-  configured: boolean
-  signInWithMagicLink: (email: string) => Promise<void>
-  signInWithPassword: (email: string, password: string) => Promise<void>
-  signOut: () => Promise<void>
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+import { AuthContext, type AuthContextValue } from './auth-context'
 
 function assertConfigured(): void {
   if (!isSupabaseConfigured) {
@@ -138,12 +124,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth(): AuthContextValue {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de <AuthProvider>')
-  }
-  return context
 }

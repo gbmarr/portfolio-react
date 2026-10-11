@@ -12,7 +12,7 @@ import {
   updateProject,
 } from '../../lib/projects'
 import { getBrief } from '../../lib/briefs'
-import { useAuth } from '../../lib/auth'
+import { useAuth } from '../../lib/auth-context'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { StageEditor } from './StageEditor'

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import { formatDate } from '../../lib/format'
-import { listProjects, listStages } from '../../lib/projects'
+import { listProjects, listStages, computeProgress } from '../../lib/projects'
 import type { Project, ProjectStage } from '../../lib/types'
 
 export type ClientProjectRow = {
@@ -11,12 +11,6 @@ export type ClientProjectRow = {
   stages: ProjectStage[]
   done: number
   total: number
-}
-
-/** Progreso del proyecto: etapas completadas sobre el total visible. */
-export function computeProgress(stages: ProjectStage[]): { done: number; total: number } {
-  const done = stages.filter((stage) => stage.status === 'completada').length
-  return { done, total: stages.length }
 }
 
 type LoadState =

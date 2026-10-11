@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   useAuth: vi.fn(),
 }))
 
-vi.mock('../lib/auth', () => ({ useAuth: mocks.useAuth }))
+vi.mock('../lib/auth-context', () => ({ useAuth: mocks.useAuth }))
 
 import { LoginPage } from './LoginPage'
 import { panelCopy } from '../data/panel'

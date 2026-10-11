@@ -57,6 +57,15 @@ export async function deleteProject(id: string): Promise<void> {
 // Etapas (timeline)
 // ----------------------------------------------------------------------------
 
+/**
+ * Progreso del proyecto: etapas completadas sobre el total visible.
+ * Lógica pura del panel del cliente, sin I/O.
+ */
+export function computeProgress(stages: ProjectStage[]): { done: number; total: number } {
+  const done = stages.filter((stage) => stage.status === 'completada').length
+  return { done, total: stages.length }
+}
+
 export async function listStages(projectId: string): Promise<ProjectStage[]> {
   const result = await supabase
     .from('project_stages')

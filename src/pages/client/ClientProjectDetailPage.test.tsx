@@ -21,7 +21,7 @@ const h = vi.hoisted(() => ({
   updateBriefAnswers: vi.fn(),
 }))
 
-vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
+vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 vi.mock('../../lib/projects', () => ({
   getProject: h.getProject,
   listStages: h.listStages,

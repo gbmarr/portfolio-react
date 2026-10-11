@@ -8,7 +8,7 @@ const h = vi.hoisted(() => ({
   useAuth: vi.fn(),
 }))
 
-vi.mock('../../lib/auth', () => ({ useAuth: h.useAuth }))
+vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 function renderLayout() {
   return render(

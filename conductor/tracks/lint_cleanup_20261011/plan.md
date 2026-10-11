@@ -11,30 +11,30 @@
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T0.1 | Grep de `useAuth`, `AuthProvider` y demás exports de `src/lib/auth.tsx` en el repo | `src/**` | ⬜ |
-| T0.2 | Grep de los exports no-componente de `ClientProjectsPage.tsx` | `src/**` | ⬜ |
+| T0.1 | Grep de `useAuth`, `AuthProvider` y demás exports de `src/lib/auth.tsx` en el repo | `src/**` | ☑️ |
+| T0.2 | Grep de los exports no-componente de `ClientProjectsPage.tsx` | `src/**` | ☑️ |
 
 ## Fase T1 — Refactor de `src/lib/auth.tsx`
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T1.1 | Crear módulo del hook/helpers no-componentes e importarlos desde el provider | `src/lib/auth.tsx` + nuevo archivo | ⬜ |
-| T1.2 | Actualizar imports de los consumidores (guard, pages, tests) | `src/routes/guards.tsx`, `src/pages/**` | ⬜ |
-| T1.3 | Correr tests de auth y del router | `src/lib/auth.test.tsx`, `src/routes/AppRouter.test.tsx` | ⬜ |
+| T1.1 | Crear módulo del hook/helpers no-componentes e importarlos desde el provider | `src/lib/auth.tsx` + `src/lib/auth-context.ts` | ☑️ |
+| T1.2 | Actualizar imports de los consumidores (guard, pages, tests) | `src/routes/guards.tsx`, `src/pages/**` | ☑️ |
+| T1.3 | Correr tests de auth y del router | `src/lib/auth.test.tsx`, `src/routes/AppRouter.test.tsx` | ☑️ |
 
 ## Fase T2 — Refactor de `ClientProjectsPage.tsx`
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T2.1 | Mover la constante/función no-componente al módulo de data/lib correspondiente | `src/pages/client/ClientProjectsPage.tsx` + destino | ⬜ |
-| T2.2 | Actualizar imports y tests de la página | `src/pages/client/ClientProjectsPage.test.tsx` | ⬜ |
+| T2.1 | Mover la constante/función no-componente al módulo de data/lib correspondiente | `src/lib/projects.ts` (+ `ClientProjectsPage.tsx`) | ☑️ |
+| T2.2 | Actualizar imports y tests de la página | `src/pages/client/ClientProjectsPage.test.tsx` | ☑️ |
 
 ## Fase V — Verificación final
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| V.1 | `npm run lint` (0 warnings) | ESLint | ⬜ |
-| V.2 | `npm run typecheck` / `npm run test` / `npm run coverage` (≥80%) | Vitest | ⬜ |
+| V.1 | `npm run lint` (0 warnings) | ESLint | ☑️ |
+| V.2 | `npm run typecheck` / `npm run test` / `npm run coverage` (≥80%) | Vitest | ☑️ |
 | V.3 | Commit `refactor(lint): separar exports no-componentes, 0 warnings` + docs del track | git | ⬜ |
 
 ---

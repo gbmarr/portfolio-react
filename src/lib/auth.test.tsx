@@ -30,7 +30,8 @@ vi.mock('./supabase', () => ({
   },
 }))
 
-import { AuthProvider, useAuth } from './auth'
+import { AuthProvider } from './auth'
+import { useAuth } from './auth-context'
 
 type AuthCallback = (event: string, session: unknown) => void
 

@@ -37,8 +37,8 @@ Tracks creados con spec + plan a partir del **reporte de aptitud MVP/v1** (anál
       _Link: [./tracks/ars_rate_config_20261011/](./tracks/ars_rate_config_20261011/)_ — Gap 3: env var pública `ARS_RATE` con prefijo `ARS_` en `vite.config.ts`, fallback 1400, helper `resolveArsRate` testeado. Decisión: env var con fallback (confirmada con el usuario). **Implementado 2026-10-11** (issue #3).
 - [ ] **Track: Sincronizar documentación de producto**
       _Link: [./tracks/docs_sync_20261011/](./tracks/docs_sync_20261011/)_ — Gap 4: retirar el requisito bilingüe ES/EN de `product-guidelines.md` (el sitio es solo español) y corregir `product.md` (dominio `gabrielmarrero.com.ar`, estado 2026-10-11, Lighthouse fechado).
-- [ ] **Track: Eliminar warnings de react-refresh/only-export-components**
-      _Link: [./tracks/lint_cleanup_20261011/](./tracks/lint_cleanup_20261011/)_ — Gap 5: separar exports no-componentes de `src/lib/auth.tsx` y `src/pages/client/ClientProjectsPage.tsx`; lint target 0 warnings sin `eslint-disable`.
+- [x] **Track: Eliminar warnings de react-refresh/only-export-components**
+      _Link: [./tracks/lint_cleanup_20261011/](./tracks/lint_cleanup_20261011/)_ — Gap 5: separar exports no-componentes de `src/lib/auth.tsx` (→ `auth-context.ts`) y `src/pages/client/ClientProjectsPage.tsx` (`computeProgress` → `src/lib/projects.ts`); lint 0 warnings sin `eslint-disable`. **Implementado 2026-10-11** (issue #5).
 - [ ] **Track: Endurecer tests — cobertura Turnstile y velocidad de la suite**
       _Link: [./tracks/test_hardening_20261011/](./tracks/test_hardening_20261011/)_ — Gap 6: subir branches de `Turnstile.tsx` de ~50% a ≥80% (tests de callbacks/ausencia de widget) + acelerar suite (~98s) con pool `vmThreads` de Vitest 5. Decisiones confirmadas con el usuario.
 
