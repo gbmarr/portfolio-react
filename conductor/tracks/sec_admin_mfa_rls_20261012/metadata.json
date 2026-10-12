@@ -1,0 +1,25 @@
+{
+  "track_id": "sec_admin_mfa_rls_20261012",
+  "type": "security",
+  "status": "in_progress",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "RT-01 (Alta). La MFA del admin (SEC-002) es solo client-side; is_admin() en RLS mira solo role='admin', sin el claim aal. Un token AAL1 (password grant) accede a todo el panel via PostgREST. Endurecer la autorizacion admin a AAL2 con un choke point unico.",
+  "severity": "high",
+  "cwe": ["CWE-308", "CWE-287"],
+  "owasp": ["A07:2021"],
+  "asvs": ["V2.2", "V2.7", "V6.2"],
+  "source": "red team 2026-10-12 (conductor/security/red-team-20261012)",
+  "ticket": "gbmarr/portfolio-react#25",
+  "decisions": {
+    "D1": "Choke point unico: is_admin() pasa a delegar en is_admin_aal2() (rol admin + aal2); no se reescriben ~20 policies."
+  },
+  "results": {
+    "code_implemented": "2026-10-12",
+    "migration": "supabase/migrations/0013_admin_aal2.sql (pendiente de aplicar por el owner)",
+    "tests": "72 archivos / 493 tests verdes (incluye src/rlsAdmin.test.ts)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "pending_owner": "aplicar la migracion 0013 en Supabase (ver CHECKLIST-OWNER.md) y verificar AAL1->403 / AAL2->OK"
+  }
+}

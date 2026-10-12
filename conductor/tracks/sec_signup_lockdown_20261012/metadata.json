@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_signup_lockdown_20261012",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "RT-02 (Media). La restriccion de auto-registro es solo de UI: /auth/v1/otp acepta create_user=true con la publishable key. Si un email controlable figura como client_email, el atacante crea cuenta y accede al proyecto (tenancy por email, sin FK).",
+  "severity": "medium",
+  "cwe": ["CWE-287"],
+  "owasp": ["A01:2021", "A07:2021"],
+  "asvs": ["V2.1"],
+  "source": "red team 2026-10-12 (conductor/security/red-team-20261012)",
+  "ticket": "gbmarr/portfolio-react#27",
+  "decisions": {},
+  "results": {}
+}

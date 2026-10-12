@@ -81,4 +81,19 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
 - [x] **Track: Hardening envío de email del formulario de contacto (SEC-005/006/007)**
       _Link: [./tracks/sec_contact_email_hardening_20261011/](./tracks/sec_contact_email_hardening_20261011/)_ — solicitud del owner (restringir proveedores de email) → **ADR-0002**: allowlist rechazado (security theater). Implementado: `validation.ts` puro con validación server-side anti-CRLF (`name`/`email`), `reply_to` solo si email válido, `isTurnstileResponseValid` (action + hostname), blocklist de dominios desechables; migración `0012` con CHECK constraints `[[:cntrl:]]` en `name`/`email`; paridad cliente. **Completado 2026-10-12** (commit `62a9641`): migración `0012` aplicada en Supabase + Edge Function desplegada y verificada en producción (email normal llega, WhatsApp sin `reply_to`, desechable → 400, CRLF → 400).
 
+---
+
+## Red Team — evaluación adversarial autorizada (2026-10-12)
+
+Tracks creados con spec + plan a partir del **paper red team** (`conductor/security/red-team-20261012/`: informe de cadena de ataque, hallazgos individuales y plan de pruebas). Alcance: repo local, solo lectura de código (sin pruebas activas). Estado: `pending` salvo el marcado; cada uno con su issue en GitHub (`gbmarr/portfolio-react`).
+
+- [ ] **Track: MFA admin aplicada en RLS (RT-01, Alta)**
+      _Link: [./tracks/sec_admin_mfa_rls_20261012/](./tracks/sec_admin_mfa_rls_20261012/)_ — la MFA de SEC-002 es solo client-side; `is_admin()` en RLS no mira el claim `aal`. Un token AAL1 (password grant) accede a todo el panel vía PostgREST. Choke point único: `is_admin_aal2()` + `is_admin()` delegado. **Código listo 2026-10-12** (72 archivos / 493 tests verdes); pendiente aplicar la migración `0013` en Supabase (owner) — ver `CHECKLIST-OWNER.md` (issue #25).
+- [ ] **Track: Audit log de acciones admin (RT-04, Media)**
+      _Link: [./tracks/sec_admin_audit_log_20261012/](./tracks/sec_admin_audit_log_20261012/)_ — no hay `audit_log`; el abuso admin es indetectable. Tabla + triggers + consultas de detección. Depende de RT-01 para la detección efectiva (issue #26).
+- [ ] **Track: Cerrar self-signup por API + validar `client_email` (RT-02, Media)**
+      _Link: [./tracks/sec_signup_lockdown_20261012/](./tracks/sec_signup_lockdown_20261012/)_ — `shouldCreateUser:false` es solo UI; `/auth/v1/otp` acepta `create_user=true`. `disable_signup` (owner) + validación/normalización de `client_email` (issue #27).
+- [ ] **Track: Ownership en UPDATE de `milestone_approvals` (RT-03, Baja)**
+      _Link: [./tracks/sec_approval_rls_20261012/](./tracks/sec_approval_rls_20261012/)_ — el `with check` del UPDATE no re-valida la pertenencia del proyecto (a diferencia del INSERT). Impacto de integridad acotado (issue #28).
+
 

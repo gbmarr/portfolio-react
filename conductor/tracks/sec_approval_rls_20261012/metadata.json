@@ -1,0 +1,16 @@
+{
+  "track_id": "sec_approval_rls_20261012",
+  "type": "security",
+  "status": "pending",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "RT-03 (Baja). La policy de UPDATE de milestone_approvals solo exige auth.uid()=client_id; no re-valida la pertenencia del proyecto (a diferencia del INSERT). Impacto de integridad acotado. Anadir ownership al with check.",
+  "severity": "low",
+  "cwe": ["CWE-639"],
+  "owasp": ["A01:2021"],
+  "asvs": ["V4.1"],
+  "source": "red team 2026-10-12 (conductor/security/red-team-20261012)",
+  "ticket": "gbmarr/portfolio-react#28",
+  "decisions": {},
+  "results": {}
+}
