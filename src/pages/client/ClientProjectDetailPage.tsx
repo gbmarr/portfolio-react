@@ -6,25 +6,16 @@ import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { ClientBrief } from './ClientBrief'
 import { useAuth } from '../../lib/auth-context'
-import { getBrief } from '../../lib/briefs'
 import { formatDate } from '../../lib/format'
 import { useAsyncData } from '../../hooks/useAsyncData'
-import { decideMilestone, getProject, listApprovals, listStages } from '../../lib/projects'
+import { decideMilestone, loadProjectDetail, ProjectNotFoundError } from '../../lib/projects'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import type {
   ApprovalDecision,
   MilestoneApproval,
-  Project,
   ProjectBrief,
   ProjectStage,
 } from '../../lib/types'
-
-type Detail = {
-  project: Project
-  stages: ProjectStage[]
-  approvals: MilestoneApproval[]
-  brief: ProjectBrief | null
-}
 
 function approvalFor(approvals: MilestoneApproval[], stageId: string) {
   return approvals.find((approval) => approval.stage_id === stageId)
@@ -42,16 +33,7 @@ export function ClientProjectDetailPage() {
   const { id } = useParams()
   const { session } = useAuth()
 
-  const load = useCallback(async () => {
-    if (!id) return null
-    const [project, stages, approvals, brief] = await Promise.all([
-      getProject(id),
-      listStages(id),
-      listApprovals(id),
-      getBrief(id),
-    ])
-    return { project, stages, approvals, brief } satisfies Detail
-  }, [id])
+  const load = useCallback(async () => (id ? loadProjectDetail(id) : null), [id])
 
   const {
     data: detail,
@@ -61,9 +43,7 @@ export function ClientProjectDetailPage() {
     setData,
   } = useAsyncData(load, [load], {
     mapError: (caught) =>
-      caught instanceof Error && caught.message === 'Proyecto no encontrado'
-        ? panelCopy.client.notFound
-        : panelCopy.error.generic,
+      caught instanceof ProjectNotFoundError ? panelCopy.client.notFound : panelCopy.error.generic,
   })
 
   const [pending, setPending] = useState<{ stageId: string; decision: ApprovalDecision } | null>(

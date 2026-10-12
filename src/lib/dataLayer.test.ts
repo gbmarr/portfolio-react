@@ -47,6 +47,8 @@ import {
   listApprovals,
   listProjects,
   listStages,
+  loadProjectDetail,
+  ProjectNotFoundError,
   reorderStages,
   updateProject,
   updateStage,
@@ -80,6 +82,34 @@ describe('proyectos', () => {
 
     h.tableResults.set('projects', { data: null, error: { message: 'RLS' } })
     await expect(getProject('p1')).rejects.toThrow('RLS')
+  })
+
+  it('getProject lanza ProjectNotFoundError tipado cuando no existe', async () => {
+    h.tableResults.set('projects', { data: null, error: null })
+    await expect(getProject('nope')).rejects.toBeInstanceOf(ProjectNotFoundError)
+  })
+
+  it('loadProjectDetail ensambla proyecto, etapas, aprobaciones y brief', async () => {
+    h.tableResults.set('projects', { data: { id: 'p1' }, error: null })
+    h.tableResults.set('project_stages', { data: [{ id: 's1' }], error: null })
+    h.tableResults.set('milestone_approvals', { data: [{ id: 'a1' }], error: null })
+    h.tableResults.set('project_briefs', { data: { id: 'b1' }, error: null })
+
+    await expect(loadProjectDetail('p1')).resolves.toEqual({
+      project: { id: 'p1' },
+      stages: [{ id: 's1' }],
+      approvals: [{ id: 'a1' }],
+      brief: { id: 'b1' },
+    })
+  })
+
+  it('loadProjectDetail propaga el no-encontrado tipado', async () => {
+    h.tableResults.set('projects', { data: null, error: null })
+    h.tableResults.set('project_stages', { data: [], error: null })
+    h.tableResults.set('milestone_approvals', { data: [], error: null })
+    h.tableResults.set('project_briefs', { data: null, error: null })
+
+    await expect(loadProjectDetail('nope')).rejects.toBeInstanceOf(ProjectNotFoundError)
   })
 
   it('createProject propaga errores del servidor', async () => {

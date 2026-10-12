@@ -20,9 +20,14 @@ const h = vi.hoisted(() => ({
 }))
 
 vi.mock('../../lib/projects', () => ({
-  getProject: h.getProject,
-  listStages: h.listStages,
-  listApprovals: h.listApprovals,
+  loadProjectDetail: async (id: string) => {
+    const [project, stages, approvals] = await Promise.all([
+      h.getProject(id),
+      h.listStages(id),
+      h.listApprovals(id),
+    ])
+    return { project, stages, approvals, brief: await h.getBrief(id) }
+  },
   createStage: h.createStage,
   updateStage: h.updateStage,
   deleteStage: h.deleteStage,

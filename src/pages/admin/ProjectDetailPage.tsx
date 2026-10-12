@@ -4,14 +4,11 @@ import {
   createStage,
   deleteProject,
   deleteStage,
-  getProject,
-  listApprovals,
-  listStages,
+  loadProjectDetail,
   reorderStages,
   updateStage,
   updateProject,
 } from '../../lib/projects'
-import { getBrief } from '../../lib/briefs'
 import { useAuth } from '../../lib/auth-context'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
@@ -23,14 +20,6 @@ import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import { estimateTiers, estimateExtras } from '../../data/estimate'
 import { getBriefTemplate, getExtraSections } from '../../data/briefTemplates'
 import { getStageTemplate } from '../../data/stageTemplates'
-import type { MilestoneApproval, Project, ProjectBrief, ProjectStage } from '../../lib/types'
-
-type Detail = {
-  project: Project
-  stages: ProjectStage[]
-  approvals: MilestoneApproval[]
-  brief: ProjectBrief | null
-}
 
 /** Detalle del proyecto: datos, timeline editable e invitación. */
 export function ProjectDetailPage() {
@@ -38,16 +27,7 @@ export function ProjectDetailPage() {
   const navigate = useNavigate()
   const { inviteByMagicLink } = useAuth()
 
-  const load = useCallback(async () => {
-    if (!id) return null
-    const [project, stages, approvals, brief] = await Promise.all([
-      getProject(id),
-      listStages(id),
-      listApprovals(id),
-      getBrief(id),
-    ])
-    return { project, stages, approvals, brief } satisfies Detail
-  }, [id])
+  const load = useCallback(async () => (id ? loadProjectDetail(id) : null), [id])
 
   const { data: detail, error, loading, reload } = useAsyncData(load, [load])
 

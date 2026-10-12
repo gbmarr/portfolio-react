@@ -11,21 +11,37 @@ import type {
   ProjectStage,
 } from '../../lib/types'
 
-const h = vi.hoisted(() => ({
-  useAuth: vi.fn(),
-  getProject: vi.fn(),
-  listStages: vi.fn(),
-  listApprovals: vi.fn(),
-  decideMilestone: vi.fn(),
-  getBrief: vi.fn(),
-  updateBriefAnswers: vi.fn(),
-}))
+const h = vi.hoisted(() => {
+  class ProjectNotFoundError extends Error {
+    constructor(message = 'Proyecto no encontrado') {
+      super(message)
+      this.name = 'ProjectNotFoundError'
+    }
+  }
+
+  return {
+    ProjectNotFoundError,
+    useAuth: vi.fn(),
+    getProject: vi.fn(),
+    listStages: vi.fn(),
+    listApprovals: vi.fn(),
+    decideMilestone: vi.fn(),
+    getBrief: vi.fn(),
+    updateBriefAnswers: vi.fn(),
+  }
+})
 
 vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 vi.mock('../../lib/projects', () => ({
-  getProject: h.getProject,
-  listStages: h.listStages,
-  listApprovals: h.listApprovals,
+  ProjectNotFoundError: h.ProjectNotFoundError,
+  loadProjectDetail: async (id: string) => {
+    const [project, stages, approvals] = await Promise.all([
+      h.getProject(id),
+      h.listStages(id),
+      h.listApprovals(id),
+    ])
+    return { project, stages, approvals, brief: await h.getBrief(id) }
+  },
   decideMilestone: h.decideMilestone,
 }))
 vi.mock('../../lib/briefs', () => ({
@@ -121,7 +137,7 @@ describe('ClientProjectDetailPage', () => {
   })
 
   it('muestra "no encontrado" si el proyecto no existe', async () => {
-    h.getProject.mockRejectedValue(new Error('Proyecto no encontrado'))
+    h.getProject.mockRejectedValue(new h.ProjectNotFoundError())
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent('No encontramos este proyecto.')
     expect(screen.getByRole('link', { name: '← Mis proyectos' })).toHaveAttribute('href', '/panel')

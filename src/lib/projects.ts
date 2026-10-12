@@ -1,8 +1,10 @@
 import { supabase } from './supabase'
+import { getBrief } from './briefs'
 import { isValidEmail, normalizeEmail } from '../utils/email'
 import type {
   MilestoneApproval,
   Project,
+  ProjectBrief,
   ProjectInput,
   ProjectStage,
   StageInput,
@@ -41,9 +43,22 @@ export async function listProjects(): Promise<Project[]> {
   return unwrapList(result)
 }
 
+/**
+ * Error tipado de "proyecto no encontrado": los callers ramifican por tipo
+ * (`instanceof`), nunca comparando el mensaje.
+ */
+export class ProjectNotFoundError extends Error {
+  constructor(message = 'Proyecto no encontrado') {
+    super(message)
+    this.name = 'ProjectNotFoundError'
+  }
+}
+
 export async function getProject(id: string): Promise<Project> {
   const result = await supabase.from('projects').select('*').eq('id', id).maybeSingle()
-  return unwrap(result, 'Proyecto no encontrado')
+  if (result.error) throw new Error(result.error.message)
+  if (result.data === null) throw new ProjectNotFoundError()
+  return result.data
 }
 
 export async function createProject(input: ProjectInput): Promise<Project> {
@@ -67,6 +82,29 @@ export async function updateProject(id: string, patch: Partial<ProjectInput>): P
 export async function deleteProject(id: string): Promise<void> {
   const { error } = await supabase.from('projects').delete().eq('id', id)
   if (error) throw new Error(error.message)
+}
+
+/** Agregado "detalle de proyecto": proyecto + etapas + aprobaciones + brief. */
+export type ProjectDetail = {
+  project: Project
+  stages: ProjectStage[]
+  approvals: MilestoneApproval[]
+  brief: ProjectBrief | null
+}
+
+/**
+ * Ensambla el detalle completo de un proyecto detrás de un único interface.
+ * Las páginas de detalle (admin y cliente) lo consumen en vez de armar cada una
+ * el `Promise.all` de cuatro consultas.
+ */
+export async function loadProjectDetail(id: string): Promise<ProjectDetail> {
+  const [project, stages, approvals, brief] = await Promise.all([
+    getProject(id),
+    listStages(id),
+    listApprovals(id),
+    getBrief(id),
+  ])
+  return { project, stages, approvals, brief }
 }
 
 // ----------------------------------------------------------------------------
