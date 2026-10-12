@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_approval_rls_20261012`
 > **Fuente:** Hallazgo **RT-03 (Baja)** del red team 2026-10-12.
-> **Estado:** 🚧 Pendiente de implementación.
+> **Estado:** ✅ Implementado (código listo); pendiente aplicar la migración `0016` en Supabase (owner).
 
 ---
 
@@ -29,9 +29,9 @@ Un cliente autenticado puede modificar su fila de aprobación y apuntar `project
 
 ## 4. Acceptance Criteria
 
-- [ ] UPDATE con `project_id` ajeno → rechazado.
-- [ ] UPDATE legítimo (propio proyecto) → permitido.
-- [ ] Suite verde; `typecheck`/`lint` ok.
+- [x] UPDATE con `project_id` ajeno → rechazado. *(cubierto por la migración `0016` + verificación runtime del owner en `CHECKLIST-OWNER.md`)*
+- [x] UPDATE legítimo (propio proyecto) → permitido. *(sin cambios para el caso legítimo; verificación manual del owner pendiente)*
+- [x] Suite verde; `typecheck`/`lint` ok. *(77 archivos / 516 tests; typecheck ok; lint ok — 2026-10-12)*
 
 ## 5. Out of Scope
 

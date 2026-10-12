@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_approval_rls_20261012`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** 🚧 Pendiente.
+> **Status:** 🟡 Implementado (código listo); pendiente aplicar la migración `0016` en Supabase (owner).
 
 ---
 
@@ -10,16 +10,16 @@
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| T1.1 | Recrear policy de UPDATE con ownership en `using`/`with check` | `supabase/migrations/0015_approval_update_ownership.sql` | ☐ |
-| T1.2 | `CHECKLIST-OWNER.md` (aplicar/verificar) | track | ☐ |
+| T1.1 | Recrear policy de UPDATE con ownership en `using`/`with check` | `supabase/migrations/0016_approval_update_ownership.sql` | ☑️ |
+| T1.2 | `CHECKLIST-OWNER.md` (aplicar/verificar) | track | ☑️ |
 
 ## Fase V — Verificación
 
 | # | Tarea | Herramienta | Estado |
 |---|-------|-------------|--------|
-| V.1 | Test guard: la migración re-crea la policy con el `exists(...)` de ownership | Vitest | ☐ |
-| V.2 | `npm run test` / `typecheck` / `lint` | npm | ☐ |
-| V.3 | Verificación manual: update con `project_id` ajeno rechazado | owner | ☐ |
+| V.1 | Test guard: la migración re-crea la policy con el `exists(...)` de ownership | Vitest | ☑️ (`src/approvalUpdateOwnership.test.ts`, 4 tests) |
+| V.2 | `npm run test` / `typecheck` / `lint` | npm | ☑️ (77 archivos / 516 tests; typecheck ok; lint ok) |
+| V.3 | Verificación manual: update con `project_id` ajeno rechazado | owner | ☐ — ver `CHECKLIST-OWNER.md` |
 | V.4 | Commit `fix(security): ownership en UPDATE de milestone_approvals (RT-03)` | git | ☐ |
 
 ---
