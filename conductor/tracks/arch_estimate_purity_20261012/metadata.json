@@ -1,0 +1,21 @@
+{
+  "track_id": "arch_estimate_purity_20261012",
+  "type": "refactor",
+  "status": "pending",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "Candidato C6 (Speculative) de la revisión de arquitectura: computeEstimate (src/lib/estimate.ts:62-116) es profundo pero impuro — multiplica por un arsRate a nivel de módulo (resuelto en data/estimate.ts:154-157 desde import.meta.env.PUBLIC_ARS_RATE). Además MIN_SECTIONS/MAX_SECTIONS están duplicados (lib/estimate.ts:33-34 y Estimator.tsx:17-18, slider :96-97), y buildEstimateWhatsAppMessage re-deriva las extras válidas que computeEstimate ya calculó en breakdown. Inyectar arsRate por parámetro, un solo hogar para los límites y reutilizar el breakdown.",
+  "source": "revisión de arquitectura del codebase (candidato C6)",
+  "review": {
+    "strength": "Speculative",
+    "files": [
+      "src/lib/estimate.ts",
+      "src/data/estimate.ts",
+      "src/sections/Estimator.tsx"
+    ],
+    "wins": ["función pura de sus argumentos", "tests deterministas", "límites en un solo hogar"]
+  },
+  "decisions": {
+    "D1": "computeEstimate(input, arsRate = resolveArsRate(import.meta.env.PUBLIC_ARS_RATE)) para compatibilidad."
+  }
+}

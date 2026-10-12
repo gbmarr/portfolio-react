@@ -1,32 +1,15 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { listProjects } from '../../lib/projects'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
+import { useAsyncData } from '../../hooks/useAsyncData'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
-import type { Project } from '../../lib/types'
-
-type State =
-  | { loading: true; error: null; projects: null }
-  | { loading: false; error: string | null; projects: Project[] | null }
 
 /** Listado de todos los proyectos con acceso al detalle. */
 export function ProjectsListPage() {
-  const [state, setState] = useState<State>({ loading: true, error: null, projects: null })
-
-  useEffect(() => {
-    let cancelled = false
-    listProjects()
-      .then((projects) => {
-        if (!cancelled) setState({ loading: false, error: null, projects })
-      })
-      .catch(() => {
-        if (!cancelled) setState({ loading: false, error: panelCopy.error.generic, projects: null })
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { data: projects, error, loading } = useAsyncData(() => listProjects(), [])
 
   return (
     <div className="space-y-6">
@@ -40,25 +23,17 @@ export function ProjectsListPage() {
         </Link>
       </div>
 
-      {state.loading && (
-        <p role="status" className="animate-pulse text-text-muted">
-          {panelCopy.loading}
-        </p>
-      )}
+      {loading && <Loading />}
 
-      {state.error && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {state.error}
-        </p>
-      )}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
 
-      {state.projects && state.projects.length === 0 && (
+      {projects && projects.length === 0 && (
         <p className="rounded-xl border border-border bg-background/60 px-4 py-8 text-center text-text-muted">
           Todavía no hay proyectos. Creá el primero con “Nuevo proyecto”.
         </p>
       )}
 
-      {state.projects && state.projects.length > 0 && (
+      {projects && projects.length > 0 && (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-border bg-background/60 text-xs uppercase tracking-wider text-text-muted">
@@ -71,8 +46,11 @@ export function ProjectsListPage() {
               </tr>
             </thead>
             <tbody>
-              {state.projects.map((project) => (
-                <tr key={project.id} className="border-b border-border last:border-b-0 hover:bg-background/40">
+              {projects.map((project) => (
+                <tr
+                  key={project.id}
+                  className="border-b border-border last:border-b-0 hover:bg-background/40"
+                >
                   <td className="px-4 py-3">
                     <Link
                       to={`/admin/proyectos/${project.id}`}

@@ -1,0 +1,21 @@
+{
+  "track_id": "arch_project_detail_aggregate_20261012",
+  "type": "refactor",
+  "status": "pending",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "Candidato C2 (Strong) de la revisión de arquitectura: el agregado 'detalle de proyecto' (project + stages + approvals + brief) se declara y ensambla dos veces (ProjectDetailPage y ClientProjectDetailPage), y la UX de 'no encontrado' ramifica por el string exacto 'Proyecto no encontrado' producido en lib (seam filtrado). Profundizar src/lib/projects.ts con loadProjectDetail(id) + tipo ProjectDetail + error de no-encontrado tipado.",
+  "source": "revisión de arquitectura del codebase (candidato C2)",
+  "review": {
+    "strength": "Strong",
+    "files": [
+      "src/pages/admin/ProjectDetailPage.tsx",
+      "src/pages/client/ClientProjectDetailPage.tsx",
+      "src/lib/projects.ts"
+    ],
+    "wins": ["locality: el agregado se ensambla una vez", "el string-match muere", "testeable sin renderizar"]
+  },
+  "decisions": {
+    "D1": "Ubicación: src/lib/projects.ts."
+  }
+}

@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { computeKpis, type DashboardKpis } from '../../lib/dashboard'
 import { listProjects } from '../../lib/projects'
 import { listMessages } from '../../lib/messages'
 import { listBriefs } from '../../lib/briefs'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { panelCopy } from '../../data/panel'
 
 type BriefStats = { completed: number; pending: number }
-
-type State =
-  | { loading: true; error: null; kpis: null; briefs: null }
-  | { loading: false; error: string | null; kpis: DashboardKpis | null; briefs: BriefStats | null }
+type DashboardData = { kpis: DashboardKpis; briefs: BriefStats }
 
 function StatCard({
   label,
@@ -22,7 +21,10 @@ function StatCard({
   danger?: boolean
 }) {
   return (
-    <div data-testid={`stat-${label}`} className="rounded-xl border border-border bg-background/60 p-5">
+    <div
+      data-testid={`stat-${label}`}
+      className="rounded-xl border border-border bg-background/60 p-5"
+    >
       <p className="text-sm text-text-muted">{label}</p>
       <p
         className={`mt-1 font-display text-3xl font-semibold ${danger ? 'text-red-300' : 'text-text'}`}
@@ -35,57 +37,28 @@ function StatCard({
 
 /** Resumen operativo: actividad, vencimientos y mensajes. */
 export function AdminDashboard() {
-  const [state, setState] = useState<State>({ loading: true, error: null, kpis: null, briefs: null })
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const [projects, messages, briefs] = await Promise.all([
-          listProjects(),
-          listMessages(),
-          listBriefs(),
-        ])
-        if (!cancelled) {
-          const completed = briefs.filter((brief) => brief.status === 'completado').length
-          setState({
-            loading: false,
-            error: null,
-            kpis: computeKpis(projects, messages),
-            briefs: { completed, pending: briefs.length - completed },
-          })
-        }
-      } catch {
-        if (!cancelled) {
-          setState({ loading: false, error: panelCopy.error.generic, kpis: null, briefs: null })
-        }
-      }
-    }
-
-    void load()
-    return () => {
-      cancelled = true
-    }
+  const { data, error, loading } = useAsyncData(async () => {
+    const [projects, messages, briefs] = await Promise.all([
+      listProjects(),
+      listMessages(),
+      listBriefs(),
+    ])
+    const completed = briefs.filter((brief) => brief.status === 'completado').length
+    return {
+      kpis: computeKpis(projects, messages),
+      briefs: { completed, pending: briefs.length - completed },
+    } satisfies DashboardData
   }, [])
 
-  if (state.loading) {
-    return (
-      <p role="status" className="animate-pulse text-text-muted">
-        {panelCopy.loading}
-      </p>
-    )
+  if (loading) {
+    return <Loading />
   }
 
-  if (state.error || !state.kpis) {
-    return (
-      <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-        {state.error ?? panelCopy.error.generic}
-      </p>
-    )
+  if (error || !data) {
+    return <ErrorAlert>{error ?? panelCopy.error.generic}</ErrorAlert>
   }
 
-  const { kpis, briefs } = state
+  const { kpis, briefs } = data
 
   return (
     <div className="space-y-8">
@@ -94,18 +67,24 @@ export function AdminDashboard() {
       <section aria-label="Proyectos" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Proyectos en curso" value={kpis.activeProjects} />
         <StatCard label="Entregas en 7 días" value={kpis.upcomingDeadlines} />
-        <StatCard label="Entregas vencidas" value={kpis.overdueDeadlines} danger={kpis.overdueDeadlines > 0} />
+        <StatCard
+          label="Entregas vencidas"
+          value={kpis.overdueDeadlines}
+          danger={kpis.overdueDeadlines > 0}
+        />
         <Link
           to="/admin/mensajes"
           data-testid="stat-Mensajes"
           className="rounded-xl border border-border bg-background/60 p-5 transition-colors hover:border-accent"
         >
           <p className="text-sm text-text-muted">{panelCopy.nav.messages}</p>
-          <p className="mt-1 font-display text-3xl font-semibold text-text">{kpis.unreadMessages}</p>
+          <p className="mt-1 font-display text-3xl font-semibold text-text">
+            {kpis.unreadMessages}
+          </p>
           <p className="mt-1 text-xs text-text-muted">sin leer</p>
         </Link>
-        <StatCard label="Briefs completados" value={briefs?.completed ?? 0} />
-        <StatCard label="Briefs pendientes" value={briefs?.pending ?? 0} />
+        <StatCard label="Briefs completados" value={briefs.completed} />
+        <StatCard label="Briefs pendientes" value={briefs.pending} />
       </section>
     </div>
   )

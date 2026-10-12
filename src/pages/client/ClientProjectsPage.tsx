@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
+import { useAsyncData } from '../../hooks/useAsyncData'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import { formatDate } from '../../lib/format'
 import { listProjects, listStages, computeProgress } from '../../lib/projects'
@@ -13,60 +15,34 @@ export type ClientProjectRow = {
   total: number
 }
 
-type LoadState =
-  | { loading: true; error: null; rows: null }
-  | { loading: false; error: string | null; rows: ClientProjectRow[] | null }
-
 /** Lista de proyectos del cliente con su barra de progreso (RLS filtra). */
 export function ClientProjectsPage() {
-  const [state, setState] = useState<LoadState>({ loading: true, error: null, rows: null })
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const projects = await listProjects()
-        const rows = await Promise.all(
-          projects.map(async (project) => {
-            const stages = await listStages(project.id)
-            return { project, stages, ...computeProgress(stages) }
-          }),
-        )
-        if (!cancelled) setState({ loading: false, error: null, rows })
-      } catch {
-        if (!cancelled) setState({ loading: false, error: panelCopy.error.generic, rows: null })
-      }
-    }
-
-    void load()
-    return () => {
-      cancelled = true
-    }
+  const { data, error, loading } = useAsyncData(async () => {
+    const projects = await listProjects()
+    return Promise.all(
+      projects.map(async (project) => {
+        const stages = await listStages(project.id)
+        return { project, stages, ...computeProgress(stages) }
+      })
+    )
   }, [])
 
-  if (state.loading) {
-    return (
-      <p role="status" className="animate-pulse text-text-muted">
-        {panelCopy.loading}
-      </p>
-    )
+  if (loading) {
+    return <Loading />
   }
 
-  if (state.error) {
-    return (
-      <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-        {state.error}
-      </p>
-    )
+  if (error) {
+    return <ErrorAlert>{error}</ErrorAlert>
   }
 
-  const rows = state.rows ?? []
+  const rows = data ?? []
 
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="font-display text-2xl font-semibold text-text">{panelCopy.client.projectsTitle}</h1>
+        <h1 className="font-display text-2xl font-semibold text-text">
+          {panelCopy.client.projectsTitle}
+        </h1>
         <p className="text-sm text-text-muted">{panelCopy.client.projectsIntro}</p>
       </header>
 
@@ -114,7 +90,9 @@ export function ClientProjectsPage() {
                       style={{ width: `${percent}%` }}
                     />
                   </div>
-                  <p className="mt-1.5 text-xs text-text-muted">{panelCopy.client.progress(done, total)}</p>
+                  <p className="mt-1.5 text-xs text-text-muted">
+                    {panelCopy.client.progress(done, total)}
+                  </p>
                 </div>
               </li>
             )

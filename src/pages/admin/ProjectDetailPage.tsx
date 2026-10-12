@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   createStage,
@@ -15,6 +15,9 @@ import { getBrief } from '../../lib/briefs'
 import { useAuth } from '../../lib/auth-context'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
+import { useAsyncData } from '../../hooks/useAsyncData'
 import { StageEditor } from './StageEditor'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import { estimateTiers, estimateExtras } from '../../data/estimate'
@@ -29,20 +32,11 @@ type Detail = {
   brief: ProjectBrief | null
 }
 
-type State =
-  | { loading: true; error: null; detail: null }
-  | { loading: false; error: string | null; detail: Detail | null }
-
 /** Detalle del proyecto: datos, timeline editable e invitación. */
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { inviteByMagicLink } = useAuth()
-
-  const [state, setState] = useState<State>({ loading: true, error: null, detail: null })
-  const [inviteStatus, setInviteStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [stageMessage, setStageMessage] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!id) return null
@@ -55,52 +49,23 @@ export function ProjectDetailPage() {
     return { project, stages, approvals, brief } satisfies Detail
   }, [id])
 
-  useEffect(() => {
-    let cancelled = false
+  const { data: detail, error, loading, reload } = useAsyncData(load, [load])
 
-    async function boot() {
-      try {
-        const detail = await load()
-        if (cancelled) return
-        if (!detail) {
-          setState({ loading: false, error: panelCopy.error.generic, detail: null })
-          return
-        }
-        setState({ loading: false, error: null, detail })
-      } catch {
-        if (!cancelled) {
-          setState({ loading: false, error: panelCopy.error.generic, detail: null })
-        }
-      }
-    }
+  const [inviteStatus, setInviteStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [stageMessage, setStageMessage] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
-    void boot()
-    return () => {
-      cancelled = true
-    }
-  }, [load])
-
-  const detail = state.detail
-
-  function setActionError() {
-    setState((current) =>
-      current.detail
-        ? { loading: false, error: panelCopy.error.generic, detail: current.detail }
-        : current,
-    )
-  }
-
-  async function refresh() {
-    const detail = await load()
-    if (detail) setState({ loading: false, error: null, detail })
+  function flagActionError() {
+    setActionError(panelCopy.error.generic)
   }
 
   async function run(action: () => Promise<unknown>) {
     try {
       await action()
-      await refresh()
+      await reload()
     } catch {
-      setActionError()
+      flagActionError()
     }
   }
 
@@ -121,24 +86,16 @@ export function ProjectDetailPage() {
       await deleteProject(detail.project.id)
       navigate('/admin/proyectos')
     } catch {
-      setActionError()
+      flagActionError()
     }
   }
 
-  if (state.loading) {
-    return (
-      <p role="status" className="animate-pulse text-text-muted">
-        {panelCopy.loading}
-      </p>
-    )
+  if (loading) {
+    return <Loading />
   }
 
-  if (state.error && !detail) {
-    return (
-      <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-        {state.error}
-      </p>
-    )
+  if (error && !detail) {
+    return <ErrorAlert>{error}</ErrorAlert>
   }
 
   if (!detail) return null
@@ -146,7 +103,7 @@ export function ProjectDetailPage() {
   const { project, stages, approvals, brief } = detail
 
   const briefServiceName = brief
-    ? estimateTiers.find((tier) => tier.id === brief.service_type)?.name ?? brief.service_type
+    ? (estimateTiers.find((tier) => tier.id === brief.service_type)?.name ?? brief.service_type)
     : null
   const briefExtras = brief
     ? estimateExtras.filter((extra) => brief.extra_ids.includes(extra.id))
@@ -175,7 +132,7 @@ export function ProjectDetailPage() {
   const suggestedStages = brief ? getStageTemplate(brief.service_type, brief.extra_ids) : []
   const existingStageNames = new Set(stages.map((item) => item.name.trim().toLowerCase()))
   const missingSuggestedStages = suggestedStages.filter(
-    (name) => !existingStageNames.has(name.trim().toLowerCase()),
+    (name) => !existingStageNames.has(name.trim().toLowerCase())
   )
 
   async function handleAddSuggestedStages() {
@@ -195,11 +152,11 @@ export function ProjectDetailPage() {
           client_visible: true,
         })
       }
-      await refresh()
+      await reload()
       const count = missingSuggestedStages.length
       setStageMessage(`Se agregaron ${count} ${count === 1 ? 'etapa' : 'etapas'} sugeridas.`)
     } catch {
-      setActionError()
+      flagActionError()
     }
   }
 
@@ -227,7 +184,7 @@ export function ProjectDetailPage() {
                 run(() =>
                   updateProject(project.id, {
                     status: project.status === 'completado' ? 'en_progreso' : 'completado',
-                  }),
+                  })
                 )
               }
               className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent"
@@ -259,15 +216,15 @@ export function ProjectDetailPage() {
         </div>
 
         {inviteStatus === 'sent' && (
-          <p role="status" className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent">
-            Se envió un enlace mágico a {project.client_email}. Cuando entre, su cuenta queda activa.
+          <p
+            role="status"
+            className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent"
+          >
+            Se envió un enlace mágico a {project.client_email}. Cuando entre, su cuenta queda
+            activa.
           </p>
         )}
-        {inviteStatus === 'error' && (
-          <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-            No se pudo enviar la invitación.
-          </p>
-        )}
+        {inviteStatus === 'error' && <ErrorAlert>No se pudo enviar la invitación.</ErrorAlert>}
 
         {confirmDelete && (
           <div
@@ -320,11 +277,7 @@ export function ProjectDetailPage() {
           )}
         </dl>
 
-        {state.error && (
-          <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-            {state.error}
-          </p>
-        )}
+        {actionError && <ErrorAlert>{actionError}</ErrorAlert>}
       </div>
 
       <section
@@ -353,7 +306,9 @@ export function ProjectDetailPage() {
                 ))}
               </dl>
             ) : (
-              <p className="text-sm text-text-muted">El cliente todavía no respondió ningún campo.</p>
+              <p className="text-sm text-text-muted">
+                El cliente todavía no respondió ningún campo.
+              </p>
             )}
           </>
         ) : (
@@ -403,7 +358,7 @@ export function ProjectDetailPage() {
               position: stages.length,
               status: 'pendiente',
               client_visible: true,
-            }),
+            })
           )
         }
         onUpdate={(stageId, patch) => run(() => updateStage(stageId, patch))}

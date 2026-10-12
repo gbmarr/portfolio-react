@@ -1,43 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { deleteMessage, listMessages, markMessageRead } from '../../lib/messages'
 import { Badge } from '../../components/ui/Badge'
 import { formatDateTime } from '../../lib/format'
 import { safeMailtoAddress } from '../../utils/contactSafety'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
+import { useAsyncData } from '../../hooks/useAsyncData'
 import { panelCopy } from '../../data/panel'
 import type { ContactMessage } from '../../lib/types'
 
-type State =
-  | { loading: true; error: null; messages: null }
-  | { loading: false; error: string | null; messages: ContactMessage[] | null }
-
 /** Bandeja de mensajes del formulario de contacto. */
 export function MessagesPage() {
-  const [state, setState] = useState<State>({ loading: true, error: null, messages: null })
+  const { data: messages, error, loading, reload } = useAsyncData(() => listMessages(), [])
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    listMessages()
-      .then((messages) => {
-        if (!cancelled) setState({ loading: false, error: null, messages })
-      })
-      .catch(() => {
-        if (!cancelled) setState({ loading: false, error: panelCopy.error.generic, messages: null })
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  async function reload() {
-    try {
-      const messages = await listMessages()
-      setState({ loading: false, error: null, messages })
-    } catch {
-      setActionError(panelCopy.error.generic)
-    }
-  }
 
   async function handleToggleRead(message: ContactMessage) {
     setActionError(null)
@@ -60,40 +36,30 @@ export function MessagesPage() {
     }
   }
 
-  const unreadCount = state.messages?.filter((message) => !message.read_at).length ?? 0
+  const unreadCount = messages?.filter((message) => !message.read_at).length ?? 0
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-semibold text-text">{panelCopy.nav.messages}</h1>
-        {!state.loading && state.messages && (
-          <Badge tone={unreadCount > 0 ? 'progress' : 'neutral'}>
-            {unreadCount} sin leer
-          </Badge>
+        {!loading && messages && (
+          <Badge tone={unreadCount > 0 ? 'progress' : 'neutral'}>{unreadCount} sin leer</Badge>
         )}
       </div>
 
-      {state.loading && (
-        <p role="status" className="animate-pulse text-text-muted">
-          {panelCopy.loading}
-        </p>
-      )}
+      {loading && <Loading />}
 
-      {state.error && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {state.error}
-        </p>
-      )}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
 
-      {state.messages && state.messages.length === 0 && (
+      {messages && messages.length === 0 && (
         <p className="rounded-xl border border-border bg-background/60 px-4 py-8 text-center text-text-muted">
           No hay mensajes todavía. Los envíos del formulario de contacto aparecen acá.
         </p>
       )}
 
-      {state.messages && state.messages.length > 0 && (
+      {messages && messages.length > 0 && (
         <ul className="space-y-3">
-          {state.messages.map((message) => {
+          {messages.map((message) => {
             const expanded = expandedId === message.id
             const replyAddress = safeMailtoAddress(message.email)
             return (
@@ -108,11 +74,16 @@ export function MessagesPage() {
                   aria-expanded={expanded}
                 >
                   {!message.read_at && (
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-accent" aria-label="Sin leer" />
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full bg-accent"
+                      aria-label="Sin leer"
+                    />
                   )}
                   <span className="font-medium text-text">{message.name}</span>
                   <span className="text-sm text-text-muted">{message.subject}</span>
-                  <span className="ml-auto text-xs text-text-muted">{formatDateTime(message.created_at)}</span>
+                  <span className="ml-auto text-xs text-text-muted">
+                    {formatDateTime(message.created_at)}
+                  </span>
                 </button>
 
                 {expanded && (
@@ -122,7 +93,9 @@ export function MessagesPage() {
                       {replyAddress ? (
                         <a
                           href={`mailto:${replyAddress}?subject=${encodeURIComponent(
-                            message.subject ? `Re: ${message.subject}` : 'Re: consulta desde tu portfolio',
+                            message.subject
+                              ? `Re: ${message.subject}`
+                              : 'Re: consulta desde tu portfolio'
                           )}`}
                           className="text-sm text-accent hover:underline"
                         >
@@ -156,11 +129,7 @@ export function MessagesPage() {
         </ul>
       )}
 
-      {actionError && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {actionError}
-        </p>
-      )}
+      {actionError && <ErrorAlert>{actionError}</ErrorAlert>}
     </div>
   )
 }

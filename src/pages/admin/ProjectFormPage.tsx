@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createProject, getProject, updateProject } from '../../lib/projects'
 import { getBrief, upsertBrief } from '../../lib/briefs'
@@ -6,6 +6,9 @@ import { listClients } from '../../lib/clients'
 import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
+import { useAsyncData } from '../../hooks/useAsyncData'
 import { statusLabels, panelCopy } from '../../data/panel'
 import { normalizeEmail, isValidEmail } from '../../utils/email'
 import {
@@ -17,13 +20,13 @@ import {
 } from '../../data/estimate'
 import type { ProjectStatus, ProjectType } from '../../lib/types'
 
-const typeOptions = (
-  Object.entries(statusLabels.type) as Array<[ProjectType, string]>
-).map(([value, label]) => ({ value, label }))
+const typeOptions = (Object.entries(statusLabels.type) as Array<[ProjectType, string]>).map(
+  ([value, label]) => ({ value, label })
+)
 
-const statusOptions = (
-  Object.entries(statusLabels.project) as Array<[ProjectStatus, string]>
-).map(([value, label]) => ({ value, label }))
+const statusOptions = (Object.entries(statusLabels.project) as Array<[ProjectStatus, string]>).map(
+  ([value, label]) => ({ value, label })
+)
 
 const serviceOptions = estimateTiers.map((tier) => ({ value: tier.id, label: tier.name }))
 
@@ -63,11 +66,43 @@ export function ProjectFormPage() {
   const isEdit = Boolean(id)
   const navigate = useNavigate()
 
+  const {
+    data,
+    error: loadError,
+    loading,
+  } = useAsyncData(async () => {
+    const [clients, project, brief] = await Promise.all([
+      listClients(),
+      id ? getProject(id) : Promise.resolve(null),
+      id ? getBrief(id) : Promise.resolve(null),
+    ])
+    return { clientEmails: clients.map((client) => client.email), project, brief }
+  }, [id])
+
   const [form, setForm] = useState<FormState>(emptyForm)
-  const [clientEmails, setClientEmails] = useState<string[]>([])
-  const [loading, setLoading] = useState(isEdit)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const [seededProjectId, setSeededProjectId] = useState<string | null>(null)
+
+  // Precarga el formulario cuando llegan los datos en modo edición. Se ajusta el
+  // estado durante el render (patrón oficial de React) para no depender de un
+  // efecto ni de un render intermedio con el formulario vacío.
+  const project = data?.project
+  if (project && seededProjectId !== project.id) {
+    const serviceType = data?.brief?.service_type ?? 'landing'
+    setSeededProjectId(project.id)
+    setForm({
+      title: project.title,
+      client_email: project.client_email,
+      type: project.type,
+      status: project.status,
+      start_date: project.start_date ?? '',
+      deadline: project.deadline ?? '',
+      description: project.description ?? '',
+      service_type: serviceType,
+      extra_ids: withIncludedExtras(serviceType, data?.brief?.extra_ids ?? []),
+    })
+  }
 
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -89,53 +124,10 @@ export function ProjectFormPage() {
       service_type: value,
       extra_ids: withIncludedExtras(
         value,
-        current.extra_ids.filter((id) => isExtraAllowed(value, id)),
+        current.extra_ids.filter((id) => isExtraAllowed(value, id))
       ),
     }))
   }
-
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const [clients, project, brief] = await Promise.all([
-          listClients(),
-          id ? getProject(id) : Promise.resolve(null),
-          id ? getBrief(id) : Promise.resolve(null),
-        ])
-        if (cancelled) return
-        setClientEmails(clients.map((client) => client.email))
-        if (project) {
-          setForm({
-            title: project.title,
-            client_email: project.client_email,
-            type: project.type,
-            status: project.status,
-            start_date: project.start_date ?? '',
-            deadline: project.deadline ?? '',
-            description: project.description ?? '',
-            service_type: brief?.service_type ?? 'landing',
-            extra_ids: withIncludedExtras(
-              brief?.service_type ?? 'landing',
-              brief?.extra_ids ?? [],
-            ),
-          })
-        }
-        setLoading(false)
-      } catch {
-        if (!cancelled) {
-          setError(panelCopy.error.generic)
-          setLoading(false)
-        }
-      }
-    }
-
-    void load()
-    return () => {
-      cancelled = true
-    }
-  }, [id])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -143,16 +135,16 @@ export function ProjectFormPage() {
     const email = normalizeEmail(form.client_email)
 
     if (!form.title.trim() || !email) {
-      setError('Completá el título y el email del cliente.')
+      setFormError('Completá el título y el email del cliente.')
       return
     }
     if (!isValidEmail(email)) {
-      setError('El email del cliente no es válido.')
+      setFormError('El email del cliente no es válido.')
       return
     }
 
     setSubmitting(true)
-    setError(null)
+    setFormError(null)
     try {
       const input = {
         title: form.title.trim(),
@@ -167,18 +159,17 @@ export function ProjectFormPage() {
       await upsertBrief(saved.id, form.service_type, form.extra_ids)
       navigate(`/admin/proyectos/${saved.id}`)
     } catch {
-      setError(panelCopy.error.generic)
+      setFormError(panelCopy.error.generic)
       setSubmitting(false)
     }
   }
 
-  if (loading) {
-    return (
-      <p role="status" className="animate-pulse text-text-muted">
-        {panelCopy.loading}
-      </p>
-    )
+  if (isEdit && loading) {
+    return <Loading />
   }
+
+  const clientEmails = data?.clientEmails ?? []
+  const error = formError ?? loadError
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -191,7 +182,11 @@ export function ProjectFormPage() {
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-4 rounded-xl border border-border bg-background/60 p-6">
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className="space-y-4 rounded-xl border border-border bg-background/60 p-6"
+      >
         <FormField
           id="project-title"
           label="Título"
@@ -269,17 +264,14 @@ export function ProjectFormPage() {
               Extras opcionales del brief
             </legend>
             <p className="mb-3 text-xs text-text-muted">
-              Definí qué le vas a pedir al cliente en “¿Qué vamos a necesitar?”. Cambiar el
-              servicio o los extras reinicia lo que el cliente ya haya completado.
+              Definí qué le vas a pedir al cliente en “¿Qué vamos a necesitar?”. Cambiar el servicio
+              o los extras reinicia lo que el cliente ya haya completado.
             </p>
             <div className="grid gap-2 sm:grid-cols-2">
               {getVisibleExtras(form.service_type).map((extra) => {
                 const isIncluded = extra.includedFor?.includes(form.service_type) ?? false
                 return (
-                  <label
-                    key={extra.id}
-                    className="flex items-center gap-2 text-sm text-text-muted"
-                  >
+                  <label key={extra.id} className="flex items-center gap-2 text-sm text-text-muted">
                     <input
                       type="checkbox"
                       checked={isIncluded || form.extra_ids.includes(extra.id)}
@@ -296,11 +288,7 @@ export function ProjectFormPage() {
           </fieldset>
         </div>
 
-        {error && (
-          <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-            {error}
-          </p>
-        )}
+        {error && <ErrorAlert>{error}</ErrorAlert>}
 
         <div className="flex gap-3">
           <button

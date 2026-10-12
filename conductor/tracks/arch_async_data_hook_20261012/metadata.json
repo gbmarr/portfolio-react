@@ -1,0 +1,47 @@
+{
+  "track_id": "arch_async_data_hook_20261012",
+  "type": "refactor",
+  "status": "in_progress",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T18:00:00Z",
+  "description": "Candidato C1 (Strong) de la revisión de arquitectura: ocho páginas admin/cliente repiten a mano la misma máquina de estados de carga (unión State + useState + useEffect con cancelled + try/catch + bloques JSX de loading/error duplicados). Profundizar un módulo useAsyncData(loader, deps) con interfaz { data, error, loading, reload } más Loading/ErrorAlert compartidos, y migrar las ocho páginas sin cambiar la semántica observable.",
+  "source": "revisión de arquitectura del codebase (candidato C1)",
+  "review": {
+    "strength": "Strong",
+    "files": [
+      "src/pages/admin/AdminDashboard.tsx",
+      "src/pages/admin/ProjectsListPage.tsx",
+      "src/pages/admin/ProjectDetailPage.tsx",
+      "src/pages/admin/ClientsPage.tsx",
+      "src/pages/admin/MessagesPage.tsx",
+      "src/pages/admin/ProjectFormPage.tsx",
+      "src/pages/client/ClientProjectsPage.tsx",
+      "src/pages/client/ClientProjectDetailPage.tsx",
+      "src/hooks/"
+    ],
+    "wins": ["locality: un loader en vez de ocho", "leverage: un interface, N call sites", "tests contra un módulo"]
+  },
+  "decisions": {
+    "D1": "Ubicación del hook: src/hooks/useAsyncData.ts (junto a useScrollReveal)."
+  },
+  "results": {
+    "new_modules": [
+      "src/hooks/useAsyncData.ts",
+      "src/components/ui/Loading.tsx",
+      "src/components/ui/ErrorAlert.tsx"
+    ],
+    "migrated_pages": [
+      "src/pages/admin/AdminDashboard.tsx",
+      "src/pages/admin/ProjectsListPage.tsx",
+      "src/pages/admin/ClientsPage.tsx",
+      "src/pages/admin/MessagesPage.tsx",
+      "src/pages/admin/ProjectDetailPage.tsx",
+      "src/pages/admin/ProjectFormPage.tsx",
+      "src/pages/client/ClientProjectsPage.tsx",
+      "src/pages/client/ClientProjectDetailPage.tsx"
+    ],
+    "tests": "80 archivos / 526 tests verdes; cobertura global 93.12% stmts (≥80%)",
+    "lint_typecheck": "eslint limpio; tsc -b limpio",
+    "pending": "smoke manual V.3 (dashboard, listados, detalle, panel cliente)"
+  }
+}

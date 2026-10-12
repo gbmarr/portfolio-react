@@ -96,4 +96,23 @@ Tracks creados con spec + plan a partir del **paper red team** (`conductor/secur
 - [ ] **Track: Ownership en UPDATE de `milestone_approvals` (RT-03, Baja)**
       _Link: [./tracks/sec_approval_rls_20261012/](./tracks/sec_approval_rls_20261012/)_ — el `with check` del UPDATE no re-valida la pertenencia del proyecto (a diferencia del INSERT). Impacto de integridad acotado (issue #28). **Código listo 2026-10-12** (77 archivos / 516 tests verdes; migración `0016` recrea la policy con ownership en `using`/`with check`); **pendiente owner: aplicar la migración `0016` en Supabase** — ver `CHECKLIST-OWNER.md`.
 
+---
+
+## Arquitectura — Revisión de profundidad de módulos (2026-10-12)
+
+Tracks creados con spec + plan a partir de la **revisión de arquitectura del codebase** (skill `improve-codebase-architecture`, vocabulario `codebase-design`: módulo / interface / profundidad / seam / adapter / leverage / locality). Objetivo: convertir módulos **shallow** en **deep** para mejorar testabilidad y navegabilidad. Estado: `pending` (sin implementar). Cada uno con su issue en GitHub (`gbmarr/portfolio-react`, etiqueta `refactor` / `perf`).
+
+- [x] **Track: Unificar los loaders async con `useAsyncData` + `Loading`/`ErrorAlert` (C1, Strong)**
+      _Link: [./tracks/arch_async_data_hook_20261012/](./tracks/arch_async_data_hook_20261012/)_ — ocho páginas admin/cliente repiten a mano la misma máquina de estados de carga (unión `State` + `useEffect` con `cancelled` + `try/catch` + bloques JSX de loading/error duplicados; `panelCopy.error.generic` ~16×). Profundizar un módulo `useAsyncData(loader, deps)` con interfaz `{ data, error, loading, reload }` más `Loading`/`ErrorAlert` compartidos. **Recomendación #1 de la revisión** (issue #29).
+- [ ] **Track: Agregado `loadProjectDetail` en la capa de datos (C2, Strong)**
+      _Link: [./tracks/arch_project_detail_aggregate_20261012/](./tracks/arch_project_detail_aggregate_20261012/)_ — el agregado "detalle de proyecto" se re-declara y ensambla en ambas páginas de detalle, y "no encontrado" ramifica por el string exacto `'Proyecto no encontrado'` (seam filtrado). Mover `loadProjectDetail(id)` + tipo `ProjectDetail` + error tipado a `src/lib/projects.ts` (issue #34).
+- [ ] **Track: Contrato único de contacto compartido cliente/Edge Function (C3, Worth exploring)**
+      _Link: [./tracks/arch_contact_contract_20261012/](./tracks/arch_contact_contract_20261012/)_ — la política de contacto vive copiada a ambos lados del seam (`CONTACT_LIMITS` ×2, `hasControlChars` ×2, regex de email ×4 incl. migración `0015`, `TURNSTILE_ACTION` ×2); `ContactForm` re-valida con constantes `MAX_*` propias. Un módulo de contrato puro en `supabase/functions/_shared/` consumido por ambos adapters (issue #30).
+- [ ] **Track: Helper único `Result`/unwrap + eliminar superficie muerta (C4, Worth exploring)**
+      _Link: [./tracks/arch_data_result_helper_20261012/](./tracks/arch_data_result_helper_20261012/)_ — `Result<T>`/desenvolvío implementado cuatro veces (briefs/projects + patrón inline en clients/messages), ~16 `throw new Error(error.message)`, `unwrapList` duplicado; `listClientProfiles` muerta. Módulo `src/lib/supabase-result.ts` (issue #31).
+- [ ] **Track: Batch de etapas en el listado del cliente — N+1 (C5, Worth exploring)**
+      _Link: [./tracks/arch_client_projects_batch_20261012/](./tracks/arch_client_projects_batch_20261012/)_ — `ClientProjectsPage` consulta etapas por proyecto (`Promise.all(projects.map(listStages))`); la función pura `computeProgress` es correcta, el defecto está en cómo se llama. `listStagesForProjects(ids)` en una sola consulta (issue #32).
+- [ ] **Track: Estimador puro — `arsRate` inyectado y límites unificados (C6, Speculative)**
+      _Link: [./tracks/arch_estimate_purity_20261012/](./tracks/arch_estimate_purity_20261012/)_ — `computeEstimate` impuro (lee `arsRate` a nivel de módulo desde `import.meta.env.PUBLIC_ARS_RATE`), `MIN/MAX_SECTIONS` duplicados lib/UI, `buildEstimateWhatsAppMessage` re-deriva las extras. Inyección de `arsRate` + un solo hogar para los límites (issue #33).
+
 

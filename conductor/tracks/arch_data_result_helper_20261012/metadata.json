@@ -1,0 +1,22 @@
+{
+  "track_id": "arch_data_result_helper_20261012",
+  "type": "refactor",
+  "status": "pending",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "Candidato C4 (Worth exploring) de la revisión de arquitectura: el desenvolvío de resultados PostgREST está implementado cuatro veces de formas distintas (Result<T> + throwOnError/unwrap/unwrapList en briefs.ts y projects.ts, y patrón inline en clients.ts y messages.ts); ~16 sitios de throw new Error(error.message); unwrapList duplicado. Un módulo src/lib/supabase-result.ts concentra Result<T> y el desenvolvío; además se elimina la función muerta listClientProfiles (clients.ts:53, sin callers).",
+  "source": "revisión de arquitectura del codebase (candidato C4)",
+  "review": {
+    "strength": "Worth exploring",
+    "files": [
+      "src/lib/projects.ts",
+      "src/lib/briefs.ts",
+      "src/lib/clients.ts",
+      "src/lib/messages.ts"
+    ],
+    "wins": ["locality: un desenvolvío", "se borra superficie muerta", "testeable en el interface"]
+  },
+  "decisions": {
+    "D1": "Firma del helper: unwrap(result, message?) + unwrapList(result)."
+  }
+}

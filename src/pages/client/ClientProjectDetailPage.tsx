@@ -1,17 +1,15 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
+import { Loading } from '../../components/ui/Loading'
+import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { ClientBrief } from './ClientBrief'
 import { useAuth } from '../../lib/auth-context'
 import { getBrief } from '../../lib/briefs'
 import { formatDate } from '../../lib/format'
-import {
-  decideMilestone,
-  getProject,
-  listApprovals,
-  listStages,
-} from '../../lib/projects'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { decideMilestone, getProject, listApprovals, listStages } from '../../lib/projects'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import type {
   ApprovalDecision,
@@ -28,10 +26,6 @@ type Detail = {
   brief: ProjectBrief | null
 }
 
-type LoadState =
-  | { loading: true; error: null; detail: null }
-  | { loading: false; error: string | null; detail: Detail | null }
-
 function approvalFor(approvals: MilestoneApproval[], stageId: string) {
   return approvals.find((approval) => approval.stage_id === stageId)
 }
@@ -47,13 +41,6 @@ const dotClass = (status: ProjectStage['status']) => {
 export function ClientProjectDetailPage() {
   const { id } = useParams()
   const { session } = useAuth()
-  const [state, setState] = useState<LoadState>({ loading: true, error: null, detail: null })
-  const [pending, setPending] = useState<{ stageId: string; decision: ApprovalDecision } | null>(null)
-  const [comment, setComment] = useState('')
-  const [sendingStage, setSendingStage] = useState<string | null>(null)
-  const [actionMessage, setActionMessage] = useState<string | null>(null)
-  const [actionError, setActionError] = useState<string | null>(null)
-  const [editingBrief, setEditingBrief] = useState(false)
 
   const load = useCallback(async () => {
     if (!id) return null
@@ -63,39 +50,33 @@ export function ClientProjectDetailPage() {
       listApprovals(id),
       getBrief(id),
     ])
-    return { project, stages, approvals, brief }
+    return { project, stages, approvals, brief } satisfies Detail
   }, [id])
 
-  useEffect(() => {
-    let cancelled = false
+  const {
+    data: detail,
+    error,
+    loading,
+    reload,
+    setData,
+  } = useAsyncData(load, [load], {
+    mapError: (caught) =>
+      caught instanceof Error && caught.message === 'Proyecto no encontrado'
+        ? panelCopy.client.notFound
+        : panelCopy.error.generic,
+  })
 
-    async function boot() {
-      try {
-        const detail = await load()
-        if (!cancelled) setState({ loading: false, error: null, detail })
-      } catch (error) {
-        if (!cancelled) {
-          const notFound = error instanceof Error && error.message === 'Proyecto no encontrado'
-          setState({ loading: false, error: notFound ? panelCopy.client.notFound : panelCopy.error.generic, detail: null })
-        }
-      }
-    }
-
-    void boot()
-    return () => {
-      cancelled = true
-    }
-  }, [load])
-
-  async function refresh() {
-    const detail = await load()
-    if (detail) setState({ loading: false, error: null, detail })
-  }
+  const [pending, setPending] = useState<{ stageId: string; decision: ApprovalDecision } | null>(
+    null
+  )
+  const [comment, setComment] = useState('')
+  const [sendingStage, setSendingStage] = useState<string | null>(null)
+  const [actionMessage, setActionMessage] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [editingBrief, setEditingBrief] = useState(false)
 
   function handleBriefSaved(updated: ProjectBrief) {
-    setState((prev) =>
-      prev.detail ? { loading: false, error: null, detail: { ...prev.detail, brief: updated } } : prev,
-    )
+    setData((prev) => (prev ? { ...prev, brief: updated } : prev))
     setEditingBrief(false)
   }
 
@@ -109,7 +90,7 @@ export function ClientProjectDetailPage() {
     try {
       await decideMilestone({
         stage_id: stageId,
-        project_id: state.detail?.project.id ?? '',
+        project_id: detail?.project.id ?? '',
         client_id: session.user.id,
         decision,
         comment: comment.trim() || null,
@@ -117,7 +98,7 @@ export function ClientProjectDetailPage() {
       setPending(null)
       setComment('')
       setActionMessage(panelCopy.client.decisionSent)
-      await refresh()
+      await reload()
     } catch {
       setActionError(panelCopy.client.decisionError)
     } finally {
@@ -125,20 +106,14 @@ export function ClientProjectDetailPage() {
     }
   }
 
-  if (state.loading) {
-    return (
-      <p role="status" className="animate-pulse text-text-muted">
-        {panelCopy.loading}
-      </p>
-    )
+  if (loading) {
+    return <Loading />
   }
 
-  if (state.error || !state.detail) {
+  if (error || !detail) {
     return (
       <div className="space-y-4">
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {state.error ?? panelCopy.error.generic}
-        </p>
+        <ErrorAlert>{error ?? panelCopy.error.generic}</ErrorAlert>
         <Link to="/panel" className="text-sm text-accent hover:underline">
           {panelCopy.client.backLink}
         </Link>
@@ -146,7 +121,7 @@ export function ClientProjectDetailPage() {
     )
   }
 
-  const { project, stages, approvals, brief } = state.detail
+  const { project, stages, approvals, brief } = detail
   const visibleStages = stages.filter((stage) => stage.client_visible)
 
   return (
@@ -225,15 +200,14 @@ export function ClientProjectDetailPage() {
         ))}
 
       {actionMessage && (
-        <p role="status" className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
+        <p
+          role="status"
+          className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300"
+        >
           {actionMessage}
         </p>
       )}
-      {actionError && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-          {actionError}
-        </p>
-      )}
+      {actionError && <ErrorAlert>{actionError}</ErrorAlert>}
 
       <section aria-label={panelCopy.client.timeline} className="space-y-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
@@ -266,7 +240,9 @@ export function ClientProjectDetailPage() {
                   </div>
 
                   {stage.description && (
-                    <p className="mt-1 whitespace-pre-wrap text-sm text-text-muted">{stage.description}</p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-text-muted">
+                      {stage.description}
+                    </p>
                   )}
 
                   {(stage.started_at || stage.completed_at) && (
@@ -304,7 +280,9 @@ export function ClientProjectDetailPage() {
                               disabled={sendingStage === stage.id}
                               className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                             >
-                              {sendingStage === stage.id ? panelCopy.client.deciding : panelCopy.client.sendDecision}
+                              {sendingStage === stage.id
+                                ? panelCopy.client.deciding
+                                : panelCopy.client.sendDecision}
                             </button>
                             <button
                               type="button"
