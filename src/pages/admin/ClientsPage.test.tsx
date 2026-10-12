@@ -63,6 +63,8 @@ describe('ClientsPage', () => {
     expect(screen.getByText('Ana Pérez')).toBeInTheDocument()
     expect(screen.getByText('Activo')).toBeInTheDocument()
     expect(screen.getByText('3')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Invitar' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reenviar enlace' })).toBeInTheDocument()
   })
 
   it('envía la invitación por magic link', async () => {
@@ -80,11 +82,19 @@ describe('ClientsPage', () => {
     expect(await screen.findByText('Invitación enviada ✓')).toBeInTheDocument()
   })
 
-  it('no muestra botón para clientes ya activos', async () => {
+  it('permite reenviar la invitación a clientes ya activos', async () => {
+    const user = userEvent.setup()
+    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
+    h.useAuth.mockReturnValue({ inviteByMagicLink })
     h.listClients.mockResolvedValue([client({ email: 'a@example.com', active: true })])
+
     renderPage()
-    expect(await screen.findByText('a@example.com')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Invitar' })).not.toBeInTheDocument()
+
+    const resendButton = await screen.findByRole('button', { name: 'Reenviar enlace' })
+    await user.click(resendButton)
+
+    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('a@example.com'))
+    expect(await screen.findByText('Invitación enviada ✓')).toBeInTheDocument()
   })
 
   it('avisa si falla la invitación', async () => {

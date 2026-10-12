@@ -1,0 +1,27 @@
+{
+  "track_id": "invite_ux_fix_20261012",
+  "type": "ux",
+  "status": "completed",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T00:00:00Z",
+  "description": "Folow-up de auditoría run-2: en /admin/clientes el botón de invitación estaba oculto para clientes activos (cuenta creada al invitar pero quizá nunca ingresaron). Permitir Invitar/Reenviar enlace para todos.",
+  "severity": "info",
+  "cwe": [],
+  "owasp": [],
+  "source": "follow-up de la auditoría de seguridad run-2 (análisis read-only del flujo de invitación, 2026-10-12)",
+  "decisions": {
+    "D1": "No cambiar la semántica de `active` (requeriría auth.users.last_sign_in_at no accesible por RLS); en su lugar, exponer siempre una acción (Invitar / Reenviar enlace) usando inviteByMagicLink, que envía OTP también a cuentas ya creadas."
+  },
+  "results": {
+    "code_implemented": "2026-10-12",
+    "files": [
+      "src/pages/admin/ClientsPage.tsx",
+      "src/pages/admin/ClientsPage.test.tsx"
+    ],
+    "tests": "70 archivos / 469 tests verdes (ClientsPage.test.tsx: 7)",
+    "typecheck": "ok",
+    "lint": "ok",
+    "notes": "Estado Invitación enviada ✓ sigue siendo efímero por sesión; sin cambios de esquema/RLS.",
+    "pending_owner": "ninguno (ajuste de UI; solo requiere deploy del front)"
+  }
+}

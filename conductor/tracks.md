@@ -67,4 +67,11 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
 - [x] **Track: Higiene de configuración de seguridad (SEC-009, Info)**
       _Link: [./tracks/sec_config_hygiene_20261011/](./tracks/sec_config_hygiene_20261011/)_ — HSTS declarado y verificado en prod (`max-age=63072000`); envs renombradas a `PUBLIC_*` en Vercel/Netlify + `.env.local`; docs Web3Forms retiradas. (issue #15, commit `420532c`)
 
+---
+
+## Follow-up UX — post auditoría run-2 (2026-10-12)
+
+- [x] **Track: Reenvío de invitación en /admin/clientes**
+      _Link: [./tracks/invite_ux_fix_20261012/](./tracks/invite_ux_fix_20261012/)_ — hallazgo del análisis read-only del flujo de invitación: el botón estaba oculto para clientes "Activos" (cuenta creada al invitar pero quizá nunca ingresaron). Ahora toda fila tiene acción (`Invitar` / `Reenviar enlace`), el estado efímero `Invitación enviada ✓` se conserva y `inviteByMagicLink` (OTP a cuentas existentes) mantiene el flujo. **Implementado 2026-10-12**: 70 archivos / 469 tests verdes.
+
 

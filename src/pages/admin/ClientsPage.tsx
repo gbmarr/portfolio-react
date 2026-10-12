@@ -48,8 +48,8 @@ export function ClientsPage() {
       <div>
         <h1 className="font-display text-2xl font-semibold text-text">{panelCopy.nav.clients}</h1>
         <p className="mt-1 text-sm text-text-muted">
-          Los clientes se detectan a partir de los proyectos cargados. Cuando entran por primera vez con su
-          enlace mágico, quedan activos.
+          Los clientes se detectan a partir de los proyectos cargados. Podés invitar a los pendientes o reenviar
+          el enlace mágico a cuentas ya creadas (por ejemplo, si perdieron el correo).
         </p>
       </div>
 
@@ -97,10 +97,8 @@ export function ClientsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    {client.active || invited.has(client.email) ? (
-                      <span className="text-xs text-emerald-300">
-                        {invited.has(client.email) ? 'Invitación enviada ✓' : '—'}
-                      </span>
+                    {invited.has(client.email) ? (
+                      <span className="text-xs text-emerald-300">Invitación enviada ✓</span>
                     ) : (
                       <button
                         type="button"
@@ -108,7 +106,11 @@ export function ClientsPage() {
                         onClick={() => handleInvite(client.email)}
                         className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
                       >
-                        {sending === client.email ? 'Enviando…' : 'Invitar'}
+                        {sending === client.email
+                          ? 'Enviando…'
+                          : client.active
+                            ? 'Reenviar enlace'
+                            : 'Invitar'}
                       </button>
                     )}
                   </td>
