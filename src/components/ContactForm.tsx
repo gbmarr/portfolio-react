@@ -1,10 +1,11 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
+import { CONTACT_LIMITS } from '../../supabase/functions/_shared/contact-contract'
 import { Button } from './Button'
-import { hasControlChars } from '../utils/contactSafety'
 import {
   buildContactPayload,
   contactFunctionUrl,
+  validateContactFields,
   validateContactPayload,
 } from '../utils/contactPayload'
 import { TurnstileWidget } from './Turnstile'
@@ -25,11 +26,6 @@ type Status = 'idle' | 'sending' | 'success' | 'error'
 
 /** Mínimo de tiempo entre envíos (anti-spam: los bots no esperan). */
 export const MIN_SUBMIT_INTERVAL_MS = 3000
-
-const MAX_NAME_LENGTH = 80
-const MAX_EMAIL_LENGTH = 120
-const MAX_MESSAGE_LENGTH = 2000
-const MIN_MESSAGE_LENGTH = 10
 
 /** Formulario corto: nombre, email o WhatsApp, y mensaje. Nada más. */
 export function ContactForm({ onSubmit }: ContactFormProps) {
@@ -55,17 +51,8 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       return
     }
 
-    // Límites y saneamiento básico: sin esto el payload puede ser basura.
-    if (
-      data.name.length === 0 ||
-      data.name.length > MAX_NAME_LENGTH ||
-      hasControlChars(data.name) ||
-      data.email.length === 0 ||
-      data.email.length > MAX_EMAIL_LENGTH ||
-      hasControlChars(data.email) ||
-      data.message.length < MIN_MESSAGE_LENGTH ||
-      data.message.length > MAX_MESSAGE_LENGTH
-    ) {
+    // Límites y saneamiento: la política vive en el módulo de contacto.
+    if (!validateContactFields(data).ok) {
       setStatus('error')
       return
     }
@@ -134,7 +121,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           type="text"
           required
           autoComplete="name"
-          maxLength={MAX_NAME_LENGTH}
+          maxLength={CONTACT_LIMITS.nameMax}
           className={inputClasses}
         />
       </div>
@@ -150,7 +137,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           required
           autoComplete="email"
           inputMode="email"
-          maxLength={MAX_EMAIL_LENGTH}
+          maxLength={CONTACT_LIMITS.emailMax}
           className={inputClasses}
         />
       </div>
@@ -164,7 +151,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           name="message"
           rows={4}
           required
-          maxLength={MAX_MESSAGE_LENGTH}
+          maxLength={CONTACT_LIMITS.messageMax}
           className={inputClasses}
         />
       </div>
@@ -176,12 +163,18 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       </Button>
 
       {status === 'success' && (
-        <p role="status" className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent">
+        <p
+          role="status"
+          className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent"
+        >
           {copy.contact.form.success}
         </p>
       )}
       {status === 'error' && (
-        <p role="alert" className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+        <p
+          role="alert"
+          className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+        >
           {copy.contact.form.error}
         </p>
       )}

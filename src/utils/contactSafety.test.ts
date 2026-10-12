@@ -1,18 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hasControlChars, safeMailtoAddress } from './contactSafety'
-
-describe('hasControlChars', () => {
-  it('detecta CR/LF/NUL', () => {
-    expect(hasControlChars('a@b.com\nbcc:x')).toBe(true)
-    expect(hasControlChars('a@b.com\r\n')).toBe(true)
-    expect(hasControlChars('a\u0000b')).toBe(true)
-  })
-
-  it('no marca texto normal (incluye acentos y espacios)', () => {
-    expect(hasControlChars('Ana Pérez')).toBe(false)
-    expect(hasControlChars('ana@example.com')).toBe(false)
-  })
-})
+import { safeMailtoAddress } from './contactSafety'
 
 describe('safeMailtoAddress', () => {
   it('acepta y recorta un email normal', () => {

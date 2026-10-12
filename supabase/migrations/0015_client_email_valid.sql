@@ -6,8 +6,9 @@
 -- creada por self-signup sobre un email cargado por el admin (o un typo) daba
 -- acceso a ese proyecto. La migración complementa el cierre del self-signup
 -- (owner: `disable_signup`) con:
---   1. `public.is_valid_email(text)` — función inmutable que espeja el SAFE_EMAIL
---      de la Edge Function contact-notify (criterio único y conservador).
+--   1. `public.is_valid_email(text)` — función inmutable que espeja el EMAIL_PATTERN
+--      del contrato compartido `supabase/functions/_shared/contact-contract.ts`
+--      (criterio único y conservador).
 --   2. CHECK `projects_client_email_valid` que exige validez estructural en el
 --      alta/edición de proyectos (defensa en profundidad, FR3).
 --
@@ -29,11 +30,12 @@ language sql
 immutable
 set search_path = public
 as $$
+  -- Mirror of EMAIL_PATTERN in supabase/functions/_shared/contact-contract.ts (keep in sync).
   select value ~ '^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$';
 $$;
 
 comment on function public.is_valid_email(text) is
-  'Valida estructuralmente un email (RT-02). Espejo del SAFE_EMAIL de contact-notify; no verifica entregabilidad.';
+  'Valida estructuralmente un email (RT-02). Espejo sincronizado de EMAIL_PATTERN en supabase/functions/_shared/contact-contract.ts; no verifica entregabilidad.';
 
 -- 2) CHECK estructural en projects.client_email --------------------------------
 alter table public.projects

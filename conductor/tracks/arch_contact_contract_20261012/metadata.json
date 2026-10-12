@@ -1,10 +1,10 @@
 {
   "track_id": "arch_contact_contract_20261012",
   "type": "refactor",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-12T00:00:00Z",
-  "updated_at": "2026-10-12T00:00:00Z",
-  "description": "Candidato C3 (Worth exploring) de la revisión de arquitectura: la política de validación de contacto vive copiada a ambos lados del seam cliente/Edge Function — CONTACT_LIMITS (2 copias), hasControlChars (2), regex SAFE_EMAIL (4, incluida la migración 0015 en SQL) y TURNSTILE_ACTION (2); además ContactForm re-implementa la validación con constantes MAX_* privadas. Un módulo de contrato puro compartido (dos adapters reales: navegador + Edge Function) consolida la política.",
+  "updated_at": "2026-10-12T20:00:00Z",
+  "description": "Candidato C3 (Worth exploring) de la revisión de arquitectura: la política de validación de contacto vivía copiada a ambos lados del seam cliente/Edge Function — CONTACT_LIMITS (2 copias), hasControlChars (2), regex SAFE_EMAIL (4, incluida la migración 0015 en SQL) y TURNSTILE_ACTION (2); además ContactForm re-implementaba la validación con constantes MAX_* privadas. Un módulo de contrato puro compartido (dos adapters reales: navegador + Edge Function) consolida la política.",
   "source": "revisión de arquitectura del codebase (candidato C3)",
   "review": {
     "strength": "Worth exploring",
@@ -20,6 +20,25 @@
     "wins": ["dos adapters justifican el seam", "un lugar para cambiar la política", "se borran 4 copias"]
   },
   "decisions": {
-    "D1": "Ubicación del módulo compartido: supabase/functions/_shared/contact-contract.ts."
+    "D1": "Ubicación del módulo compartido: supabase/functions/_shared/contact-contract.ts.",
+    "D2": "Nuevo validateContactFields(data) en src/utils/contactPayload.ts: el guard temprano del form rechaza campos inválidos SIN exigir token de Turnstile (los tests con onSubmit propio aseguran que onSubmit se llama sin token); validateContactPayload lo compone con el chequeo del token."
+  },
+  "results": {
+    "new_modules": ["supabase/functions/_shared/contact-contract.ts"],
+    "migrated_consumers": [
+      "src/utils/contactPayload.ts",
+      "src/utils/contactSafety.ts",
+      "src/utils/email.ts",
+      "src/components/ContactForm.tsx",
+      "src/components/Turnstile.tsx",
+      "supabase/functions/contact-notify/validation.ts",
+      "supabase/functions/contact-notify/index.ts"
+    ],
+    "sql_mirror_documented": "supabase/migrations/0015_client_email_valid.sql",
+    "collapsed_copies": ["CONTACT_LIMITS x2", "hasControlChars x2", "regex email x4", "TURNSTILE_ACTION x2"],
+    "tests": "81 archivos / 528 tests verdes; cobertura global 93.16% stmts (>=80%)",
+    "lint_typecheck": "eslint limpio; tsc -b limpio",
+    "grep_checks": "definiciones de CONTACT_LIMITS/hasControlChars/EMAIL_PATTERN/TURNSTILE_ACTION solo en el contrato; ContactForm sin MAX_*",
+    "pending": "smoke local con supabase functions serve (V.4) y deploy + verificación en prod (V.5) — requieren credenciales Supabase del usuario"
   }
 }

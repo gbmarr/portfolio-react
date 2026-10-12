@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import migration from '../supabase/migrations/0015_client_email_valid.sql?raw'
 
 describe('validación estructural de client_email (RT-02)', () => {
-  it('define is_valid_email() como función immutable espejo del SAFE_EMAIL', () => {
+  it('define is_valid_email() como función immutable espejo del EMAIL_PATTERN', () => {
     expect(migration).toContain('create or replace function public.is_valid_email(value text)')
     expect(migration).toContain('immutable')
     expect(migration).toMatch(/value ~ '\^\[A-Za-z0-9\._\+-\]\+@/)

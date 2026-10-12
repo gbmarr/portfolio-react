@@ -25,7 +25,7 @@ Copias actuales:
 
 - **FR1 —** Un módulo de contrato exporta `CONTACT_LIMITS`, `hasControlChars`, el patrón de email y `TURNSTILE_ACTION` como fuente única.
 - **FR2 —** El cliente (`src/utils/*`) y la Edge Function (`validation.ts`) importan el contrato en vez de re-declararlo.
-- **FR3 —** `ContactForm` usa `validateContactPayload` como único validador; se eliminan sus constantes `MAX_*` privadas.
+- **FR3 —** `ContactForm` no re-implementa validación: usa el módulo de contacto (`validateContactFields` para el guard temprano de campos y `validateContactPayload` antes del envío) y `CONTACT_LIMITS` para los `maxLength`; se eliminan sus constantes `MAX_*` privadas.
 - **FR4 —** La copia en SQL (`0015`) se documenta explícitamente como **espejo sincronizado** del contrato TS (la DB no puede importar TS), igual que el espejo `compute_brief_status` de SEC-006.
 
 ## 3. Non-Functional Requirements

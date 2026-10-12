@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { TURNSTILE_ACTION } from '../../supabase/functions/_shared/contact-contract'
 
 declare global {
   interface Window {
@@ -11,19 +12,12 @@ declare global {
           action?: string
           'expired-callback'?: () => void
           'error-callback'?: () => void
-        },
+        }
       ) => string
       remove: (widgetId: string) => void
     }
   }
 }
-
-/**
- * SEC-006: acción que viaja en el token de Turnstile y que el servidor verifica
- * en `siteverify`. Debe coincidir con `TURNSTILE_ACTION` de la Edge Function
- * `supabase/functions/contact-notify/validation.ts`.
- */
-export const TURNSTILE_ACTION = 'contact'
 
 const SCRIPTS = new Map<string, Promise<void>>()
 
