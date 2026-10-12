@@ -1,7 +1,7 @@
 {
   "track_id": "sec_signup_lockdown_20261012",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-12T00:00:00Z",
   "updated_at": "2026-10-12T00:00:00Z",
   "description": "RT-02 (Media). La restriccion de auto-registro es solo de UI: /auth/v1/otp acepta create_user=true con la publishable key. Si un email controlable figura como client_email, el atacante crea cuenta y accede al proyecto (tenancy por email, sin FK).",
@@ -11,6 +11,17 @@
   "asvs": ["V2.1"],
   "source": "red team 2026-10-12 (conductor/security/red-team-20261012)",
   "ticket": "gbmarr/portfolio-react#27",
-  "decisions": {},
-  "results": {}
+  "decisions": {
+    "D1": "Modelo invite-only confirmado: el login no crea cuentas; la invitación es la única vía.",
+    "D2": "Validación espejo del SAFE_EMAIL de contact-notify (criterio único y conservador).",
+    "D3": "CHECK estructural con NOT VALID para no romper filas históricas; validar después de limpiar datos."
+  },
+  "results": {
+    "migration": "supabase/migrations/0015_client_email_valid.sql",
+    "code": "src/utils/email.ts (normalizeEmail/isValidEmail) + validación en ProjectFormPage.tsx y src/lib/projects.ts",
+    "tests": "76 archivos / 512 tests verdes (email.test.ts 7, projects.test.ts 5, form 1, clientEmailValid.test.ts 4)",
+    "typecheck": "ok",
+    "lint": "limpio",
+    "pending_owner": "activar disable_signup en dashboard + aplicar 0015 en Supabase + verificación manual (CHECKLIST-OWNER.md)"
+  }
 }

@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { isValidEmail, normalizeEmail } from '../utils/email'
 import type {
   MilestoneApproval,
   Project,
@@ -20,6 +21,13 @@ async function unwrapList<T>(result: Result<T[]>): Promise<T[]> {
   return result.data ?? []
 }
 
+/** RT-02: valida la estructura del email del cliente (defensa en profundidad). */
+function assertValidClientEmail(clientEmail: string): void {
+  if (!isValidEmail(clientEmail)) {
+    throw new Error('El email del cliente no es válido.')
+  }
+}
+
 // ----------------------------------------------------------------------------
 // Proyectos
 // ----------------------------------------------------------------------------
@@ -39,12 +47,20 @@ export async function getProject(id: string): Promise<Project> {
 }
 
 export async function createProject(input: ProjectInput): Promise<Project> {
-  const result = await supabase.from('projects').insert(input).select().single()
+  // RT-02: normaliza a minúsculas y valida antes de escribir.
+  const client_email = normalizeEmail(input.client_email)
+  assertValidClientEmail(client_email)
+  const result = await supabase.from('projects').insert({ ...input, client_email }).select().single()
   return unwrap(result)
 }
 
 export async function updateProject(id: string, patch: Partial<ProjectInput>): Promise<Project> {
-  const result = await supabase.from('projects').update(patch).eq('id', id).select().single()
+  const cleanPatch = { ...patch }
+  if (cleanPatch.client_email !== undefined) {
+    cleanPatch.client_email = normalizeEmail(cleanPatch.client_email)
+    assertValidClientEmail(cleanPatch.client_email)
+  }
+  const result = await supabase.from('projects').update(cleanPatch).eq('id', id).select().single()
   return unwrap(result)
 }
 

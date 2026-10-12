@@ -7,6 +7,7 @@ import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { statusLabels, panelCopy } from '../../data/panel'
+import { normalizeEmail, isValidEmail } from '../../utils/email'
 import {
   estimateTiers,
   getIncludedExtras,
@@ -138,10 +139,15 @@ export function ProjectFormPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const email = form.client_email.trim().toLowerCase()
+    // RT-02: normalización (minúsculas) + validación estructural del email.
+    const email = normalizeEmail(form.client_email)
 
     if (!form.title.trim() || !email) {
       setError('Completá el título y el email del cliente.')
+      return
+    }
+    if (!isValidEmail(email)) {
+      setError('El email del cliente no es válido.')
       return
     }
 

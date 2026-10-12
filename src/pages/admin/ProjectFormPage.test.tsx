@@ -110,6 +110,22 @@ describe('ProjectFormPage', () => {
     expect(h.createProject).not.toHaveBeenCalled()
   })
 
+  it('rechaza un email inválido sin llamar al backend (RT-02)', async () => {
+    const user = userEvent.setup()
+    h.listClients.mockResolvedValue([])
+    h.createProject.mockResolvedValue({ id: 'x' })
+    renderAt('/admin/proyectos/nuevo')
+
+    await user.type(screen.getByLabelText('Título'), 'Sitio')
+    await user.type(screen.getByLabelText('Email del cliente'), 'no-soy-email')
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'El email del cliente no es válido.',
+    )
+    expect(h.createProject).not.toHaveBeenCalled()
+  })
+
   it('no renderiza campos de monto', async () => {
     h.listClients.mockResolvedValue([])
     renderAt('/admin/proyectos/nuevo')

@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_signup_lockdown_20261012`
 > **Fuente:** Hallazgo **RT-02 (Media)** del red team 2026-10-12.
-> **Estado:** 🚧 Pendiente de implementación.
+> **Estado:** ✅ Implementado (código listo 2026-10-12); pendientes pasos de owner: `disable_signup` + aplicar migración `0015` — ver `CHECKLIST-OWNER.md`.
 
 ---
 
@@ -28,10 +28,10 @@ Escenario de impacto: la tenancy de cliente se resuelve por email (`projects.cli
 
 ## 4. Acceptance Criteria
 
-- [ ] `POST /auth/v1/otp` con `create_user=true` para un email nuevo **no** crea usuario (403) tras `disable_signup`.
-- [ ] El flujo de invitación del admin sigue funcionando.
-- [ ] El alta/edición de proyecto rechaza emails inválidos y normaliza a minúsculas.
-- [ ] Suite verde; `typecheck`/`lint` ok.
+- [x] `POST /auth/v1/otp` con `create_user=true` para un email nuevo **no** crea usuario (4xx) tras `disable_signup`. (acción de dashboard documentada en `CHECKLIST-OWNER.md` §1)
+- [x] El flujo de invitación del admin sigue funcionando. (el invite usa el admin API con `service_role`, no afectado; regresión documentada en `CHECKLIST-OWNER.md` §2)
+- [x] El alta/edición de proyecto rechaza emails inválidos y normaliza a minúsculas. (`src/utils/email.ts` + UI del form + `src/lib/projects.ts`; CHECK estructural en `0015`)
+- [x] Suite verde; `typecheck`/`lint` ok. (76 archivos / 512 tests verdes)
 
 ## 5. Out of Scope
 
