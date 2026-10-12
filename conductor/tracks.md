@@ -94,6 +94,6 @@ Tracks creados con spec + plan a partir del **paper red team** (`conductor/secur
 - [ ] **Track: Cerrar self-signup por API + validar `client_email` (RT-02, Media)**
       _Link: [./tracks/sec_signup_lockdown_20261012/](./tracks/sec_signup_lockdown_20261012/)_ — `shouldCreateUser:false` es solo UI; `/auth/v1/otp` acepta `create_user=true`. `disable_signup` (owner) + validación/normalización de `client_email` (issue #27). **Código listo 2026-10-12** (76 archivos / 512 tests verdes; `src/utils/email.ts` + UI + lib; migración `0015` con CHECK estructural `NOT VALID`); pendiente owner: `disable_signup` + aplicar `0015` — ver `CHECKLIST-OWNER.md`.
 - [ ] **Track: Ownership en UPDATE de `milestone_approvals` (RT-03, Baja)**
-      _Link: [./tracks/sec_approval_rls_20261012/](./tracks/sec_approval_rls_20261012/)_ — el `with check` del UPDATE no re-valida la pertenencia del proyecto (a diferencia del INSERT). Impacto de integridad acotado (issue #28).
+      _Link: [./tracks/sec_approval_rls_20261012/](./tracks/sec_approval_rls_20261012/)_ — el `with check` del UPDATE no re-valida la pertenencia del proyecto (a diferencia del INSERT). Impacto de integridad acotado (issue #28). **Código listo 2026-10-12** (77 archivos / 516 tests verdes; migración `0016` recrea la policy con ownership en `using`/`with check`); **pendiente owner: aplicar la migración `0016` en Supabase** — ver `CHECKLIST-OWNER.md`.
 
 

@@ -20,7 +20,7 @@
 | V.1 | Test guard: la migración re-crea la policy con el `exists(...)` de ownership | Vitest | ☑️ (`src/approvalUpdateOwnership.test.ts`, 4 tests) |
 | V.2 | `npm run test` / `typecheck` / `lint` | npm | ☑️ (77 archivos / 516 tests; typecheck ok; lint ok) |
 | V.3 | Verificación manual: update con `project_id` ajeno rechazado | owner | ☐ — ver `CHECKLIST-OWNER.md` |
-| V.4 | Commit `fix(security): ownership en UPDATE de milestone_approvals (RT-03)` | git | ☐ |
+| V.4 | Commit `fix(security): ownership en UPDATE de milestone_approvals (RT-03)` | git | ☑️ (`6d21fc1`) |
 
 ---
 
