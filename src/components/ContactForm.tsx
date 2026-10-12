@@ -59,6 +59,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
     if (
       data.name.length === 0 ||
       data.name.length > MAX_NAME_LENGTH ||
+      hasControlChars(data.name) ||
       data.email.length === 0 ||
       data.email.length > MAX_EMAIL_LENGTH ||
       hasControlChars(data.email) ||

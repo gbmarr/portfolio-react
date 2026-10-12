@@ -52,6 +52,7 @@ async function loadFreshWidget() {
 interface TurnstileOptions {
   sitekey: string
   callback: (token: string) => void
+  action?: string
   'expired-callback'?: () => void
   'error-callback'?: () => void
 }
@@ -81,6 +82,7 @@ describe('TurnstileWidget', () => {
     const [el, options] = turnstile.render.mock.calls[0] as [HTMLElement, TurnstileOptions]
     expect(el).toBeInstanceOf(HTMLDivElement)
     expect(options.sitekey).toBe('site-key-1')
+    expect(options.action).toBe('contact')
     expect(typeof options.callback).toBe('function')
   })
 

@@ -1,4 +1,5 @@
 import type { ContactFormData } from '../components/ContactForm'
+import { hasControlChars } from './contactSafety'
 
 /** Payload que recibe la Edge Function `contact-notify`. */
 export interface ContactPayload {
@@ -26,8 +27,12 @@ export function validateContactPayload(payload: ContactPayload): ContactValidati
   const email = payload.email.trim()
   const message = payload.message.trim()
 
-  if (!name || name.length > CONTACT_LIMITS.nameMax) return { ok: false, reason: 'name' }
-  if (!email || email.length > CONTACT_LIMITS.emailMax) return { ok: false, reason: 'email' }
+  // SEC-005: `name`/`email` van a headers del email; se rechazan caracteres de
+  // control (CR/LF/NUL) también del lado cliente, en paridad con el servidor.
+  if (!name || name.length > CONTACT_LIMITS.nameMax || hasControlChars(name))
+    return { ok: false, reason: 'name' }
+  if (!email || email.length > CONTACT_LIMITS.emailMax || hasControlChars(email))
+    return { ok: false, reason: 'email' }
   if (message.length < CONTACT_LIMITS.messageMin || message.length > CONTACT_LIMITS.messageMax)
     return { ok: false, reason: 'message' }
   if (!payload.turnstileToken.trim()) return { ok: false, reason: 'turnstile' }

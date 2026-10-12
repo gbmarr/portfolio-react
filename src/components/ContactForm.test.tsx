@@ -174,6 +174,22 @@ describe('ContactForm', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
   })
 
+  it('rechaza un nombre con caracteres de control (CRLF)', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(<ContactForm onSubmit={onSubmit} />)
+
+    fireEvent.change(screen.getByLabelText('Tu nombre'), {
+      target: { value: 'Ana\u0007Bcc: attacker@example.com' },
+    })
+    await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
+    await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('button', { name: 'Enviar' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
+  })
+
   it(
     'blocks rapid repeated submissions (anti-spam throttle)',
     async () => {

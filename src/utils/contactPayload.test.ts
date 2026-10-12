@@ -57,6 +57,15 @@ describe('validateContactPayload', () => {
     })
   })
 
+  it('rechaza caracteres de control (CRLF) en nombre y email (SEC-005)', () => {
+    expect(
+      validateContactPayload({ ...base, name: 'Ana\r\nBcc: attacker@example.com' }),
+    ).toEqual({ ok: false, reason: 'name' })
+    expect(
+      validateContactPayload({ ...base, email: 'ana@example.com\nbcc:x@y.com' }),
+    ).toEqual({ ok: false, reason: 'email' })
+  })
+
   it('recorta antes de validar', () => {
     expect(validateContactPayload({ ...base, name: '  Ana Pérez  ' })).toEqual({ ok: true })
   })

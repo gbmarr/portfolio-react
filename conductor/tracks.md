@@ -74,4 +74,11 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
 - [x] **Track: Reenvío de invitación en /admin/clientes**
       _Link: [./tracks/invite_ux_fix_20261012/](./tracks/invite_ux_fix_20261012/)_ — hallazgo del análisis read-only del flujo de invitación: el botón estaba oculto para clientes "Activos" (cuenta creada al invitar pero quizá nunca ingresaron). Ahora toda fila tiene acción (`Invitar` / `Reenviar enlace`), el estado efímero `Invitación enviada ✓` se conserva y `inviteByMagicLink` (OTP a cuentas existentes) mantiene el flujo. **Implementado 2026-10-12**: 70 archivos / 469 tests verdes.
 
+---
+
+## Seguridad — endurecimiento envío de email de contacto (2026-10-12)
+
+- [ ] **Track: Hardening envío de email del formulario de contacto (SEC-005/006/007)**
+      _Link: [./tracks/sec_contact_email_hardening_20261011/](./tracks/sec_contact_email_hardening_20261011/)_ — solicitud del owner (restringir proveedores de email) → **ADR-0002**: allowlist rechazado (security theater). Implementado: `validation.ts` puro con validación server-side anti-CRLF (`name`/`email`), `reply_to` solo si email válido, `isTurnstileResponseValid` (action + hostname), blocklist de dominios desechables; migración `0012` con CHECK constraints `[[:cntrl:]]` en `name`/`email`; paridad cliente. **Pendiente del owner:** aplicar migración `0012` y desplegar `contact-notify` (CHECKLIST-OWNER.md).
+
 

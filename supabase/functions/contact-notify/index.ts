@@ -25,6 +25,15 @@ import { serve } from "https://deno.land/std@0.219.1/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.117.3";
 // SEC-004: helpers de error del envío (puros, testeados con Vitest).
 import { logMailError, mailSendErrorBody } from "./email-result.ts";
+// SEC-005: validación de contenido (pura, testeada con Vitest).
+import {
+  isSafeEmail,
+  isTurnstileResponseValid,
+  TURNSTILE_ACTION,
+  validateContactInput,
+  type ContactPayload,
+  type TurnstileVerifyResponse,
+} from "./validation.ts";
 
 const ALLOWED_ORIGINS = new Set([
   "https://gabrielmarrero.com.ar",
@@ -32,19 +41,14 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:5173",
 ]);
 
-const LIMITS = {
-  nameMax: 80,
-  emailMax: 120,
-  messageMin: 10,
-  messageMax: 2000,
-};
-
-interface ContactPayload {
-  name: string;
-  email: string;
-  message: string;
-  turnstileToken: string;
-}
+// SEC-006: hostnames desde los que Turnstile puede emitir un token válido.
+// Deben reflejar los hostnames configurados en el sitio de Cloudflare Turnstile
+// (`gabrielmarrero.com.ar`, `www.…` y `localhost` para dev).
+const TURNSTILE_ALLOWED_HOSTNAMES = [
+  "gabrielmarrero.com.ar",
+  "www.gabrielmarrero.com.ar",
+  "localhost",
+];
 
 function cors(origin: string | null): Record<string, string> {
   const base = {
@@ -82,28 +86,6 @@ function json(
   });
 }
 
-function validate(raw: Partial<ContactPayload>):
-  | { ok: true; payload: ContactPayload }
-  | { ok: false; reason: string } {
-  const name = typeof raw.name === "string" ? raw.name.trim() : "";
-  const email = typeof raw.email === "string" ? raw.email.trim() : "";
-  const message = typeof raw.message === "string" ? raw.message.trim() : "";
-  const turnstileToken =
-    typeof raw.turnstileToken === "string" ? raw.turnstileToken.trim() : "";
-
-  if (!name || name.length > LIMITS.nameMax) return { ok: false, reason: "name" };
-  if (!email || email.length > LIMITS.emailMax) return { ok: false, reason: "email" };
-  if (
-    !message ||
-    message.length < LIMITS.messageMin ||
-    message.length > LIMITS.messageMax
-  ) {
-    return { ok: false, reason: "message" };
-  }
-  if (!turnstileToken) return { ok: false, reason: "turnstile" };
-  return { ok: true, payload: { name, email, message, turnstileToken } };
-}
-
 async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
   // Fallback al nombre histórico TURNSTILE_SECRET_KEY para no romper dashboards
   // que ya cargaron el secret con ese nombre (2026-10-10).
@@ -120,8 +102,12 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
       { method: "POST", body: form },
     );
-    const data = (await res.json()) as { success?: boolean };
-    return data.success === true;
+    // SEC-006: no alcanza con `success`; se valida además la acción y el hostname.
+    const data = (await res.json()) as TurnstileVerifyResponse;
+    return isTurnstileResponseValid(data, {
+      allowedHostnames: TURNSTILE_ALLOWED_HOSTNAMES,
+      expectedAction: TURNSTILE_ACTION,
+    });
   } catch {
     return false;
   }
@@ -131,22 +117,25 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
 // interno para logging server-side (SEC-004): NO se expone al browser.
 async function sendResendMail(
   apiKey: string,
-  opts: { from: string; to: string; subject: string; text: string; replyTo: string },
+  opts: { from: string; to: string; subject: string; text: string; replyTo?: string },
 ): Promise<{ ok: true } | { ok: false; detail: string }> {
   try {
+    const body: Record<string, unknown> = {
+      from: opts.from,
+      to: opts.to,
+      subject: opts.subject,
+      text: opts.text,
+    };
+    // SEC-005: `reply_to` solo cuando el valor es un email válido; si el emisor
+    // dejó un WhatsApp/teléfono, se omite (nunca llega crudo a un header).
+    if (opts.replyTo) body.reply_to = opts.replyTo;
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        from: opts.from,
-        to: opts.to,
-        subject: opts.subject,
-        text: opts.text,
-        reply_to: opts.replyTo,
-      }),
+      body: JSON.stringify(body),
     });
     const raw = await res.text();
     if (res.ok) return { ok: true };
@@ -184,7 +173,7 @@ serve(async (req) => {
     return json({ ok: false, error: "invalid-json" }, 400, headers);
   }
 
-  const check = validate(raw);
+  const check = validateContactInput(raw);
   if (!check.ok) {
     return json({ ok: false, error: "invalid-payload", reason: check.reason }, 400, headers);
   }
@@ -239,7 +228,7 @@ serve(async (req) => {
       to: mailTo,
       subject: `Nuevo mensaje de ${name} <${email}>`,
       text: message,
-      replyTo: email,
+      replyTo: isSafeEmail(email) ? email : undefined,
     });
     if (!sent.ok) {
       // SEC-004: el detalle del proveedor queda solo en logs server-side.

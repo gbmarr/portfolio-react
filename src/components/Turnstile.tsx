@@ -8,6 +8,7 @@ declare global {
         options: {
           sitekey: string
           callback: (token: string) => void
+          action?: string
           'expired-callback'?: () => void
           'error-callback'?: () => void
         },
@@ -16,6 +17,13 @@ declare global {
     }
   }
 }
+
+/**
+ * SEC-006: acción que viaja en el token de Turnstile y que el servidor verifica
+ * en `siteverify`. Debe coincidir con `TURNSTILE_ACTION` de la Edge Function
+ * `supabase/functions/contact-notify/validation.ts`.
+ */
+export const TURNSTILE_ACTION = 'contact'
 
 const SCRIPTS = new Map<string, Promise<void>>()
 
@@ -64,6 +72,7 @@ export function TurnstileWidget({ siteKey, onChange }: TurnstileWidgetProps) {
         if (cancelled || !containerRef.current || !window.turnstile) return
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
+          action: TURNSTILE_ACTION,
           callback: onChange,
           'expired-callback': () => onChange(''),
           'error-callback': () => onChange(''),

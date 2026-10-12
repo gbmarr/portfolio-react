@@ -1,0 +1,24 @@
+{
+  "track_id": "sec_contact_email_hardening_20261011",
+  "type": "security",
+  "status": "in_progress",
+  "created_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T11:00:00Z",
+  "description": "Solicitud del owner: aumentar seguridad de los envíos de email del formulario de contacto (allowlist de proveedores) + análisis de viabilidad (ADR-0002: allowlist rechazado). SEC-005 (Media, CWE-93/CWE-20, OWASP A03:2021): name/email terminan en subject/reply_to del email y la validación server-side solo chequeaba longitud → un POST directo a la Edge Function permitía inyección de headers (CRLF). SEC-006 (Baja, CWE-345): siteverify de Turnstile solo validaba success, sin action ni hostname. SEC-007 (Info): sin filtro contra dominios desechables (ruido).",
+  "severity": "medium",
+  "cwe": ["CWE-93", "CWE-20", "CWE-345"],
+  "owasp": ["A03:2021", "A06:2021"],
+  "source": "Solicitud del owner + análisis de seguridad del flujo de contacto (2026-10-11/12); decisión de producto en conductor/decisions/0002-allowlist-proveedores-email-rechazado.md",
+  "decisions": {
+    "D1": "NO allowlist de proveedores (security theater, evadible, rompe 'email o WhatsApp', falsos positivos). Se implementa hardening real: validación server-side anti-CRLF en name/email + reply_to condicional a email válido + CHECK constraints en esquema (0012) + Turnstile action/hostname + blocklist opt-in de dominios desechables."
+  },
+  "results": {
+    "code_implemented": "2026-10-12",
+    "migration": "supabase/migrations/0012_contact_content_hardening.sql",
+    "tests": "70 archivos / 469+ tests verdes (nuevos: validation.test.ts)",
+    "typecheck": "ok (run final pendiente de confirmar en V.3)",
+    "lint": "ok",
+    "notes": "validation.ts módulo puro (estilo email-result.ts); index.ts ya no tiene validate()/LIMITS locales; Turnstile.tsx exporta TURNSTILE_ACTION='contact'; blocklist DISPOSABLE_EMAIL_DOMAINS (12 dominios) solo aplica a valores con @ (WhatsApp intacto).",
+    "pending_owner": "aplicar migración 0012 en SQL Editor; supabase functions deploy contact-notify --no-verify-jwt; pruebas en vivo (CHECKLIST-OWNER.md)"
+  }
+}
