@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { throwIfError, unwrapList } from './supabase-result'
 import type { ContactMessage } from './types'
 
 /** Bandeja de mensajes del formulario de contacto (solo admin, según RLS). */
@@ -7,19 +8,18 @@ export async function listMessages(): Promise<ContactMessage[]> {
     .from('contact_messages')
     .select('*')
     .order('created_at', { ascending: false })
-  if (result.error) throw new Error(result.error.message)
-  return (result.data ?? []) as ContactMessage[]
+  return unwrapList(result)
 }
 
 export async function markMessageRead(id: string, read: boolean): Promise<void> {
-  const { error } = await supabase
+  const result = await supabase
     .from('contact_messages')
     .update({ read_at: read ? new Date().toISOString() : null })
     .eq('id', id)
-  if (error) throw new Error(error.message)
+  throwIfError(result)
 }
 
 export async function deleteMessage(id: string): Promise<void> {
-  const { error } = await supabase.from('contact_messages').delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  const result = await supabase.from('contact_messages').delete().eq('id', id)
+  throwIfError(result)
 }

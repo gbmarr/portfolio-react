@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Profile } from './types'
+import { unwrapList } from './supabase-result'
 
 export type ClientRow = {
   email: string
@@ -20,12 +20,12 @@ export async function listClients(): Promise<ClientRow[]> {
     supabase.from('projects').select('client_email'),
   ])
 
-  if (profilesResult.error) throw new Error(profilesResult.error.message)
-  if (projectsResult.error) throw new Error(projectsResult.error.message)
+  const profiles = unwrapList(profilesResult)
+  const projects = unwrapList(projectsResult)
 
   const rows = new Map<string, ClientRow>()
 
-  for (const project of projectsResult.data ?? []) {
+  for (const project of projects) {
     const email = project.client_email
     const existing = rows.get(email)
     if (existing) {
@@ -35,7 +35,7 @@ export async function listClients(): Promise<ClientRow[]> {
     }
   }
 
-  for (const profile of profilesResult.data ?? []) {
+  for (const profile of profiles) {
     if (profile.role === 'admin') continue
     const email = profile.email.toLowerCase()
     const existing = rows.get(email)
@@ -48,10 +48,4 @@ export async function listClients(): Promise<ClientRow[]> {
   }
 
   return [...rows.values()].sort((a, b) => a.email.localeCompare(b.email))
-}
-
-export async function listClientProfiles(): Promise<Profile[]> {
-  const result = await supabase.from('profiles').select('*').neq('role', 'admin').order('email')
-  if (result.error) throw new Error(result.error.message)
-  return (result.data ?? []) as Profile[]
 }

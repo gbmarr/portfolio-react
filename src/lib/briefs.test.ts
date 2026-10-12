@@ -33,14 +33,14 @@ const h = vi.hoisted(() => {
       single: () => Promise.resolve(result),
       then: (
         onFulfilled: (value: TableResult) => unknown,
-        onRejected?: (reason: unknown) => unknown,
+        onRejected?: (reason: unknown) => unknown
       ) => Promise.resolve(result).then(onFulfilled, onRejected),
     }
     return builder
   }
 
   const from = vi.fn((table: string) =>
-    makeBuilder(tableResults.get(table) ?? { data: [], error: null }),
+    makeBuilder(tableResults.get(table) ?? { data: [], error: null })
   )
 
   return { tableResults, calls, from, makeBuilder }
@@ -90,7 +90,9 @@ describe('getBrief', () => {
 
 describe('upsertBrief', () => {
   it('crea un brief nuevo cuando el proyecto no tiene uno', async () => {
-    h.tableResults.set('project_briefs', { data: null, error: null })
+    h.from
+      .mockImplementationOnce(() => h.makeBuilder({ data: null, error: null }))
+      .mockImplementationOnce(() => h.makeBuilder({ data: briefRow, error: null }))
     h.calls.length = 0
     await upsertBrief('p1', 'landing', ['blog'])
 
@@ -199,7 +201,7 @@ describe('updateBriefAnswers', () => {
     h.tableResults.set('project_briefs', { data: briefRow, error: null })
     h.from.mockImplementationOnce(() => h.makeBuilder({ data: briefRow, error: null }))
     h.from.mockImplementationOnce(() =>
-      h.makeBuilder({ data: null, error: { message: 'update denied' } }),
+      h.makeBuilder({ data: null, error: { message: 'update denied' } })
     )
     await expect(updateBriefAnswers('p1', {})).rejects.toThrow('update denied')
   })

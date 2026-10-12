@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import { getBrief } from './briefs'
 import { isValidEmail, normalizeEmail } from '../utils/email'
+import { throwIfError, unwrap, unwrapList, unwrapMaybe } from './supabase-result'
 import type {
   MilestoneApproval,
   Project,
@@ -9,19 +10,6 @@ import type {
   ProjectStage,
   StageInput,
 } from './types'
-
-type Result<T> = { data: T | null; error: { message: string } | null }
-
-function unwrap<T>(result: Result<T>, notFoundMessage = 'No se encontró el registro'): T {
-  if (result.error) throw new Error(result.error.message)
-  if (result.data === null) throw new Error(notFoundMessage)
-  return result.data
-}
-
-async function unwrapList<T>(result: Result<T[]>): Promise<T[]> {
-  if (result.error) throw new Error(result.error.message)
-  return result.data ?? []
-}
 
 /** RT-02: valida la estructura del email del cliente (defensa en profundidad). */
 function assertValidClientEmail(clientEmail: string): void {
@@ -39,7 +27,10 @@ function assertValidClientEmail(clientEmail: string): void {
  * los suyos (mismo query para ambos).
  */
 export async function listProjects(): Promise<Project[]> {
-  const result = await supabase.from('projects').select('*').order('created_at', { ascending: false })
+  const result = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false })
   return unwrapList(result)
 }
 
@@ -56,16 +47,20 @@ export class ProjectNotFoundError extends Error {
 
 export async function getProject(id: string): Promise<Project> {
   const result = await supabase.from('projects').select('*').eq('id', id).maybeSingle()
-  if (result.error) throw new Error(result.error.message)
-  if (result.data === null) throw new ProjectNotFoundError()
-  return result.data
+  const project = unwrapMaybe(result)
+  if (project === null) throw new ProjectNotFoundError()
+  return project
 }
 
 export async function createProject(input: ProjectInput): Promise<Project> {
   // RT-02: normaliza a minúsculas y valida antes de escribir.
   const client_email = normalizeEmail(input.client_email)
   assertValidClientEmail(client_email)
-  const result = await supabase.from('projects').insert({ ...input, client_email }).select().single()
+  const result = await supabase
+    .from('projects')
+    .insert({ ...input, client_email })
+    .select()
+    .single()
   return unwrap(result)
 }
 
@@ -80,8 +75,8 @@ export async function updateProject(id: string, patch: Partial<ProjectInput>): P
 }
 
 export async function deleteProject(id: string): Promise<void> {
-  const { error } = await supabase.from('projects').delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  const result = await supabase.from('projects').delete().eq('id', id)
+  throwIfError(result)
 }
 
 /** Agregado "detalle de proyecto": proyecto + etapas + aprobaciones + brief. */
@@ -144,15 +139,15 @@ export async function updateStage(id: string, patch: Partial<StageInput>): Promi
 }
 
 export async function deleteStage(id: string): Promise<void> {
-  const { error } = await supabase.from('project_stages').delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  const result = await supabase.from('project_stages').delete().eq('id', id)
+  throwIfError(result)
 }
 
 /** Reordena las etapas: actualiza `position` en el orden dado. */
 export async function reorderStages(orderedIds: string[]): Promise<void> {
   for (const [index, id] of orderedIds.entries()) {
-    const { error } = await supabase.from('project_stages').update({ position: index }).eq('id', id)
-    if (error) throw new Error(error.message)
+    const result = await supabase.from('project_stages').update({ position: index }).eq('id', id)
+    throwIfError(result)
   }
 }
 
@@ -161,16 +156,13 @@ export async function reorderStages(orderedIds: string[]): Promise<void> {
 // ----------------------------------------------------------------------------
 
 export async function listApprovals(projectId: string): Promise<MilestoneApproval[]> {
-  const result = await supabase
-    .from('milestone_approvals')
-    .select('*')
-    .eq('project_id', projectId)
+  const result = await supabase.from('milestone_approvals').select('*').eq('project_id', projectId)
   return unwrapList(result)
 }
 
 /** El cliente registra (o cambia) su decisión sobre una etapa en revisión. */
 export async function decideMilestone(
-  input: Pick<MilestoneApproval, 'stage_id' | 'project_id' | 'client_id' | 'decision' | 'comment'>,
+  input: Pick<MilestoneApproval, 'stage_id' | 'project_id' | 'client_id' | 'decision' | 'comment'>
 ): Promise<MilestoneApproval> {
   const result = await supabase
     .from('milestone_approvals')
