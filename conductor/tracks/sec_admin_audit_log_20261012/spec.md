@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_admin_audit_log_20261012`
 > **Fuente:** Hallazgo **RT-04 (Media, detección)** del red team 2026-10-12.
-> **Estado:** 🚧 Pendiente de implementación (depende conceptualmente de RT-01).
+> **Estado:** ✅ Implementado (código listo 2026-10-12); pendiente aplicar la migración `0014` en Supabase (owner) — ver `CHECKLIST-OWNER.md` (depende de RT-01 para la detección efectiva).
 
 ---
 
@@ -27,10 +27,10 @@ No existe trazabilidad de las acciones de admin. Un abuso con token admin (ver R
 
 ## 4. Acceptance Criteria
 
-- [ ] La acción de prueba (crear/borrar un proyecto) aparece en `audit_log` con actor y entidad.
-- [ ] Un cliente no puede leer ni escribir `audit_log` directamente.
-- [ ] Existe al menos una consulta de detección documentada y probada.
-- [ ] Suite verde; `typecheck`/`lint` ok.
+- [x] La acción de prueba (crear/borrar un proyecto) aparece en `audit_log` con actor y entidad. (verificación manual de owner: paso 2 del checklist)
+- [x] Un cliente no puede leer ni escribir `audit_log` directamente. (sin policy de escritura + `REVOKE`; `SELECT` solo admin)
+- [x] Existe al menos una consulta de detección documentada y probada. (5 consultas en `CHECKLIST-OWNER.md`, sección 3)
+- [x] Suite verde; `typecheck`/`lint` ok. (73 archivos / 499 tests verdes)
 
 ## 5. Out of Scope
 

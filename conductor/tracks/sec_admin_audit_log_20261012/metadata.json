@@ -1,7 +1,7 @@
 {
   "track_id": "sec_admin_audit_log_20261012",
   "type": "security",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-12T00:00:00Z",
   "updated_at": "2026-10-12T00:00:00Z",
   "description": "RT-04 (Media, deteccion). No existe audit_log; las acciones admin no dejan rastro propio, por lo que un abuso con token admin es indetectable. Crear tabla audit_log con triggers en tablas sensibles + consultas de deteccion.",
@@ -12,7 +12,15 @@
   "source": "red team 2026-10-12 (conductor/security/red-team-20261012)",
   "ticket": "gbmarr/portfolio-react#26",
   "decisions": {
-    "D1": "Registrar ids + campos descriptivos; no volcar filas completas (evitar PII innecesaria)."
+    "D1": "Registrar ids + campos descriptivos; no volcar filas completas (evitar PII innecesaria).",
+    "D2": "En UPDATE, metadata solo con NOMBRES de columnas cambiadas (sin valores).",
+    "D3": "Retención: 90 días vía public.prune_audit_log()."
   },
-  "results": {}
+  "results": {
+    "migration": "supabase/migrations/0014_audit_log.sql",
+    "tests": "73 archivos / 499 tests verdes (auditLog.test.ts: 6 tests)",
+    "typecheck": "ok",
+    "lint": "limpio",
+    "pending_owner": "aplicar 0014 en Supabase + verificación manual (CHECKLIST-OWNER.md); aplicar 0013 (RT-01) antes para SELECT con AAL2"
+  }
 }
