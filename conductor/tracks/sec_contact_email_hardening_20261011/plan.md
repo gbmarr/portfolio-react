@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_contact_email_hardening_20261011`
 > **Spec:** [./spec.md](./spec.md)
-> **Status:** 🧪 Código listo (Fases 1–4 implementadas y testeadas); pendiente aplicar migración `0012` y deploy de la Edge Function por el owner.
+> **Status:** ✅ Completado (2026-10-12) — código + migración `0012` aplicada + Edge Function desplegada y verificada en producción.
 
 ---
 
@@ -42,7 +42,7 @@
 | V.1 | Tests de la Edge Function (CRLF, blocklist, turnstile) | Vitest (`validation.test.ts`) | ☑️ |
 | V.2 | Paridad cliente y widget (tests ContactForm/contactPayload/Turnstile) | Vitest | ☑️ |
 | V.3 | Suite completa + typecheck + lint | npm | ☑️ (pendiente run final post-docs) |
-| V.4 | Aplicar migración `0012` + deploy `contact-notify` + pruebas en vivo | Supabase SQL Editor + `supabase functions deploy contact-notify --no-verify-jwt` | ⏳ owner (CHECKLIST-OWNER.md) |
+| V.4 | Aplicar migración `0012` + deploy `contact-notify` + pruebas en vivo | Supabase SQL Editor + `supabase functions deploy contact-notify --no-verify-jwt` | ☑️ owner — aplicado y verificado en producción (2026-10-12) |
 
 ---
 

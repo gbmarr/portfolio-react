@@ -78,7 +78,7 @@ Tracks creados con spec + plan a partir de la **auditoría de seguridad run-2** 
 
 ## Seguridad — endurecimiento envío de email de contacto (2026-10-12)
 
-- [ ] **Track: Hardening envío de email del formulario de contacto (SEC-005/006/007)**
-      _Link: [./tracks/sec_contact_email_hardening_20261011/](./tracks/sec_contact_email_hardening_20261011/)_ — solicitud del owner (restringir proveedores de email) → **ADR-0002**: allowlist rechazado (security theater). Implementado: `validation.ts` puro con validación server-side anti-CRLF (`name`/`email`), `reply_to` solo si email válido, `isTurnstileResponseValid` (action + hostname), blocklist de dominios desechables; migración `0012` con CHECK constraints `[[:cntrl:]]` en `name`/`email`; paridad cliente. **Pendiente del owner:** aplicar migración `0012` y desplegar `contact-notify` (CHECKLIST-OWNER.md).
+- [x] **Track: Hardening envío de email del formulario de contacto (SEC-005/006/007)**
+      _Link: [./tracks/sec_contact_email_hardening_20261011/](./tracks/sec_contact_email_hardening_20261011/)_ — solicitud del owner (restringir proveedores de email) → **ADR-0002**: allowlist rechazado (security theater). Implementado: `validation.ts` puro con validación server-side anti-CRLF (`name`/`email`), `reply_to` solo si email válido, `isTurnstileResponseValid` (action + hostname), blocklist de dominios desechables; migración `0012` con CHECK constraints `[[:cntrl:]]` en `name`/`email`; paridad cliente. **Completado 2026-10-12** (commit `62a9641`): migración `0012` aplicada en Supabase + Edge Function desplegada y verificada en producción (email normal llega, WhatsApp sin `reply_to`, desechable → 400, CRLF → 400).
 
 

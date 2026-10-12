@@ -2,7 +2,7 @@
 
 > **Track ID:** `sec_contact_email_hardening_20261011`
 > **Fuente:** Solicitud del owner (2026-10-11): *"aumentar el nivel de seguridad de los envíos de emails en el formulario de contacto"* + análisis de viabilidad del **allowlist de proveedores** (ADR-0002: rechazado).
-> **Estado:** 🧪 En implementación (código listo; pendiente aplicar migración `0012` y deploy de la Edge Function por el owner).
+> **Estado:** ✅ Completado (código implementado, migración `0012` aplicada y Edge Function desplegada y verificada en producción — 2026-10-12).
 
 ---
 
@@ -41,7 +41,7 @@ El owner propuso restringir los proveedores de email permitidos (ej. gmail). El 
 - [x] Blocklist desechables + teléfono no bloqueado (tests).
 - [x] Migración `0012` escrita, idempotente, con CHECK sobre `name`/`email` únicamente.
 - [x] `npm run test` / `typecheck` / `lint` verdes.
-- [ ] (Owner) Migración `0012` aplicada en Supabase + Edge Function desplegada.
+- [x] (Owner) Migración `0012` aplicada en Supabase + Edge Function desplegada y verificada en producción (2026-10-12).
 
 ## 5. Out of Scope
 
