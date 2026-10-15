@@ -10,7 +10,7 @@
  * Edge Function (`supabase/functions/_shared/contact-contract.ts`).
  */
 
-import { EMAIL_PATTERN, hasControlChars } from '../../supabase/functions/_shared/contact-contract'
+import { EMAIL_PATTERN, hasControlChars } from '../shared/contact-contract'
 
 /**
  * Devuelve la dirección solo si es un email seguro para `mailto:`; si no, `null`.

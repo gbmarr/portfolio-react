@@ -6,7 +6,7 @@
  * único y conservador. No verifica entregabilidad (fuera de alcance).
  */
 
-import { EMAIL_PATTERN } from '../../supabase/functions/_shared/contact-contract'
+import { EMAIL_PATTERN } from '../shared/contact-contract'
 
 /** Normaliza un email para la tenancy por email: recorta y pasa a minúsculas. */
 export function normalizeEmail(value: string): string {

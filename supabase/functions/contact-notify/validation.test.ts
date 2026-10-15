@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { CONTACT_LIMITS, TURNSTILE_ACTION } from '../_shared/contact-contract'
+import { CONTACT_LIMITS, TURNSTILE_ACTION } from '../../../src/shared/contact-contract'
 import { isDisposableEmail, isTurnstileResponseValid, validateContactInput } from './validation'
 
 describe('isDisposableEmail (SEC-007)', () => {

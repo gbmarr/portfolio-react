@@ -26,7 +26,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.117.3'
 // SEC-004: helpers de error del envío (puros, testeados con Vitest).
 import { logMailError, mailSendErrorBody } from './email-result.ts'
 // Contrato compartido con el cliente (límites, patrón de email, acción Turnstile).
-import { isSafeEmail, TURNSTILE_ACTION } from '../_shared/contact-contract.ts'
+import { isSafeEmail, TURNSTILE_ACTION } from '../../../src/shared/contact-contract.ts'
 // SEC-005: validación de contenido (pura, testeada con Vitest).
 import {
   isTurnstileResponseValid,

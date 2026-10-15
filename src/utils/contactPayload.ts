@@ -1,5 +1,5 @@
 import type { ContactFormData } from '../components/ContactForm'
-import { CONTACT_LIMITS, hasControlChars } from '../../supabase/functions/_shared/contact-contract'
+import { CONTACT_LIMITS, hasControlChars } from '../shared/contact-contract'
 
 /** Payload que recibe la Edge Function `contact-notify`. */
 export interface ContactPayload {

@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
-import { CONTACT_LIMITS } from '../../supabase/functions/_shared/contact-contract'
+import { CONTACT_LIMITS } from '../shared/contact-contract'
 import { Button } from './Button'
 import {
   buildContactPayload,

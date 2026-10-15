@@ -10,7 +10,7 @@
 
 // Los límites, `hasControlChars`, el patrón de email y `TURNSTILE_ACTION` viven
 // en el contrato compartido con el cliente (un solo lugar para la política).
-import { CONTACT_LIMITS, hasControlChars } from '../_shared/contact-contract.ts'
+import { CONTACT_LIMITS, hasControlChars } from '../../../src/shared/contact-contract.ts'
 
 export interface ContactPayload {
   name: string

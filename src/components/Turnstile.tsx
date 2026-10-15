@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { TURNSTILE_ACTION } from '../../supabase/functions/_shared/contact-contract'
+import { TURNSTILE_ACTION } from '../shared/contact-contract'
 
 declare global {
   interface Window {
