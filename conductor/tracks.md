@@ -112,7 +112,7 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
       _Link: [./tracks/arch_data_result_helper_20261012/](./tracks/arch_data_result_helper_20261012/)_ — `Result<T>`/desenvolvío implementado cuatro veces (briefs/projects + patrón inline en clients/messages), ~16 `throw new Error(error.message)`, `unwrapList` duplicado; `listClientProfiles` muerta. Módulo `src/lib/supabase-result.ts` (issue #31).
 - [x] **Track: Batch de etapas en el listado del cliente — N+1 (C5, Worth exploring)**
       _Link: [./tracks/arch_client_projects_batch_20261012/](./tracks/arch_client_projects_batch_20261012/)_ — `ClientProjectsPage` consulta etapas por proyecto (`Promise.all(projects.map(listStages))`); la función pura `computeProgress` es correcta, el defecto está en cómo se llama. `listStagesForProjects(ids)` en una sola consulta (issue #32).
-- [ ] **Track: Estimador puro — `arsRate` inyectado y límites unificados (C6, Speculative)**
+- [x] **Track: Estimador puro — `arsRate` inyectado y límites unificados (C6, Speculative)**
       _Link: [./tracks/arch_estimate_purity_20261012/](./tracks/arch_estimate_purity_20261012/)_ — `computeEstimate` impuro (lee `arsRate` a nivel de módulo desde `import.meta.env.PUBLIC_ARS_RATE`), `MIN/MAX_SECTIONS` duplicados lib/UI, `buildEstimateWhatsAppMessage` re-deriva las extras. Inyección de `arsRate` + un solo hogar para los límites (issue #33).
 
 

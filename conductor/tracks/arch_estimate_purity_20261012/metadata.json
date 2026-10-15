@@ -1,9 +1,9 @@
 {
   "track_id": "arch_estimate_purity_20261012",
   "type": "refactor",
-  "status": "pending",
+  "status": "in_progress",
   "created_at": "2026-10-12T00:00:00Z",
-  "updated_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T23:30:00Z",
   "description": "Candidato C6 (Speculative) de la revisión de arquitectura: computeEstimate (src/lib/estimate.ts:62-116) es profundo pero impuro — multiplica por un arsRate a nivel de módulo (resuelto en data/estimate.ts:154-157 desde import.meta.env.PUBLIC_ARS_RATE). Además MIN_SECTIONS/MAX_SECTIONS están duplicados (lib/estimate.ts:33-34 y Estimator.tsx:17-18, slider :96-97), y buildEstimateWhatsAppMessage re-deriva las extras válidas que computeEstimate ya calculó en breakdown. Inyectar arsRate por parámetro, un solo hogar para los límites y reutilizar el breakdown.",
   "source": "revisión de arquitectura del codebase (candidato C6)",
   "review": {
@@ -16,6 +16,20 @@
     "wins": ["función pura de sus argumentos", "tests deterministas", "límites en un solo hogar"]
   },
   "decisions": {
-    "D1": "computeEstimate(input, arsRate = resolveArsRate(import.meta.env.PUBLIC_ARS_RATE)) para compatibilidad."
+    "D1": "computeEstimate(input, arsRate = resolveArsRate(import.meta.env.PUBLIC_ARS_RATE)) para compatibilidad.",
+    "D2": "MIN_SECTIONS/MAX_SECTIONS exportados desde src/lib/estimate.ts; Estimator.tsx los importa.",
+    "D3": "buildEstimateWhatsAppMessage deriva etiquetas de extras desde result.breakdown en vez de re-derivar."
+  },
+  "results": {
+    "new_exports": ["MIN_SECTIONS", "MAX_SECTIONS desde lib/estimate.ts"],
+    "changed_functions": ["computeEstimate (recibe arsRate)", "buildEstimateWhatsAppMessage (usa breakdown)"],
+    "tests": "82 archivos / 542 tests verdes; cobertura global 93.6% stmts (≥80%)",
+    "lint_typecheck": "eslint limpio; tsc -b limpio",
+    "grep_checks": [
+      "MIN_SECTIONS/MAX_SECTIONS definidos solo en src/lib/estimate.ts",
+      "arsRate ya no es const a nivel de módulo en data/estimate.ts",
+      "buildEstimateWhatsAppMessage no re-deriva extras"
+    ],
+    "pending": "smoke manual V.4 (slider secciones + mensaje WhatsApp)"
   }
 }

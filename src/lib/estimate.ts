@@ -1,5 +1,5 @@
 import {
-  arsRate,
+  resolveArsRate,
   estimateExtras,
   estimateTiers,
   isExtraAllowed,
@@ -30,8 +30,8 @@ export interface EstimateResult {
   breakdown: EstimateBreakdownRow[]
 }
 
-const MIN_SECTIONS = 3
-const MAX_SECTIONS = 8
+export const MIN_SECTIONS = 3
+export const MAX_SECTIONS = 8
 const SECTION_EXTRA_USD = 80
 const MAX_RANGE_MULTIPLIER = 1.2
 
@@ -58,8 +58,15 @@ function buildTimeline(tier: EstimateTier, sections: number, extrasCount: number
 /**
  * Rango orientativo de precio (100% client-side, cero fetch).
  * Reglas según spec del track fairuse_20261008 §5.2.
+ *
+ * @param input  Parámetros de la estimación (tier, secciones, extras).
+ * @param arsRate  Cotización USD→ARS. Si no se provee, se resuelve desde
+ *   `PUBLIC_ARS_RATE` (fallback 1400) para compatibilidad hacia atrás.
  */
-export function computeEstimate(input: EstimateInput): EstimateResult {
+export function computeEstimate(
+  input: EstimateInput,
+  arsRate = resolveArsRate(import.meta.env.PUBLIC_ARS_RATE)
+): EstimateResult {
   const tier = findTier(input.tier)
   const sections =
     tier.id === 'institucional' ? clamp(input.sections, MIN_SECTIONS, MAX_SECTIONS) : 0
@@ -120,11 +127,15 @@ export function buildEstimateWhatsAppMessage(input: EstimateInput, result: Estim
   const tier = findTier(input.tier)
   let message = `Hola Gabriel, hice una estimación en tu web para un proyecto tipo "${tier.name}"`
   if (tier.id === 'institucional') {
-    message += ` de ${clamp(input.sections, MIN_SECTIONS, MAX_SECTIONS)} secciones`
+    const sections = clamp(input.sections, MIN_SECTIONS, MAX_SECTIONS)
+    message += ` de ${sections} secciones`
   }
-  const extraLabels = input.extras
-    .filter((id) => isExtraAllowed(tier.id, id))
-    .map((id) => estimateExtras.find((item) => item.id === id)?.label)
+  // Derivar las etiquetas de extras desde el breakdown ya calculado:
+  // el breakdown trae [tier base, secciones extra?, extras...]
+  const extraLabels = result.breakdown
+    .slice(1) // saltar el tier base
+    .filter((row) => !row.label.startsWith('Secciones extra'))
+    .map((row) => row.label.replace(/ \(.*\)$/, '')) // quitar sufijo "(+X%)" o "(+USD N)"
     .filter((label): label is string => Boolean(label))
   if (extraLabels.length > 0) {
     message += ` con extras: ${extraLabels.join(', ')}`

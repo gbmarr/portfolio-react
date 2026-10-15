@@ -10,12 +10,15 @@ import {
   isExtraAllowed,
   type EstimateTierId,
 } from '../data/estimate'
-import { buildEstimateWhatsAppMessage, computeEstimate, type EstimateInput } from '../lib/estimate'
+import {
+  buildEstimateWhatsAppMessage,
+  computeEstimate,
+  MAX_SECTIONS,
+  MIN_SECTIONS,
+  type EstimateInput,
+} from '../lib/estimate'
 import { formatMoney } from '../lib/format'
 import { profile } from '../data/profile'
-
-const MIN_SECTIONS = 3
-const MAX_SECTIONS = 8
 
 /**
  * Estimador de presupuesto: 100% client-side (fair-use: cero functions, cero

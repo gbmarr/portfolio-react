@@ -131,7 +131,7 @@ export function getIncludedExtras(tier: EstimateTierId): EstimateExtra[] {
 /** Extras visibles para un tier: seleccionables + incluidos, en orden de catálogo. */
 export function getVisibleExtras(tier: EstimateTierId): EstimateExtra[] {
   return estimateExtras.filter(
-    (extra) => extra.tiers.includes(tier) || extra.includedFor?.includes(tier),
+    (extra) => extra.tiers.includes(tier) || extra.includedFor?.includes(tier)
   )
 }
 
@@ -155,10 +155,3 @@ export function resolveArsRate(raw?: string): number {
   const value = Number(raw?.trim())
   return value > 0 ? value : DEFAULT_ARS_RATE
 }
-
-/**
- * Cotización USD→ARS usada solo para la aproximación en pesos del estimador.
- * Configurable vía `PUBLIC_ARS_RATE` en el host (sin redeploy) para no editar
- * código cada vez que cambia la cotización.
- */
-export const arsRate = resolveArsRate(import.meta.env.PUBLIC_ARS_RATE)
