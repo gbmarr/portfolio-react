@@ -27,19 +27,23 @@ const h = vi.hoisted(() => {
         return builder
       },
       neq: () => builder,
+      in: (...args: unknown[]) => {
+        calls.push({ method: 'in', args })
+        return builder
+      },
       order: () => builder,
       maybeSingle: () => Promise.resolve(result),
       single: () => Promise.resolve(result),
       then: (
         onFulfilled: (value: TableResult) => unknown,
-        onRejected?: (reason: unknown) => unknown,
+        onRejected?: (reason: unknown) => unknown
       ) => Promise.resolve(result).then(onFulfilled, onRejected),
     }
     return builder
   }
 
   const from = vi.fn((table: string) =>
-    makeBuilder(tableResults.get(table) ?? { data: [], error: null }),
+    makeBuilder(tableResults.get(table) ?? { data: [], error: null })
   )
 
   return { tableResults, calls, from }
@@ -50,7 +54,7 @@ vi.mock('./supabase', () => ({
   supabase: { from: h.from },
 }))
 
-import { createProject, updateProject } from './projects'
+import { createProject, updateProject, listStagesForProjects } from './projects'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -101,7 +105,7 @@ describe('createProject (RT-02)', () => {
         start_date: null,
         deadline: null,
         description: null,
-      }),
+      })
     ).rejects.toThrow('El email del cliente no es válido.')
     expect(h.from).not.toHaveBeenCalled()
   })
@@ -111,9 +115,9 @@ describe('updateProject (RT-02)', () => {
   it('rechaza un patch con email inválido sin tocar la base', async () => {
     h.tableResults.set('projects', { data: row, error: null })
 
-    await expect(
-      updateProject('p1', { client_email: 'aaa@bbb' }),
-    ).rejects.toThrow('El email del cliente no es válido.')
+    await expect(updateProject('p1', { client_email: 'aaa@bbb' })).rejects.toThrow(
+      'El email del cliente no es válido.'
+    )
     expect(h.from).not.toHaveBeenCalled()
   })
 
@@ -131,5 +135,54 @@ describe('updateProject (RT-02)', () => {
 
     const updateCall = h.calls.find((call) => call.method === 'update')
     expect(updateCall?.args[0]).toEqual({ title: 'Título nuevo' })
+  })
+})
+
+describe('listStagesForProjects (batch N+1)', () => {
+  const stageRow = (over: Partial<Record<string, unknown>> = {}) => ({
+    id: 's1',
+    project_id: 'p1',
+    name: 'Diseño',
+    description: null,
+    position: 0,
+    status: 'completada',
+    client_visible: true,
+    started_at: null,
+    completed_at: null,
+    created_at: '2026-09-01T00:00:00Z',
+    ...over,
+  })
+
+  it('devuelve Record vacío si ids está vacío', async () => {
+    await expect(listStagesForProjects([])).resolves.toEqual({})
+  })
+
+  it('agrupa etapas por project_id preservando el orden', async () => {
+    h.tableResults.set('project_stages', {
+      data: [
+        stageRow({ id: 's1', project_id: 'p1', position: 1 }),
+        stageRow({ id: 's2', project_id: 'p2', position: 0 }),
+        stageRow({ id: 's3', project_id: 'p1', position: 0 }),
+      ],
+      error: null,
+    })
+
+    const result = await listStagesForProjects(['p1', 'p2'])
+
+    expect(result).toEqual({
+      p1: [
+        expect.objectContaining({ id: 's1', position: 1 }),
+        expect.objectContaining({ id: 's3', position: 0 }),
+      ],
+      p2: [expect.objectContaining({ id: 's2', position: 0 })],
+    })
+  })
+
+  it('incluye project_id sin etapas con array vacío', async () => {
+    h.tableResults.set('project_stages', { data: [], error: null })
+
+    const result = await listStagesForProjects(['p1', 'p2'])
+
+    expect(result).toEqual({ p1: [], p2: [] })
   })
 })

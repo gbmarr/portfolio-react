@@ -1,9 +1,9 @@
 {
   "track_id": "arch_client_projects_batch_20261012",
-  "type": "refactor",
-  "status": "pending",
+  "type": "perf",
+  "status": "in_progress",
   "created_at": "2026-10-12T00:00:00Z",
-  "updated_at": "2026-10-12T00:00:00Z",
+  "updated_at": "2026-10-12T22:00:00Z",
   "description": "Candidato C5 (Worth exploring) de la revisión de arquitectura: ClientProjectsPage.tsx:30-35 arma el progreso con una consulta de etapas por proyecto (Promise.all(projects.map(listStages))) — un N+1 donde la página filtra estrategia de datos. La función pura computeProgress es correcta; el defecto está en cómo se llama. Profundizar la capa de datos con listStagesForProjects(ids) (una consulta in(...) agrupada por project_id).",
   "source": "revisión de arquitectura del codebase (candidato C5)",
   "review": {
@@ -16,5 +16,13 @@
   },
   "decisions": {
     "D1": "Forma: listStagesForProjects(ids): Promise<Record<string, ProjectStage[]>>."
+  },
+  "results": {
+    "new_functions": ["listStagesForProjects(ids): Record<string, ProjectStage[]>"],
+    "migrated_pages": ["src/pages/client/ClientProjectsPage.tsx"],
+    "tests": "82 archivos / 542 tests verdes; cobertura global 93.62% stmts (≥80%)",
+    "lint_typecheck": "eslint limpio; tsc -b limpio",
+    "grep_checks": "sin listStages dentro de map en páginas",
+    "pending": "smoke manual V.4 (portal cliente 0/1/varios proyectos)"
   }
 }

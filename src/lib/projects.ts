@@ -124,6 +124,41 @@ export async function listStages(projectId: string): Promise<ProjectStage[]> {
   return unwrapList(result)
 }
 
+/**
+ * Trae las etapas de varios proyectos en una sola consulta.
+ * Agrupa por `project_id` preservando el orden original (`position`).
+ * Devuelve un Record vacío si `ids` está vacío (evita `in()` inválido).
+ * Incluye todos los `project_id` solicitados aunque no tengan etapas.
+ */
+export async function listStagesForProjects(
+  ids: string[]
+): Promise<Record<string, ProjectStage[]>> {
+  if (ids.length === 0) return {}
+
+  const result = await supabase
+    .from('project_stages')
+    .select('*')
+    .in('project_id', ids)
+    .order('project_id', { ascending: true })
+    .order('position', { ascending: true })
+
+  const stages = unwrapList(result)
+  const grouped: Record<string, ProjectStage[]> = {}
+
+  // Inicializar todos los project_id solicitados
+  for (const id of ids) {
+    grouped[id] = []
+  }
+
+  for (const stage of stages) {
+    const pid = stage.project_id
+    if (!grouped[pid]) grouped[pid] = []
+    grouped[pid].push(stage)
+  }
+
+  return grouped
+}
+
 export async function createStage(projectId: string, input: StageInput): Promise<ProjectStage> {
   const result = await supabase
     .from('project_stages')

@@ -7,13 +7,13 @@ import type { Project, ProjectStage } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   listProjects: vi.fn(),
-  listStages: vi.fn(),
+  listStagesForProjects: vi.fn(),
 }))
 
 vi.mock('../../lib/projects', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../lib/projects')>()),
   listProjects: h.listProjects,
-  listStages: h.listStages,
+  listStagesForProjects: h.listStagesForProjects,
 }))
 
 const project = (over: Partial<Project> = {}): Project => ({
@@ -57,7 +57,7 @@ function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/panel']}>
       <ClientProjectsPage />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -73,7 +73,7 @@ describe('ClientProjectsPage', () => {
     h.listProjects.mockRejectedValue(new Error('boom'))
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
@@ -94,18 +94,17 @@ describe('ClientProjectsPage', () => {
         deadline: null,
       }),
     ])
-    h.listStages.mockImplementation(async (projectId: string) =>
-      projectId === 'p1'
-        ? [stage(), stage({ id: 's2', status: 'pendiente' })]
-        : [stage({ id: 's3', status: 'completada' })],
-    )
+    h.listStagesForProjects.mockResolvedValue({
+      p1: [stage(), stage({ id: 's2', status: 'pendiente' })],
+      p2: [stage({ id: 's3', status: 'completada' })],
+    })
 
     renderPage()
 
     expect(await screen.findByText('Sitio web para Estudio')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sitio web para Estudio' })).toHaveAttribute(
       'href',
-      '/panel/p1',
+      '/panel/p1'
     )
     expect(screen.getByText('Landing para Clínica')).toBeInTheDocument()
     expect(screen.getAllByText('Completado').length).toBeGreaterThan(0)
@@ -114,14 +113,16 @@ describe('ClientProjectsPage', () => {
     expect(screen.getByText('1 de 1 etapas completadas')).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'Sitio web para Estudio' })).toHaveAttribute(
       'aria-valuenow',
-      '50',
+      '50'
     )
   })
 })
 
 describe('computeProgress', () => {
   it('cuenta etapas completadas sobre el total', () => {
-    expect(computeProgress([stage(), stage({ id: 's2' }), stage({ id: 's3', status: 'en_progreso' })])).toEqual({
+    expect(
+      computeProgress([stage(), stage({ id: 's2' }), stage({ id: 's3', status: 'en_progreso' })])
+    ).toEqual({
       done: 2,
       total: 3,
     })

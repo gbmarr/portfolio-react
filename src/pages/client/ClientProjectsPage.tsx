@@ -5,7 +5,7 @@ import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import { formatDate } from '../../lib/format'
-import { listProjects, listStages, computeProgress } from '../../lib/projects'
+import { listProjects, listStagesForProjects, computeProgress } from '../../lib/projects'
 import type { Project, ProjectStage } from '../../lib/types'
 
 export type ClientProjectRow = {
@@ -19,12 +19,11 @@ export type ClientProjectRow = {
 export function ClientProjectsPage() {
   const { data, error, loading } = useAsyncData(async () => {
     const projects = await listProjects()
-    return Promise.all(
-      projects.map(async (project) => {
-        const stages = await listStages(project.id)
-        return { project, stages, ...computeProgress(stages) }
-      })
-    )
+    const stagesByProject = await listStagesForProjects(projects.map((p) => p.id))
+    return projects.map((project) => {
+      const stages = stagesByProject[project.id] ?? []
+      return { project, stages, ...computeProgress(stages) }
+    })
   }, [])
 
   if (loading) {

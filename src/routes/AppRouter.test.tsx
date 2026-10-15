@@ -17,7 +17,7 @@ vi.mock('../lib/auth-context', async (importOriginal) => ({
 // mockean los repositorios para que los chunks lazy rendericen contenido estable.
 vi.mock('../lib/projects', () => ({
   listProjects: vi.fn(async () => []),
-  listStages: vi.fn(async () => []),
+  listStagesForProjects: vi.fn(async () => ({})),
   computeProgress: vi.fn(() => ({ done: 0, total: 0 })),
 }))
 vi.mock('../lib/messages', () => ({ listMessages: vi.fn(async () => []) }))
@@ -87,9 +87,7 @@ describe('AppRouter', () => {
     window.history.pushState({}, '', '/admin')
     render(<AppRouter />)
 
-    expect(
-      await screen.findByRole('heading', { name: 'Acceso de gestión' }),
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Acceso de gestión' })).toBeInTheDocument()
   })
 
   it('carga bajo demanda el panel admin para un administrador', async () => {
@@ -106,10 +104,10 @@ describe('AppRouter', () => {
     // El layout admin es estático y el chunk lazy del dashboard termina cargando.
     expect(await screen.findByRole('link', { name: 'Proyectos' })).toHaveAttribute(
       'href',
-      '/admin/proyectos',
+      '/admin/proyectos'
     )
     expect(
-      await screen.findByRole('heading', { name: panelCopy.nav.dashboard }),
+      await screen.findByRole('heading', { name: panelCopy.nav.dashboard })
     ).toBeInTheDocument()
   })
 
@@ -125,7 +123,7 @@ describe('AppRouter', () => {
     render(<AppRouter />)
 
     expect(
-      await screen.findByRole('heading', { name: panelCopy.adminMfa.title }),
+      await screen.findByRole('heading', { name: panelCopy.adminMfa.title })
     ).toBeInTheDocument()
   })
 
@@ -139,7 +137,7 @@ describe('AppRouter', () => {
     render(<AppRouter />)
 
     expect(
-      await screen.findByRole('heading', { name: panelCopy.client.projectsTitle }),
+      await screen.findByRole('heading', { name: panelCopy.client.projectsTitle })
     ).toBeInTheDocument()
     expect(await screen.findByText(panelCopy.client.emptyProjects)).toBeInTheDocument()
   })
