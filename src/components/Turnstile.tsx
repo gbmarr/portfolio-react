@@ -46,6 +46,8 @@ function loadTurnstileScript(): Promise<void> {
 
 interface TurnstileWidgetProps {
   siteKey: string
+  /** Acción esperada por la Edge Function (`contact` por defecto, `quote` para presupuestos). */
+  action?: string
   onChange: (token: string) => void
 }
 
@@ -53,7 +55,11 @@ interface TurnstileWidgetProps {
  * Widget de Cloudflare Turnstile sin dependencias externas.
  * Carga el script una sola vez y renderiza en modo explícito.
  */
-export function TurnstileWidget({ siteKey, onChange }: TurnstileWidgetProps) {
+export function TurnstileWidget({
+  siteKey,
+  action = TURNSTILE_ACTION,
+  onChange,
+}: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
 
@@ -66,7 +72,7 @@ export function TurnstileWidget({ siteKey, onChange }: TurnstileWidgetProps) {
         if (cancelled || !containerRef.current || !window.turnstile) return
         widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
-          action: TURNSTILE_ACTION,
+          action,
           callback: onChange,
           'expired-callback': () => onChange(''),
           'error-callback': () => onChange(''),
@@ -85,9 +91,9 @@ export function TurnstileWidget({ siteKey, onChange }: TurnstileWidgetProps) {
         window.turnstile.remove(widgetIdRef.current)
       }
     }
-    // siteKey no cambia en la práctica; onChange se recomienda estable.
+    // siteKey/action no cambian en la práctica; onChange se recomienda estable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [siteKey])
+  }, [siteKey, action])
 
   return <div ref={containerRef} className="mt-1" />
 }

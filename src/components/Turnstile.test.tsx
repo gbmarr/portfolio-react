@@ -86,6 +86,18 @@ describe('TurnstileWidget', () => {
     expect(typeof options.callback).toBe('function')
   })
 
+  it('usa la acción personalizada cuando se especifica', async () => {
+    const Widget = await loadFreshWidget()
+    const onChange = vi.fn()
+
+    render(<Widget siteKey="site-key-1" action="quote" onChange={onChange} />)
+    triggerScriptLoad()
+
+    await waitFor(() => expect(turnstile.render).toHaveBeenCalledTimes(1))
+    const options = turnstile.render.mock.calls[0][1] as TurnstileOptions
+    expect(options.action).toBe('quote')
+  })
+
   it('invoca onChange con el token cuando el captcha se resuelve', async () => {
     const Widget = await loadFreshWidget()
     const onChange = vi.fn()
