@@ -1,0 +1,28 @@
+{
+  "track_id": "emil_skills_20261024",
+  "type": "tooling",
+  "status": "completed",
+  "created_at": "2026-10-24T00:00:00Z",
+  "updated_at": "2026-10-24T00:00:00Z",
+  "description": "Subset curado de emilkowalski/skills para motion, rendimiento y edge cases de UI. Impeccable descartado por conflicto con el design system y telemetría/hooks.",
+  "source": "análisis de skills externas (2026-10-24)",
+  "decisions": {
+    "D1": "Instalar solo el subset de Emil; no Impeccable.",
+    "D2": "portfolio-design mantiene precedencia sobre tokens/colores/tipografía."
+  },
+  "results": {
+    "skills": [
+      "emil-design-eng",
+      "animate",
+      "review-animations",
+      "improve-animations",
+      "animation-performance",
+      "animation-vocabulary",
+      "mobile-native",
+      "break-ui"
+    ],
+    "location": ".agents/skills",
+    "lockfile": "skills-lock.json",
+    "verification": "suite completa verde (580 tests) + typecheck/lint/build"
+  }
+}

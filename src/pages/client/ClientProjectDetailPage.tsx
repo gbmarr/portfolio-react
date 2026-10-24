@@ -5,6 +5,7 @@ import { TextAreaField } from '../../components/ui/TextAreaField'
 import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { ClientBrief } from './ClientBrief'
+import { ProjectPreviewGallery } from './ProjectPreviewGallery'
 import { useAuth } from '../../lib/auth-context'
 import { formatDate } from '../../lib/format'
 import { useAsyncData } from '../../hooks/useAsyncData'
@@ -101,7 +102,8 @@ export function ClientProjectDetailPage() {
     )
   }
 
-  const { project, stages, approvals, brief } = detail
+  const { project, stages, approvals, brief, previews: rawPreviews } = detail
+  const previews = rawPreviews ?? []
   const visibleStages = stages.filter((stage) => stage.client_visible)
 
   return (
@@ -178,6 +180,8 @@ export function ClientProjectDetailPage() {
         ) : (
           <ClientBrief brief={brief} onSaved={handleBriefSaved} />
         ))}
+
+      <ProjectPreviewGallery project={project} stages={stages} previews={previews} />
 
       {actionMessage && (
         <p

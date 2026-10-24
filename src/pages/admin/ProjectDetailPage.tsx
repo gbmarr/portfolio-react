@@ -16,6 +16,7 @@ import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { StageEditor } from './StageEditor'
+import { ProjectPreviewManager } from './ProjectPreviewManager'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import { estimateTiers, estimateExtras } from '../../data/estimate'
 import { getBriefTemplate, getExtraSections } from '../../data/briefTemplates'
@@ -80,7 +81,8 @@ export function ProjectDetailPage() {
 
   if (!detail) return null
 
-  const { project, stages, approvals, brief } = detail
+  const { project, stages, approvals, brief, previews: rawPreviews } = detail
+  const previews = rawPreviews ?? []
 
   const briefServiceName = brief
     ? (estimateTiers.find((tier) => tier.id === brief.service_type)?.name ?? brief.service_type)
@@ -326,6 +328,14 @@ export function ProjectDetailPage() {
           </p>
         )}
       </section>
+
+      <ProjectPreviewManager
+        key={project.id}
+        project={project}
+        stages={stages}
+        previews={previews}
+        onChanged={reload}
+      />
 
       <StageEditor
         stages={stages}

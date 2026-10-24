@@ -115,4 +115,13 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
 - [x] **Track: Estimador puro — `arsRate` inyectado y límites unificados (C6, Speculative)**
       _Link: [./tracks/arch_estimate_purity_20261012/](./tracks/arch_estimate_purity_20261012/)_ — `computeEstimate` impuro (lee `arsRate` a nivel de módulo desde `import.meta.env.PUBLIC_ARS_RATE`), `MIN/MAX_SECTIONS` duplicados lib/UI, `buildEstimateWhatsAppMessage` re-deriva las extras. Inyección de `arsRate` + un solo hogar para los límites (issue #33).
 
+---
+
+## Preview de proyecto y skills de motion (2026-10-24)
+
+- [ ] **Track: Preview visual del avance del proyecto (capturas + enlace externo)**
+      _Link: [./tracks/project_preview_20261024/](./tracks/project_preview_20261024/)_ — el admin publica capturas en el bucket privado `project-previews` (etapa, epígrafe, visibilidad) y un enlace externo HTTPS; el cliente ve una galería en `/panel/:id` con signed URLs y un botón “Abrir preview” en pestaña nueva. Sin iframe, sin serverless nuevo y sin montos. **Código + tests completos 2026-10-24** (85 archivos / 580 tests; coverage 93.56% statements; typecheck/lint/build verdes). **Pendiente owner:** aplicar `0017_project_previews.sql` en Supabase y hacer smoke manual con una imagen real.
+- [x] **Track: Skills de Emil Kowalski (subset curado)**
+      _Link: [./tracks/emil_skills_20261024/](./tracks/emil_skills_20261024/)_ — se evaluaron `emilkowalski/skills` e `pbakaus/impeccable`. Se instalaron 8 skills de Emil en `.agents/skills/` (`emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `animation-performance`, `animation-vocabulary`, `mobile-native`, `break-ui`) y se registraron en `skills-lock.json`; Impeccable se descartó por conflicto con el design system y telemetría/hooks. `portfolio-design` conserva precedencia sobre tokens/colores/tipografía. **Completado 2026-10-24** (suite completa verde).
+
 

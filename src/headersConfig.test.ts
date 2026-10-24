@@ -34,6 +34,13 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
     }
   })
 
+  it('permite las imágenes firmadas de Supabase Storage en img-src', () => {
+    for (const csp of cspValues) {
+      expect(csp).toContain("img-src 'self' data: https://jntueibgkfwptigpncmh.supabase.co;")
+      expect(csp).not.toContain("img-src 'self' data: https://*.supabase.co")
+    }
+  })
+
   it('no permite inline handlers ni unsafe-inline en script-src', () => {
     for (const csp of cspValues) {
       expect(csp).not.toContain("script-src-attr")

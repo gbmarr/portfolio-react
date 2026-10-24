@@ -1,0 +1,20 @@
+{
+  "track_id": "project_preview_20261024",
+  "type": "feature",
+  "status": "in_progress",
+  "created_at": "2026-10-24T00:00:00Z",
+  "updated_at": "2026-10-24T00:00:00Z",
+  "description": "Preview visual del avance: galería de capturas en Supabase Storage + enlace externo opcional, visible para el cliente en el detalle del proyecto. Sin serverless nuevo ni iframe.",
+  "source": "pedido del owner (2026-10-24)",
+  "decisions": {
+    "D1": "Galería de capturas + enlace externo; no iframe en el MVP.",
+    "D2": "Bucket privado project-previews con signed URLs.",
+    "D3": "client_visible por captura; preview_url/preview_label por proyecto.",
+    "D4": "Límite de 5 MB; JPEG/PNG/WebP/AVIF."
+  },
+  "results": {
+    "migration": "supabase/migrations/0017_project_previews.sql",
+    "verification": "85 archivos / 580 tests; coverage 93.56% statements; typecheck, lint y build verdes",
+    "pending": "aplicar migración 0017 + smoke manual con imagen real"
+  }
+}

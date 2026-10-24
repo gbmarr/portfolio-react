@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
 import { getBrief } from './briefs'
+import { listProjectPreviews } from './previews'
 import { isValidEmail, normalizeEmail } from '../utils/email'
 import { throwIfError, unwrap, unwrapList, unwrapMaybe } from './supabase-result'
 import type {
@@ -7,6 +8,7 @@ import type {
   Project,
   ProjectBrief,
   ProjectInput,
+  ProjectPreviewWithUrl,
   ProjectStage,
   StageInput,
 } from './types'
@@ -79,27 +81,29 @@ export async function deleteProject(id: string): Promise<void> {
   throwIfError(result)
 }
 
-/** Agregado "detalle de proyecto": proyecto + etapas + aprobaciones + brief. */
+/** Agregado "detalle de proyecto": proyecto + etapas + aprobaciones + brief + previews. */
 export type ProjectDetail = {
   project: Project
   stages: ProjectStage[]
   approvals: MilestoneApproval[]
   brief: ProjectBrief | null
+  previews: ProjectPreviewWithUrl[]
 }
 
 /**
  * Ensambla el detalle completo de un proyecto detrás de un único interface.
  * Las páginas de detalle (admin y cliente) lo consumen en vez de armar cada una
- * el `Promise.all` de cuatro consultas.
+ * el `Promise.all` de cinco consultas.
  */
 export async function loadProjectDetail(id: string): Promise<ProjectDetail> {
-  const [project, stages, approvals, brief] = await Promise.all([
+  const [project, stages, approvals, brief, previews] = await Promise.all([
     getProject(id),
     listStages(id),
     listApprovals(id),
     getBrief(id),
+    listProjectPreviews(id),
   ])
-  return { project, stages, approvals, brief }
+  return { project, stages, approvals, brief, previews }
 }
 
 // ----------------------------------------------------------------------------

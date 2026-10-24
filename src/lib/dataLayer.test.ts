@@ -89,7 +89,7 @@ describe('proyectos', () => {
     await expect(getProject('nope')).rejects.toBeInstanceOf(ProjectNotFoundError)
   })
 
-  it('loadProjectDetail ensambla proyecto, etapas, aprobaciones y brief', async () => {
+  it('loadProjectDetail ensambla proyecto, etapas, aprobaciones, brief y previews', async () => {
     h.tableResults.set('projects', { data: { id: 'p1' }, error: null })
     h.tableResults.set('project_stages', { data: [{ id: 's1' }], error: null })
     h.tableResults.set('milestone_approvals', { data: [{ id: 'a1' }], error: null })
@@ -100,6 +100,7 @@ describe('proyectos', () => {
       stages: [{ id: 's1' }],
       approvals: [{ id: 'a1' }],
       brief: { id: 'b1' },
+      previews: [],
     })
   })
 

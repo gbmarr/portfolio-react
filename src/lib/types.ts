@@ -34,6 +34,10 @@ export interface Project {
   updated_at: string
   /** Fecha de cierre: la setea un trigger al pasar status a 'completado'. */
   completed_at: string | null
+  /** Enlace HTTPS de preview externo (staging, Figma, etc.). */
+  preview_url?: string | null
+  /** Etiqueta visible del enlace de preview. */
+  preview_label?: string | null
 }
 
 export type StageStatus = 'pendiente' | 'en_progreso' | 'revision' | 'completada' | 'bloqueada'
@@ -55,6 +59,22 @@ export interface ProjectStage {
   started_at: string | null
   completed_at: string | null
   created_at: string
+}
+
+export interface ProjectPreview {
+  id: string
+  project_id: string
+  stage_id: string | null
+  storage_path: string
+  caption: string | null
+  position: number
+  client_visible: boolean
+  created_at: string
+}
+
+/** Preview con signed URL resuelta para renderizar la imagen. */
+export interface ProjectPreviewWithUrl extends ProjectPreview {
+  url: string | null
 }
 
 export interface ContactMessage {
