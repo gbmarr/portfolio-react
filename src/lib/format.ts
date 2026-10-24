@@ -1,14 +1,3 @@
-import type { Currency } from './types'
-
-/** Formato monetario es-AR, ej. "$ 1.500,00" / "US$ 1.500,00". */
-export function formatMoney(amount: number, currency: Currency): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
-
 /** Fecha legible es-AR, ej. "05/10/2026". Acepta 'YYYY-MM-DD' o ISO completo. */
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—'

@@ -1,7 +1,7 @@
 {
   "track_id": "quote_request_20261024",
   "type": "feature",
-  "status": "planned",
+  "status": "completed",
   "created_at": "2026-10-24T00:00:00Z",
   "updated_at": "2026-10-24T00:00:00Z",
   "description": "Reemplaza los precios públicos por una solicitud de presupuesto con consentimiento, tabla quote_requests sin montos, panel admin dedicado y respuesta manual del owner. Extiende contact-notify sin crear serverless nuevo.",
@@ -15,12 +15,27 @@
     "D6": "Mantener el plazo estimado como referencia no vinculante; el precio va por email."
   },
   "results": {
-    "status": "planned",
-    "pending": [
-      "implementar spec y plan",
+    "status": "completed",
+    "implemented": [
+      "catálogo de precios eliminado del bundle público",
+      "formulario de solicitud de presupuesto con consentimiento y Turnstile action quote",
+      "migración 0018 con quote_requests sin montos, RLS admin y rate limit",
+      "contact-notify extendido con kind contact/quote; solo avisa al owner",
+      "panel /admin/presupuestos con estados y contacto por email",
+      "páginas /privacidad y /terminos; consentimiento también en contacto"
+    ],
+    "verification": [
+      "616 tests verdes",
+      "coverage 93.28% statements / 87.52% branches / 92.36% functions / 95.18% lines",
+      "typecheck, lint y build verdes",
+      "sin strings de precios en dist/assets"
+    ],
+    "pendingOwner": [
       "aplicar migración 0018",
       "desplegar Edge Function actualizada",
-      "revisión legal del owner"
+      "configurar Turnstile action quote",
+      "revisión legal del owner",
+      "prueba E2E real y revisión de retención"
     ]
   }
 }

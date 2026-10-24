@@ -18,7 +18,6 @@ export interface Profile {
 
 export type ProjectType = 'web' | 'landing' | 'app' | 'diseno' | 'mantenimiento' | 'otro'
 export type ProjectStatus = 'lead' | 'en_progreso' | 'pausado' | 'completado' | 'cancelado'
-export type Currency = 'ARS' | 'USD'
 
 export interface Project {
   id: string

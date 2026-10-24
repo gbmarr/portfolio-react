@@ -142,7 +142,7 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
 
 ## Captación de leads — Solicitud de presupuesto (2026-10-24)
 
-- [~] **Track: Solicitud de presupuesto sin precios públicos**
-      _Link: [./tracks/quote_request_20261024/](./tracks/quote_request_20261024/)_ — reemplaza la calculadora pública por un formulario de solicitud de presupuesto con consentimiento; el owner recibe el lead y responde manualmente. Panel `/admin/presupuestos` con tabla `quote_requests` sin montos. Sin serverless nuevo: se extiende `contact-notify`. **Planificado 2026-10-24** (spec + plan aprobados; sin implementar).
+- [x] **Track: Solicitud de presupuesto sin precios públicos**
+      _Link: [./tracks/quote_request_20261024/](./tracks/quote_request_20261024/)_ — reemplaza la calculadora pública por un formulario de solicitud de presupuesto con consentimiento; el owner recibe el lead y responde manualmente. Panel `/admin/presupuestos` con tabla `quote_requests` sin montos. Sin serverless nuevo: se extiende `contact-notify`. **Implementado 2026-10-24**: 616 tests verdes, coverage 93,28 % statements, typecheck/lint/build verdes; pendientes del owner: migración 0018, deploy de la función, Turnstile action quote, revisión legal y E2E real.
 
 

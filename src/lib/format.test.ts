@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDate, formatDateTime, formatMoney } from './format'
-
-describe('formatMoney', () => {
-  it('formatea pesos y dólares en es-AR', () => {
-    expect(formatMoney(1500, 'ARS')).toContain('1.500')
-    expect(formatMoney(1500, 'USD')).toContain('1.500')
-  })
-})
+import { formatDate, formatDateTime } from './format'
 
 describe('formatDate', () => {
   it('formatea fechas YYYY-MM-DD', () => {
