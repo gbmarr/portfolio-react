@@ -138,4 +138,11 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
 - [x] **Track: Baseline de formato y correcciones de configuración**
       _Link: [./tracks/format_baseline_20261024/](./tracks/format_baseline_20261024/)_ — `format:check` fallaba en 390 archivos y arrastraba dos defectos reales: la CSP de `vercel.json` tenía `font-src https://fonts.gstatic.com` sin `'self'` (habría bloqueado las fuentes self-hosted en producción) y el `metadata.json` de `sec_approval_rls_20261012` era JSON inválido. Se agregó `.prettierignore` (excluye `.agents/`, `.opencode/`, `conductor/`, `public/`, `assets/`), se reformateó el árbol (102 archivos, diff simétrico 521/521) y se verificó que el bundle no cambia de hash. **Completado 2026-10-24**: 580 tests verdes, coverage 93,26 % statements.
 
+---
+
+## Captación de leads — Solicitud de presupuesto (2026-10-24)
+
+- [~] **Track: Solicitud de presupuesto sin precios públicos**
+      _Link: [./tracks/quote_request_20261024/](./tracks/quote_request_20261024/)_ — reemplaza la calculadora pública por un formulario de solicitud de presupuesto con consentimiento; el owner recibe el lead y responde manualmente. Panel `/admin/presupuestos` con tabla `quote_requests` sin montos. Sin serverless nuevo: se extiende `contact-notify`. **Planificado 2026-10-24** (spec + plan aprobados; sin implementar).
+
 

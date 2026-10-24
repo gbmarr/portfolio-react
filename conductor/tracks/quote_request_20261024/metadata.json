@@ -1,0 +1,26 @@
+{
+  "track_id": "quote_request_20261024",
+  "type": "feature",
+  "status": "planned",
+  "created_at": "2026-10-24T00:00:00Z",
+  "updated_at": "2026-10-24T00:00:00Z",
+  "description": "Reemplaza los precios públicos por una solicitud de presupuesto con consentimiento, tabla quote_requests sin montos, panel admin dedicado y respuesta manual del owner. Extiende contact-notify sin crear serverless nuevo.",
+  "source": "pedido del owner (2026-10-24)",
+  "decisions": {
+    "D1": "Respuesta manual del owner; sin envío automático al solicitante en v1.",
+    "D2": "Extender contact-notify con kind contact/quote; no crear otra Edge Function.",
+    "D3": "Tabla dedicada quote_requests sin columnas de dinero; RLS solo admin.",
+    "D4": "Eliminar el catálogo de precios del bundle público, no solo ocultarlo.",
+    "D5": "Consentimiento obligatorio y versionado (2026-10-24) en presupuesto y contacto.",
+    "D6": "Mantener el plazo estimado como referencia no vinculante; el precio va por email."
+  },
+  "results": {
+    "status": "planned",
+    "pending": [
+      "implementar spec y plan",
+      "aplicar migración 0018",
+      "desplegar Edge Function actualizada",
+      "revisión legal del owner"
+    ]
+  }
+}
