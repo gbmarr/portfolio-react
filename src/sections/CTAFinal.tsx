@@ -6,7 +6,7 @@ import { copy } from '../data/copy'
 /** CTA final repetido, que cierra el home. */
 export function CTAFinal() {
   return (
-    <Section id="presupuesto" className="bg-surface/40">
+    <Section id="presupuesto">
       <Container className="max-w-3xl text-center">
         <h2 className="font-display text-3xl font-semibold text-text sm:text-4xl">
           {copy.cta.title}

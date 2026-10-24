@@ -35,20 +35,20 @@ const institucionalService = services.find((service) => service.id === 'instituc
 export const estimateTiers: EstimateTier[] = [
   {
     id: 'landing',
-    name: 'Landing page',
+    name: 'Sitio de una página',
     // Misma fuente que el precio "desde" público en ServiceCard.
-    baseUsd: landingService?.priceFromUsd ?? 250,
+    baseUsd: landingService?.priceFromUsd ?? 350,
     timeline: { minWeeks: 1, maxWeeks: 2 },
   },
   {
     id: 'institucional',
-    name: 'Sitio institucional',
-    baseUsd: institucionalService?.priceFromUsd ?? 450,
+    name: 'Sitio completo',
+    baseUsd: institucionalService?.priceFromUsd ?? 600,
     timeline: { minWeeks: 2, maxWeeks: 4 },
   },
   {
     id: 'medida',
-    name: 'E-commerce o proyecto a medida',
+    name: 'E-commerce o a medida',
     baseUsd: 1200,
     timeline: { minWeeks: 4, maxWeeks: 8 },
   },

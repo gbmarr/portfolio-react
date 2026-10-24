@@ -46,8 +46,8 @@ export interface Service {
   audience: string
   /** Qué incluye. */
   includes: string[]
-  /** Qué NO incluye. */
-  excludes: string[]
+  /** Qué necesito del cliente para empezar. */
+  requires: string[]
   /** Plazo estimado. */
   timeline: string
   /** Precio de partida en USD ("desde"), si se desea publicar. */

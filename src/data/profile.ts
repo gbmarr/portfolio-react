@@ -13,7 +13,8 @@ export const profile: Profile = {
   email: 'gab.bmar.05@email.com',
   phone: '+54 9 2262 339680',
   whatsappNumber: '5492262339680',
-  whatsappMessage: 'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto.',
+  whatsappMessage:
+    'Hola Gabriel, vi tu web y quiero un presupuesto. Mi rubro es ______ y estoy en ______.',
   socialLinks: {
     github: 'https://github.com/gbmarr',
     linkedin: 'https://www.linkedin.com/in/gabrielmarrerok/',

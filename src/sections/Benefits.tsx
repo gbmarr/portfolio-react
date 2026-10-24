@@ -11,7 +11,7 @@ import { benefits } from '../data/benefits'
  */
 export function Benefits() {
   return (
-    <Section id="beneficios">
+    <Section id="beneficios" className="bg-surface/40">
       <Container>
         <SectionHeading
           eyebrow={copy.benefits.eyebrow}

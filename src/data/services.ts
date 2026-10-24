@@ -9,42 +9,50 @@ import { profile } from './profile'
 export const services: Service[] = [
   {
     id: 'landing',
-    name: 'Landing page',
+    name: 'Sitio de una página',
     audience:
-      'Ideal para un comercio o emprendimiento que necesita presencia online rápida: una campaña, un producto o un evento puntual.',
+      'Para una urgencia, una campaña o un servicio puntual. Ideal si necesitás estar online ya y que el teléfono suene.',
     includes: [
-      'Diseño personalizado, a tu medida',
-      'Se ve perfecta en el celular',
-      'Formulario de contacto',
-      'SEO básico para que te encuentren',
-      'Publicación y conexión de tu dominio',
-      'Carga rápida',
+      'Una página enfocada en que te contacten',
+      'Botón de llamada y WhatsApp a la vista',
+      'Servicios, zona de cobertura y horarios',
+      'Formulario y mapa',
+      'SEO local básico',
+      'Publicado en tu dominio y andando en el celular',
     ],
-    excludes: ['Redacción de textos', 'Fotografía profesional', 'Diseño de logo'],
+    requires: [
+      'Una charla de 30 minutos',
+      'Tus textos base (o los armamos juntos)',
+      'Fotos reales de tu trabajo (o coordinamos)',
+      'Logo (o te ayudo a definir uno)',
+    ],
     timeline: '1 a 2 semanas',
-    priceFromUsd: 250,
+    priceFromUsd: 350,
     whatsappMessage:
-      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para una landing page.',
+      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio de una página.',
   },
   {
     id: 'institucional',
-    name: 'Sitio institucional',
+    name: 'Sitio profesional completo',
     audience:
-      'Ideal para un negocio o estudio que quiere un sitio permanente con varias secciones: servicios, sobre nosotros, contacto.',
+      'Para un estudio o un oficio que quiere un sitio permanente: servicios, sobre vos, trabajos y contacto.',
     includes: [
-      'Diseño personalizado, a tu medida',
-      '3 secciones base (hasta 8 con secciones extra)',
-      'Se ve perfecto en el celular',
-      'Formulario de contacto',
-      'SEO básico para que te encuentren',
-      'Publicación y conexión de tu dominio',
-      'Te explico cómo editar el contenido vos mismo',
+      'Hasta 8 secciones (servicios, sobre mí/el estudio, trabajos, preguntas frecuentes, contacto)',
+      'Textos y estructura pensados para tu rubro',
+      'SEO local básico',
+      'Panel para editar el contenido vos mismo',
+      'Publicado en tu dominio',
     ],
-    excludes: ['Redacción de textos', 'Fotografía profesional', 'Diseño de logo'],
+    requires: [
+      'Una charla de 30 minutos',
+      'Tus textos base (o los armamos juntos)',
+      'Fotos reales de tu trabajo (o coordinamos)',
+      'Logo (o te ayudo a definir uno)',
+    ],
     timeline: '2 a 4 semanas',
-    priceFromUsd: 450,
+    priceFromUsd: 600,
     whatsappMessage:
-      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio institucional.',
+      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio profesional completo.',
   },
 ]
 

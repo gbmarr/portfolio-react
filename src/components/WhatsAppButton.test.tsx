@@ -12,7 +12,7 @@ describe('WhatsAppButton', () => {
   it('uses the service-specific message when a serviceId is provided', () => {
     render(<WhatsAppButton serviceId="landing" />)
     const link = screen.getByRole('link', { name: 'Escribime por WhatsApp' })
-    expect(link).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('una landing')))
+    expect(link).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('una página')))
   })
 
   it('uses the custom label when provided', () => {

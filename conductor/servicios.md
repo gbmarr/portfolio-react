@@ -8,7 +8,9 @@
 > - Proceso de trabajo — `src/data/process.ts`
 > - Copy público — `src/data/copy.ts`
 >
-> **Guardrail fair-use (ver `conductor/fair-use.md`):** el deploy es 100% estático en Vercel Hobby. **Nunca** se agregan funciones serverless (`/api`, edge, cron) para operación del negocio. Todo lo que aquí aparece como "requerimiento de backend" se resuelve con servicios externos (Supabase, Web3Forms, Mercado Pago Checkout/link) o redirección client-side. Los precios de este documento son internos / de referencia del estimador.
+> **Guardrail fair-use (ver `conductor/fair-use.md`):** el deploy es 100% estático en Vercel Hobby. **Nunca** se agregan funciones serverless (`/api`, edge, cron) para operación del negocio. Todo lo que aquí aparece como "requerimiento de backend" se resuelve con servicios externos (Supabase, Mercado Pago Checkout/link) o redirección client-side. Los precios de este documento son internos / de referencia del estimador.
+
+> **Foco comercial (2026-10-24):** estudios profesionales (contadores, abogados, escribanos) y oficios a domicilio (electricistas, plomeros, gasistas). El e-commerce y los sistemas a medida se ofrecen solo en el estimador y se evalúan como proyecto aparte.
 
 ---
 
@@ -18,14 +20,14 @@ Todos los servicios siguen el mismo proceso público (`process.ts`), con distint
 
 | # | Paso | En qué consiste | Peso por servicio |
 |---|------|----------------|-------------------|
-| 1 | **Contame qué necesitás** | Charla por WhatsApp/email. Se define objetivo, público, alcance y contenido disponible. | Baja en todos (pero en "a medida" es discovery profundo) |
-| 2 | **Te paso un presupuesto cerrado** | Precio fijo y plazo definido. Para proyectos a medida incluye alcance escrito y modelo de datos. | Media |
-| 3 | **Diseño y desarrollo** | Diseño a medida, maquetado, programación, revisiones en el medio. | Alta: acá vive la complejidad |
-| 4 | **Publicamos y te explico** | Deploy, conexión de dominio, capacitación de edición y documentación. | Baja–media (mayor en a medida) |
+| 1 | **Contame qué necesitás** | Charla de 30 minutos por WhatsApp o videollamada. Se define objetivo, público, alcance y contenido disponible. | Baja en todos (pero en "a medida" es discovery profundo) |
+| 2 | **Te paso un presupuesto cerrado** | En 48 h: precio fijo, plazo y alcance. Si sirve, se reserva el cupo con el 50%. Para proyectos a medida incluye alcance escrito y modelo de datos. | Media |
+| 3 | **Diseño y desarrollo** | Diseño a medida, maquetado, programación y revisiones. El cliente ve avances en su panel. | Alta: acá vive la complejidad |
+| 4 | **Publicamos y te explico** | Deploy, conexión de dominio, capacitación de edición y ajustes hasta publicar. | Baja–media (mayor en a medida) |
 
 Reglas generales del paso 3 (aplican a todos):
 - Diseño personalizado sobre tokens propios ("Dark & Modern", Tailwind 4), responsive mobile-first.
-- Formularios de contacto con honeypot + rate-limit (Web3Forms + copia a Supabase).
+- Formularios de contacto con honeypot + rate-limit + Turnstile (Edge Function `contact-notify` de Supabase).
 - SEO básico siempre: meta title/description, Open Graph, sitemap, robots técnico.
 - Publicación en Vercel (estático) con dominio propio del cliente (el costo de dominio/hosting va aparte — FAQ del sitio).
 - Se entrega explicación de edición de contenido simple.
@@ -34,22 +36,22 @@ Reglas generales del paso 3 (aplican a todos):
 
 ## 2. Servicios principales
 
-### 2.1 Landing page
+### 2.1 Sitio de una página
 
 | Campo | Detalle |
 |-------|---------|
-| **Precio referencia** | Desde USD 250 (estimador) |
+| **Precio referencia** | Desde USD 350 (estimador) |
 | **Plazo** | 1 a 2 semanas |
 | **Dónde se ofrece** | Card pública (`ServiceCard`) + tier del estimador |
 
 **Qué es / función**
-Página única diseñada para una sola acción: conseguir contactos, vender un producto/servicio puntual o validar una campaña. Es la presencia online rápida: una campaña, un producto o un evento.
+Página única para una urgencia, una campaña o un servicio puntual. Es la presencia online rápida para que el teléfono empiece a sonar: una página enfocada en que te contacten.
 
 **Qué hace / qué aporta**
-- Convierte tráfico (Google, redes, anuncios) en un único CTA (WhatsApp, formulario, mail).
-- Da "existencia digital" inmediata a comercios/emprendimientos sin sitio.
-- Sirve de aterrizaje para campañas pagas (Menor costo de "no estás en Google").
-- Base para escalar después a un sitio institucional.
+- Convierte tráfico (Google, redes, anuncios) en un único CTA (WhatsApp, llamada, formulario).
+- Da "existencia digital" inmediata a un estudio u oficio sin sitio.
+- Muestra servicios, zona de cobertura y horarios en el celular.
+- Base para escalar después a un sitio profesional completo.
 
 **Procedimiento de desarrollo**
 1. **Charla:** definir la oferta, el público y la acción única que se busca. Entregables del cliente: textos, fotos, logo y datos de contacto (si no los tiene → extras copy/logo).
@@ -68,25 +70,25 @@ Una sola página, estática, sin navegación ni estado. El riesgo es de copy/dis
 - Sin DB propia, sin auth, sin pagos.
 
 **Ejemplo aplicado**
-Un **electricista** (rubro real de `industries.ts`, "Oficios y reparaciones"): landing de una página con CTA de WhatsApp de emergencia, servicios, zona de cobertura y mini-galeria de trabajos. Objetivo: que "electricista cerca de mí" termine en un mensaje.
+Un **electricista** (rubro real de `industries.ts`, "Oficios a domicilio"): sitio de una página con CTA de WhatsApp de emergencia, servicios, zona de cobertura y mini-galería de trabajos. Objetivo: que "electricista cerca de mí" termine en un mensaje.
 
 ---
 
-### 2.2 Sitio institucional
+### 2.2 Sitio profesional completo
 
 | Campo | Detalle |
 |-------|---------|
-| **Precio referencia** | Desde USD 450 (estimador) |
+| **Precio referencia** | Desde USD 600 (estimador) |
 | **Plazo** | 2 a 4 semanas |
 | **Dónde se ofrece** | Card pública (`ServiceCard`) + tier del estimador |
 
 **Qué es / función**
-Sitio permanente multi-sección para un negocio o estudio que quiere presencia seria y completa: servicios, sobre nosotros, contacto, FAQ, etc. **3 secciones base** en el precio base (el estimador permite 3–8 secciones, +USD 80 por sección extra sobre la base).
+Sitio permanente multi-sección para un estudio o un oficio que quiere presencia seria y completa: servicios, sobre vos/el estudio, trabajos, FAQ y contacto. **3 secciones base** en el precio base (el estimador permite 3–8 secciones, +USD 80 por sección extra sobre la base).
 
 **Qué hace / qué aporta**
 - Posiciona al negocio como establecido y confiable antes de la primera consulta.
 - Funciona 24/7 como canal de contacto y de respuesta a objeciones (FAQ, horarios, cobertura).
-- Mejora el SEO local (rubros de `industries.ts`: contadores, abogados, psicólogos, gimnasios…).
+- Mejora el SEO local (rubros de `industries.ts`: contadores, abogados, escribanos, electricistas, plomeros, gasistas).
 - El cliente aprende a editar contenido simple él mismo (promesa del servicio).
 
 **Procedimiento de desarrollo**
@@ -101,12 +103,12 @@ Más secciones, más copy y más arquitectura de información; navegación y con
 **Requerimientos**
 - Dominio propio + hosting estático.
 - Contenido por sección (textos, fotos, logo) — o extras de redacción/identidad.
-- Formulario(s) de contacto (Web3Forms + Supabase opcional).
+- Formulario(s) de contacto (Turnstile + Edge Function `contact-notify` de Supabase).
 - Si el cliente quiere publicar contenido solo → extra **Blog / CMS** (evita el "¿cómo edito?").
 - SEO local básico (sitemap, schema Organization/LocalBusiness recomendado).
 
 **Ejemplo aplicado**
-Una **psicóloga** (rubro real "Salud y bienestar"): 5 secciones — Inicio, Sobre mí (formación y enfoque), Servicios (consulta online/presencial), Preguntas frecuentes y Contacto con botón de WhatsApp. Objetivo: convertir búsquedas locales en turnos.
+Un **estudio contable** (rubro real "Estudios profesionales"): 5 secciones — Inicio, El estudio, Servicios (monotributo, sociedades, sueldos), Preguntas frecuentes y Contacto con botón de WhatsApp. Objetivo: que quien busca un contador en su zona llegue a una consulta.
 
 ---
 
@@ -183,12 +185,12 @@ Plan de soporte post-publicación para cambios frecuentes de contenido, ajustes 
 **Complejidad: baja por mes** (cambios incrementales sobre una base ya hecha). Media si el cliente abusa del plan como desarrollo encubierto → renegociar alcance.
 
 **Requerimientos**
-- Acceso al repo/deploy y a las credenciales (Supabase/Web3Forms).
+- Acceso al repo/deploy y a las credenciales (Supabase).
 - Acuerdo de alcance mensual (cantidad de cambios, qué se considera cambio simple).
 - Sin infraestructura propia adicional.
 
 **Ejemplo aplicado**
-Estudio contable con sitio institucional: cada mes actualiza horarios, novedades impositivas (blog) y el equipo. El mantenimiento cubre esos cambios sin re-presupuestar cada uno.
+Estudio contable con sitio profesional completo: cada mes actualiza horarios, novedades impositivas (blog) y el equipo. El mantenimiento cubre esos cambios sin re-presupuestar cada uno.
 
 ---
 
@@ -197,7 +199,7 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 ### 3.1 Blog / CMS editable — +USD 150
 
 **Qué es / función:** sistema para que el cliente publique contenido (noticias, tips, artículos) sin tocar código.
-**Qué hace / aporta:** posicionamiento SEO por contenido, comunicación constante con clientes, y libera al desarrollador de tareas recurrentes. Combina con: institucional, medida.
+**Qué hace / aporta:** posicionamiento SEO por contenido, comunicación constante con clientes, y libera al desarrollador de tareas recurrentes. Combina con: sitio completo, medida.
 **Procedimiento:** definir tipos de contenido → modelo de datos (Supabase) → panel de edición con roles (admin/publicador) → publicación con rutas de detalle y listados → SEO (meta por artículo, sitemap).
 **Complejidad: media.** CRUD completo + editor + permisos (RLS) + frontend de listado/detalle.
 **Requerimientos:** DB (Supabase) y opcional Storage para imágenes; auth de editores; contenido inicial (o extra de redacción). Bajo fair-use: perfecto, todo client-side contra Supabase.
@@ -209,17 +211,17 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 **Qué hace / aporta:** automatiza el "después del formulario" (el lead llega donde debe), habilita reserva de turnos y cobro online sin que el cliente gestione nada manual.
 **Procedimiento:** relevar el servicio destino y sus credenciales → implementar el envío client-side (fetch directo a API del proveedor) → manejo de errores y disclaimers → prueba end-to-end.
 **Complejidad: media.** Cada integración es un mundo (auth, webhooks, rate limits); el riesgo es la variedad de proveedores.
-**Requerimientos:** credenciales/API keys del cliente en cada proveedor (CRM, calendario, pasarela); CORS amigable (Web3Forms y Supabase ya lo son; Mercado Pago redirect no requiere backend). ⚠️ Guardrail: si el provider exige serverless, se evalúa redirección/link externo (ej. Checkout Pro en vez de procesamiento propio).
-**Ejemplo:** nutricionista con formulario de "turno online" que crea evento en su calendario, notifica por email y guarda copia en Supabase.
+**Requerimientos:** credenciales/API keys del cliente en cada proveedor (CRM, calendario, pasarela); CORS amigable (Supabase ya lo es; Mercado Pago redirect no requiere backend). ⚠️ Guardrail: si el provider exige serverless, se evalúa redirección/link externo (ej. Checkout Pro en vez de procesamiento propio).
+**Ejemplo:** escribano con formulario de "turno online" que crea evento en su calendario, notifica por email y guarda copia en Supabase.
 
 ### 3.3 Sitio en 2 idiomas — +40% del subtotal
 
 **Qué es / función:** versión completa del sitio en un segundo idioma (contenido, navegación y SEO).
-**Qué hace / aporta:** abre mercados (exportadores, turismo, audiencias bilingües) y mejora el SEO multilingüe (hreflang). Combina con: institucional, medida, landing.
+**Qué hace / aporta:** abre mercados (exportadores, turismo, audiencias bilingües) y mejora el SEO multilingüe (hreflang). Combina con: sitio completo, medida, sitio de una página.
 **Procedimiento:** estructura de i18n (el repo hoy no tiene i18n — se reintroduce con routes per-idioma o selector con contexto) → traducción profesional de todo el copy → SEO dual (meta/hreflang/sitemap) → ajuste de layouts con texto más largo/corto.
 **Complejidad: media-alta.** No es traducir: es re-arquitectar la presentación para que el idioma sea un eje del sitio.
 **Requerimientos:** contenido traducido (o extra de redacción en 2 idiomas), decisión de dominio (subdirectorio `/en/` recomendado), hreflang y sitemap bilingüe.
-**Ejemplo:** estudio de arquitectura (rubro "Profesionales") que vende a clientes del exterior: versión ES y EN con portfolio y contactos separados.
+**Ejemplo:** estudio de arquitectura (rubro "Estudios profesionales") que vende a clientes del exterior: versión ES y EN con portfolio y contactos separados.
 
 ### 3.4 Diseño de logo / identidad — +USD 200
 
@@ -228,7 +230,7 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 **Procedimiento:** brief de marca → referencias y moodboard → 2–3 propuestas → iteración → entrega de formatos (SVG/PNG, claro/oscuro) → integración al sitio.
 **Complejidad: media (de oficio, no de código).** El costo es de diseño e iteración con el cliente.
 **Requerimientos:** brief del cliente (rubro, estilo, referencias); herramientas de diseño; sin backend.
-**Ejemplo:** emprendimiento de catering (rubro "Comercios y servicios") sin marca: logo + paleta aplicados a landing + WhatsApp con marca.
+**Ejemplo:** estudio contable sin marca: logo + paleta aplicados a un sitio de una página + WhatsApp con marca.
 
 ### 3.5 Redacción de textos (copy) — +USD 150
 
@@ -237,16 +239,16 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 **Procedimiento:** entrevista de negocio → estructura de mensajes → redacción en tono del sitio (segunda persona, concreto, sin promesas vacías — como el copy real del repo) → iteración → integración.
 **Complejidad: baja–media.** No es desarrollo; requiere entender el negocio y escribir bien.
 **Requerimientos:** información del negocio (servicios, diferenciales, público); sin backend.
-**Ejemplo:** restaurante (rubro "Restaurantes y cafeterías") que no tiene textos de carta/menú: copy profesional de menú, horarios, reservas y FAQ.
+**Ejemplo:** estudio contable que no tiene textos de servicios: copy profesional de servicios, honorarios orientativos, horarios y FAQ.
 
 ### 3.6 Módulo de tienda online — +USD 600
 
-**Qué es / función:** catálogo + carrito + checkout sobre un sitio existente (landing o institucional con sección de tienda). En el tier "medida" **está incluido** (el estimador lo deshabilita con nota "Incluido en este plan").
+**Qué es / función:** catálogo + carrito + checkout sobre un sitio existente (sitio de una página o sitio completo con sección de tienda). En el tier "medida" **está incluido** (el estimador lo deshabilita con nota "Incluido en este plan").
 **Qué hace / aporta:** vender online sin marketplace (sin comisiones de plataforma, con la identidad propia), catálogo siempre actualizado.
 **Procedimiento:** relevar catálogo y reglas (envío, stock, medios de pago) → modelo de datos (products, pedidos) → UI de catálogo/carrito → checkout con Mercado Pago (redirect) → panel de pedidos para el dueño → prueba de compra real.
 **Complejidad: alta.** Es el extra más grande: datos, estados de pedido, integración de pago y panel.
 **Requerimientos:** catálogo con fotos y precios, políticas de envío/cambios, cuenta de Mercado Pago del cliente, DB (Supabase), Storage para fotos de productos. ⚠️ Guardrail fair-use: checkout por redirección (Checkout Pro/link), no procesamiento propio; los pedidos pueden guardarse en Supabase como *gestión* si el volumen es personal/no comercial — validar antes de ofrecerlo a clientes que cobran (ver `fair-use.md`).
-**Ejemplo:** gimnasio (rubro "Salud y bienestar") vendiendo planes y packs de clases online: catálogo, carrito y pago por Mercado Pago.
+**Ejemplo:** tienda de una marca local (fuera del foco estudios/oficios, se evalúa como proyecto `medida`): catálogo, carrito y pago por Mercado Pago.
 
 ### 3.7 SEO técnico avanzado + analytics — +USD 100
 
@@ -255,7 +257,7 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 **Procedimiento:** auditoría técnica → implementación de schema por rubro (LocalBusiness, Service, FAQPage) → analytics (Vercel Analytics / GA4 / Plausible) → Search Console y sitemap → medición post-lanzamiento.
 **Complejidad: baja–media.** Mayoría es configuración y markup; el único trabajo real es la auditoría y el seguimiento.
 **Requerimientos:** dominio de producción estable (no un subdominio de prueba); cuenta de analytics y Search Console del cliente; contenido ya publicado.
-**Ejemplo:** abogado (rubro "Profesionales y estudios") posicionando en búsqueda local: schema LegalService, página por especialidad, analytics para ver qué servicios buscan.
+**Ejemplo:** abogado (rubro "Estudios profesionales") posicionando en búsqueda local: schema LegalService, página por especialidad, analytics para ver qué servicios buscan.
 
 ---
 
@@ -263,8 +265,8 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 
 | Servicio | Dónde se ofrece | Precio ref. | Plazo | Complejidad | Requisitos clave |
 |----------|-----------------|-------------|-------|-------------|------------------|
-| Landing page | Card pública + estimador | Desde USD 250 | 1–2 sem | Baja | Dominio, hosting, contenido |
-| Sitio institucional | Card pública + estimador | Desde USD 450 | 2–4 sem | Media | Dominio, hosting, contenido x sección |
+| Sitio de una página | Card pública + estimador | Desde USD 350 | 1–2 sem | Baja | Dominio, hosting, contenido |
+| Sitio profesional completo | Card pública + estimador | Desde USD 600 | 2–4 sem | Media | Dominio, hosting, contenido x sección |
 | E-commerce / a medida | Solo estimador | USD 1.200 | 4–8 sem | Alta | Supabase (DB/auth/RLS), integraciones, contenido/datos |
 | Mantenimiento mensual | Chip informativo | A definir | Mensual | Baja | Acceso repo/deploy, acuerdo de alcance |
 | Blog / CMS | Extra | +USD 150 | — | Media | Supabase (DB), auth editores, contenido |
@@ -294,10 +296,10 @@ Estudio contable con sitio institucional: cada mes actualiza horarios, novedades
 
 ## 6. Verificación de coherencia
 
-- [x] `services.ts` ↔ `estimate.ts`: los precios "desde" de landing/institucional coinciden con los tiers del estimador.
+- [x] `services.ts` ↔ `estimate.ts`: los precios "desde" de sitio de una página/sitio completo coinciden con los tiers del estimador (350/600).
 - [x] Todos los extras tienen precio en `estimate.ts` y ficha acá.
 - [x] Guardrails fair-use referenciados en cada requerimiento que toca backend.
-- [x] Ejemplos basados en casos reales (`cases.ts`) y rubros reales (`industries.ts`).
+- [x] Ejemplos basados en casos reales (`cases.ts`) y rubros reales (`industries.ts`: estudios y oficios).
 
 ---
 

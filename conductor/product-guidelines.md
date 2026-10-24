@@ -1,10 +1,11 @@
-# Product Guidelines: Junior Fullstack Developer Portfolio
+# Product Guidelines: Sitios para estudios y oficios
 
 ## Prose Style
 
-- **Friendly & approachable:** Use a warm, personal, and inviting tone. Write in first person where appropriate (e.g., "I built...", "My goal is...").
-- Keep sentences short and clear. Avoid overly formal or corporate language.
-- Use project descriptions that tell a story: the problem, the approach, and the result.
+- **Español rioplatense, segunda persona:** hablarle al dueño del estudio o del oficio (“te buscan”, “te llaman”), no a un reclutador.
+- Frases cortas y concretas. Nada de jerga técnica ni promesas vacías.
+- Cada caso cuenta el problema, qué se hizo y el resultado verificable.
+- Nombrar el dolor antes que la característica; especificidad antes que “para todos”.
 
 ## Visual Branding
 
@@ -27,4 +28,4 @@
 
 - Semantic HTML, descriptive alt text, and keyboard-navigable menus.
 - Consistent naming and copy style across all sections.
-- Clear calls to action in Spanish (e.g., "Ver proyecto", "Contacto").
+- Clear calls to action in Spanish (e.g., “Pedí tu presupuesto cerrado”, “Ver trabajos”).

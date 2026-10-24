@@ -12,7 +12,7 @@ import { industries } from '../data/industries'
  */
 export function Industries() {
   return (
-    <Section id="rubros" className="bg-surface/40">
+    <Section id="rubros">
       <Container>
         <SectionHeading
           eyebrow={copy.industries.eyebrow}
@@ -35,6 +35,9 @@ export function Industries() {
             </div>
           ))}
         </div>
+        <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-text-muted">
+          {copy.industries.note}
+        </p>
       </Container>
     </Section>
   )

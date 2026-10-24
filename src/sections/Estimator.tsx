@@ -55,13 +55,14 @@ export function Estimator() {
   const rangeLabel = `USD ${result.minUsd.toLocaleString('es-AR')} – USD ${result.maxUsd.toLocaleString('es-AR')}`
 
   return (
-    <Section id="estimador" className="bg-surface/40">
+    <Section id="estimador">
       <Container className="max-w-3xl">
         <SectionHeading
           eyebrow={copy.estimator.eyebrow}
           title={copy.estimator.title}
           subtitle={copy.estimator.subtitle}
         />
+        <p className="mb-6 text-center text-sm font-medium text-accent">{copy.estimator.slots}</p>
 
         <div className="space-y-8 rounded-xl border border-border bg-background/60 p-6 sm:p-8">
           <fieldset>

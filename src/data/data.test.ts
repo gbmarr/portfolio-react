@@ -40,7 +40,7 @@ describe('services data', () => {
       expect(service.name).toBeTruthy()
       expect(service.audience).toBeTruthy()
       expect(service.includes.length).toBeGreaterThan(0)
-      expect(service.excludes.length).toBeGreaterThan(0)
+      expect(service.requires.length).toBeGreaterThan(0)
       expect(service.timeline).toBeTruthy()
       expect(service.whatsappMessage).toBeTruthy()
     }
@@ -106,18 +106,18 @@ describe('benefits data', () => {
 })
 
 describe('industries data', () => {
-  it('has at least 4 groups with non-empty items', () => {
-    expect(industries.length).toBeGreaterThanOrEqual(4)
+  it('has the two focus groups with non-empty items', () => {
+    expect(industries.length).toBe(2)
     for (const group of industries) {
       expect(group.id).toBeTruthy()
       expect(group.label).toBeTruthy()
-      expect(group.items.length).toBeGreaterThanOrEqual(4)
+      expect(group.items.length).toBeGreaterThanOrEqual(3)
     }
   })
 
   it('gives every industry item a name and a particular benefit', () => {
     const allItems = industries.flatMap((group) => group.items)
-    expect(allItems.length).toBeGreaterThanOrEqual(20)
+    expect(allItems.length).toBeGreaterThanOrEqual(6)
     for (const item of allItems) {
       expect(item.name).toBeTruthy()
       expect(item.benefit.length).toBeGreaterThan(20)

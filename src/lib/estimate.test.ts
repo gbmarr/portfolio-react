@@ -7,14 +7,14 @@ const base = { sections: 3, extras: [] }
 describe('computeEstimate', () => {
   it('estimates a landing from the services base price', () => {
     const result = computeEstimate({ tier: 'landing', ...base }, FIXED_ARS_RATE)
-    expect(result.minUsd).toBe(250)
-    expect(result.maxUsd).toBe(300)
+    expect(result.minUsd).toBe(350)
+    expect(result.maxUsd).toBe(420)
   })
 
   it('estimates an institutional site at 3 sections from base', () => {
     const result = computeEstimate({ tier: 'institucional', ...base }, FIXED_ARS_RATE)
-    expect(result.minUsd).toBe(450)
-    expect(result.maxUsd).toBe(540)
+    expect(result.minUsd).toBe(600)
+    expect(result.maxUsd).toBe(720)
   })
 
   it('adds USD 80 per extra section above 3', () => {
@@ -22,8 +22,8 @@ describe('computeEstimate', () => {
       { tier: 'institucional', sections: 8, extras: [] },
       FIXED_ARS_RATE
     )
-    expect(result.minUsd).toBe(450 + 5 * 80)
-    expect(result.maxUsd).toBe(1020)
+    expect(result.minUsd).toBe(600 + 5 * 80)
+    expect(result.maxUsd).toBe(1200)
   })
 
   it('clamps the sections input to the 3–8 range', () => {
@@ -32,8 +32,8 @@ describe('computeEstimate', () => {
       { tier: 'institucional', sections: 99, extras: [] },
       FIXED_ARS_RATE
     )
-    expect(low.minUsd).toBe(450)
-    expect(high.minUsd).toBe(850)
+    expect(low.minUsd).toBe(600)
+    expect(high.minUsd).toBe(1000)
   })
 
   it('estimates a custom project from its local base', () => {
@@ -47,8 +47,8 @@ describe('computeEstimate', () => {
       { tier: 'landing', sections: 3, extras: ['logo', 'seo'] },
       FIXED_ARS_RATE
     )
-    expect(result.minUsd).toBe(250 + 200 + 100)
-    expect(result.maxUsd).toBe(660)
+    expect(result.minUsd).toBe(350 + 200 + 100)
+    expect(result.maxUsd).toBe(780)
   })
 
   it('applies multidioma as 40% over the subtotal including other extras', () => {
@@ -60,8 +60,8 @@ describe('computeEstimate', () => {
       },
       FIXED_ARS_RATE
     )
-    expect(result.minUsd).toBe(630) // (250 + 200) × 1.4
-    expect(result.maxUsd).toBe(760) // 756 redondeado a múltiplo de 10
+    expect(result.minUsd).toBe(770) // (350 + 200) × 1.4
+    expect(result.maxUsd).toBe(920) // 924 redondeado a múltiplo de 10
   })
 
   it('ignora la tienda online en una landing (no aplica al tier)', () => {
@@ -69,8 +69,8 @@ describe('computeEstimate', () => {
       { tier: 'landing', sections: 3, extras: ['ecommerce'] },
       FIXED_ARS_RATE
     )
-    expect(result.minUsd).toBe(250)
-    expect(result.maxUsd).toBe(300)
+    expect(result.minUsd).toBe(350)
+    expect(result.maxUsd).toBe(420)
   })
 
   it('no cobra la tienda en medida: viene incluida en el plan', () => {
@@ -99,7 +99,7 @@ describe('computeEstimate', () => {
       { tier: 'landing', sections: 3, extras: ['no-existe'] },
       FIXED_ARS_RATE
     )
-    expect(result.minUsd).toBe(250)
+    expect(result.minUsd).toBe(350)
   })
 
   it('converts the range to ARS with the injected rate', () => {
@@ -158,7 +158,7 @@ describe('buildEstimateWhatsAppMessage', () => {
     const result = computeEstimate(input, FIXED_ARS_RATE)
     const message = buildEstimateWhatsAppMessage(input, result)
 
-    expect(message).toContain('Sitio institucional')
+    expect(message).toContain('Sitio completo')
     expect(message).toContain('6 secciones')
     expect(message).toContain('Blog / CMS editable')
     expect(message).not.toContain('exprés')

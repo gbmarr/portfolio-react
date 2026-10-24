@@ -8,7 +8,7 @@ import { cases } from '../data/cases'
 /** Todos los casos con contexto y la nota de honestidad. Nunca una galería. */
 export function Cases() {
   return (
-    <Section id="trabajos">
+    <Section id="trabajos" className="bg-surface/40">
       <Container>
         <SectionHeading
           eyebrow={copy.cases.eyebrow}

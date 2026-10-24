@@ -20,14 +20,14 @@ describe('Estimator', () => {
 
   it('estimates a landing by default', () => {
     render(<Estimator />)
-    expect(resultPanel()).toHaveTextContent('USD 250')
-    expect(resultPanel()).toHaveTextContent('USD 300')
+    expect(resultPanel()).toHaveTextContent('USD 350')
+    expect(resultPanel()).toHaveTextContent('USD 420')
   })
 
   it('switches the tier with the radio controls', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
-    await user.click(screen.getByRole('radio', { name: /proyecto a medida/i }))
+    await user.click(screen.getByRole('radio', { name: /a medida/i }))
     expect(resultPanel()).toHaveTextContent('USD 1.200')
     expect(resultPanel()).toHaveTextContent('USD 1.440')
   })
@@ -35,13 +35,13 @@ describe('Estimator', () => {
   it('adjusts the estimate with the sections slider on the institutional tier', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
-    await user.click(screen.getByRole('radio', { name: /sitio institucional/i }))
+    await user.click(screen.getByRole('radio', { name: /sitio completo/i }))
     const slider = screen.getByRole('slider')
     expect(slider).toHaveAttribute('min', '3')
     expect(slider).toHaveAttribute('max', '8')
     fireEvent.change(slider, { target: { value: '8' } })
-    expect(resultPanel()).toHaveTextContent('USD 850')
-    expect(resultPanel()).toHaveTextContent('USD 1.020')
+    expect(resultPanel()).toHaveTextContent('USD 1.000')
+    expect(resultPanel()).toHaveTextContent('USD 1.200')
   })
 
   it('hides the sections slider when the tier is not institutional', () => {
@@ -54,15 +54,15 @@ describe('Estimator', () => {
     render(<Estimator />)
     const logo = screen.getByRole('checkbox', { name: /Diseño de logo/ })
     await user.click(logo)
-    expect(resultPanel()).toHaveTextContent('USD 450')
-    expect(resultPanel()).toHaveTextContent('USD 540')
+    expect(resultPanel()).toHaveTextContent('USD 550')
+    expect(resultPanel()).toHaveTextContent('USD 660')
   })
 
   it('oculta la tienda en landing y la muestra incluida en medida', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
     expect(screen.queryByRole('checkbox', { name: /tienda online/i })).not.toBeInTheDocument()
-    await user.click(screen.getByRole('radio', { name: /proyecto a medida/i }))
+    await user.click(screen.getByRole('radio', { name: /a medida/i }))
     const ecommerce = screen.getByRole('checkbox', { name: /tienda online/i })
     expect(ecommerce).toBeDisabled()
     expect(ecommerce).toBeChecked()
@@ -72,13 +72,13 @@ describe('Estimator', () => {
   it('descarta extras que dejan de aplicar al cambiar de tier', async () => {
     const user = userEvent.setup()
     render(<Estimator />)
-    await user.click(screen.getByRole('radio', { name: /sitio institucional/i }))
+    await user.click(screen.getByRole('radio', { name: /sitio completo/i }))
     await user.click(screen.getByRole('checkbox', { name: /Blog \/ CMS editable/ }))
-    // Institucional: 450 + 2 secciones extra (de 5) = 610, + blog 150 = 760.
-    expect(resultPanel()).toHaveTextContent('USD 760')
+    // Sitio completo: 600 + 2 secciones extra (de 5) = 760, + blog 150 = 910.
+    expect(resultPanel()).toHaveTextContent('USD 910')
 
-    await user.click(screen.getByRole('radio', { name: /landing page/i }))
-    expect(resultPanel()).toHaveTextContent('USD 250')
+    await user.click(screen.getByRole('radio', { name: /sitio de una página/i }))
+    expect(resultPanel()).toHaveTextContent('USD 350')
     expect(
       screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ })
     ).not.toBeInTheDocument()
@@ -89,9 +89,9 @@ describe('Estimator', () => {
     const cta = screen.getByRole('link', { name: copy.estimator.ctaWhatsApp })
     expect(cta.getAttribute('href')).toContain('wa.me')
     const decoded = decodeURIComponent(cta.getAttribute('href') ?? '')
-    expect(decoded).toContain('Landing page')
-    expect(decoded).toContain('USD 250')
-    expect(decoded).toContain('USD 300')
+    expect(decoded).toContain('Sitio de una página')
+    expect(decoded).toContain('USD 350')
+    expect(decoded).toContain('USD 420')
   })
 
   it('offers the maintenance chip linking to the contact section', () => {

@@ -6,7 +6,7 @@ export const faqs: FAQ[] = [
     id: 'tiempos',
     question: '¿Cuánto tarda mi sitio?',
     answer:
-      'Una landing page tarda entre 1 y 2 semanas. Un sitio institucional, entre 2 y 4 semanas.',
+      'Un sitio de una página tarda entre 1 y 2 semanas. Un sitio profesional completo, entre 2 y 4 semanas.',
   },
   {
     id: 'que-necesitas-darme',
@@ -35,6 +35,25 @@ export const faqs: FAQ[] = [
   {
     id: 'pagos',
     question: '¿Cómo son los pagos?',
-    answer: '50% al empezar y 50% al entregar el sitio. Por transferencia o Mercado Pago.',
+    answer:
+      '50% para reservar el cupo y 50% al publicar. Por transferencia o Mercado Pago.',
+  },
+  {
+    id: 'plantilla',
+    question: '¿Por qué no uso una plantilla tipo Wix?',
+    answer:
+      'Podés usarla y armarlo vos. Si tu prioridad es probar rápido y bajo costo, puede servirte. Yo hago un sitio a medida, rápido y pensado para que te contacten; si no es lo que buscás, te lo digo.',
+  },
+  {
+    id: 'llamados',
+    question: '¿En cuánto tiempo voy a recibir llamados?',
+    answer:
+      'Un sitio no genera llamados por sí solo: depende de que la gente te busque y de cómo te encuentre. Incluyo SEO local básico y te explico qué hacer. No prometo números que no puedo controlar.',
+  },
+  {
+    id: 'rubro',
+    question: '¿Trabajás con mi rubro?',
+    answer:
+      'Mi foco son estudios profesionales y oficios a domicilio. Si tu proyecto es otro, te lo digo antes de empezar.',
   },
 ]

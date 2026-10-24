@@ -1,4 +1,4 @@
-# Tech Stack: Junior Fullstack Developer Portfolio
+# Tech Stack: Sitios para estudios y oficios
 
 ## Frontend
 

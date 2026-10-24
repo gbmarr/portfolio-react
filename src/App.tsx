@@ -27,14 +27,14 @@ function App() {
       <main className="flex-1">
         <Hero />
         <Problem />
-        <Benefits />
-        <Industries />
         <Services />
-        <HowItWorks />
         <Cases />
         <AboutShort />
-        <FAQSection />
+        <Benefits />
+        <Industries />
+        <HowItWorks />
         <Estimator />
+        <FAQSection />
         <CTAFinal />
         <Contact />
       </main>

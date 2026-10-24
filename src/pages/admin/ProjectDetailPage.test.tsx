@@ -154,7 +154,7 @@ describe('ProjectDetailPage', () => {
     renderDetail()
 
     const section = await screen.findByRole('region', { name: 'Brief del cliente' })
-    expect(within(section).getByText('Sitio institucional')).toBeInTheDocument()
+    expect(within(section).getByText('Sitio completo')).toBeInTheDocument()
     expect(within(section).getByText('Blog / CMS editable')).toBeInTheDocument()
     expect(within(section).getByText('SEO técnico avanzado + analytics')).toBeInTheDocument()
     expect(within(section).getByText('Pendiente')).toBeInTheDocument()

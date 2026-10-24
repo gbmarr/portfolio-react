@@ -1,6 +1,6 @@
 # Gabriel Marrero — Portfolio & Gestión de clientes
 
-Sitio público de servicios web para PyMEs (portfolio + landing + estimador de presupuesto + contacto) con un **sistema de gestión** integrado: panel de administración y portal de clientes con seguimiento de proyectos. En producción en **https://gabrielmarrero.com.ar** · Repo: [github.com/gbmarr/portfolio-react](https://github.com/gbmarr/portfolio-react).
+Sitio público de servicios web para **estudios profesionales y oficios a domicilio** (casos + servicios + estimador de presupuesto + contacto) con un **sistema de gestión** integrado: panel de administración y portal de clientes con seguimiento de proyectos. En producción en **https://gabrielmarrero.com.ar** · Repo: [github.com/gbmarr/portfolio-react](https://github.com/gbmarr/portfolio-react).
 
 > Documentación de producto y decisiones: [`conductor/product.md`](conductor/product.md) · Stack técnico: [`conductor/tech-stack.md`](conductor/tech-stack.md).
 

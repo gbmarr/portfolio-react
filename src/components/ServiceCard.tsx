@@ -23,28 +23,16 @@ function CheckIcon() {
   )
 }
 
-function CrossIcon() {
-  return (
-    <svg
-      className="mt-0.5 h-4 w-4 shrink-0 text-text-muted"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M4.3 4.3a1 1 0 011.4 0L10 8.6l4.3-4.3a1 1 0 111.4 1.4L11.4 10l4.3 4.3a1 1 0 01-1.4 1.4L10 11.4l-4.3 4.3a1 1 0 01-1.4-1.4L8.6 10 4.3 5.7a1 1 0 010-1.4z"
-        clipRule="evenodd"
-      />
-    </svg>
-  )
-}
-
-/** Tarjeta de servicio: para quién es, qué incluye, qué no, plazo y CTA. */
+/** Tarjeta de servicio: para quién es, qué incluye, qué necesito, plazo y CTA. */
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow sm:p-8">
-      <h3 className="font-display text-2xl font-semibold text-text">{service.name}</h3>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <h3 className="font-display text-2xl font-semibold text-text">{service.name}</h3>
+        <span className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+          {copy.services.budgetBadge}
+        </span>
+      </div>
       <p className="text-text-muted">{service.audience}</p>
 
       <div className="space-y-5">
@@ -63,12 +51,12 @@ export function ServiceCard({ service }: ServiceCardProps) {
         </div>
         <div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-text-muted">
-            {copy.services.excludesLabel}
+            {copy.services.requiresLabel}
           </p>
           <ul className="space-y-2">
-            {service.excludes.map((item) => (
+            {service.requires.map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-text-muted">
-                <CrossIcon />
+                <CheckIcon />
                 <span>{item}</span>
               </li>
             ))}

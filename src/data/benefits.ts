@@ -1,48 +1,41 @@
 import type { Benefit } from './types'
 
-// Beneficios de tener un sitio web para el cliente. Copy en segunda persona,
-// frases cortas y sin promesas vacías (ver spec: tono del sitio).
+// Razones para elegirme a mí, no para "tener un sitio web".
+// Copy en segunda persona, frases cortas y sin promesas vacías.
 export const benefits: Benefit[] = [
   {
-    id: 'encontran',
-    icon: 'search',
-    title: 'Te encuentran cuando te buscan',
-    description:
-      'Casi la mitad de las búsquedas en Google son de servicios cerca: si tenés sitio, el cliente que te busca llega a tu puerta.',
-  },
-  {
-    id: 'horas',
-    icon: 'clock',
-    title: 'Trabaja las 24 horas',
-    description:
-      'Tu sitio no cierra, no se toma feriados y sigue presentando tu negocio mientras vos dormís o trabajás.',
-  },
-  {
-    id: 'confianza',
-    icon: 'shield',
-    title: 'Transmitís confianza',
-    description:
-      'Un sitio prolijo te hace lucir serio y profesional, y te diferencia de los que todavía no tienen.',
-  },
-  {
-    id: 'trabajo',
-    icon: 'briefcase',
-    title: 'Mostrás tu trabajo',
-    description:
-      'Portfolio, clientes y resultados: el que duda, mira lo que hiciste y decide más rápido.',
-  },
-  {
-    id: 'consultas',
+    id: 'directo',
     icon: 'chat',
-    title: 'Respondés menos consultas repetidas',
+    title: 'Hablás conmigo, no con un vendedor',
     description:
-      'Horarios, zona y cómo trabajás los explica el sitio. Vos te dedicás a lo que sabe tu rubro.',
+      'Del primer mensaje a la publicación, tu interlocutor soy yo. Sin intermediarios que traduzcan lo que pediste.',
   },
   {
-    id: 'competencia',
-    icon: 'users',
-    title: 'No perdés con tu competencia',
+    id: 'presupuesto',
+    icon: 'clock',
+    title: 'Presupuesto cerrado en 48 h',
     description:
-      'Si tu competidor tiene web y vos no, el cliente elige mirar lo que está a un clic.',
+      'Después de la charla tenés precio, plazo y alcance por escrito. Si algo cambia, lo hablamos antes, no después.',
+  },
+  {
+    id: 'panel',
+    icon: 'briefcase',
+    title: 'Ves el avance en tu panel',
+    description:
+      'Brief, etapas y avances en un panel privado. No tenés que preguntar cómo va por WhatsApp.',
+  },
+  {
+    id: 'autonomia',
+    icon: 'users',
+    title: 'Te enseño a editarlo',
+    description:
+      'Al publicar te explico cómo cambiar textos y fotos. El sitio queda en tus manos, no en las mías.',
+  },
+  {
+    id: 'ajustes',
+    icon: 'shield',
+    title: 'Ajustes hasta publicar',
+    description:
+      'Revisamos juntos y ajustamos lo acordado hasta que el sitio quede publicado. Sin sorpresas de último momento.',
   },
 ]

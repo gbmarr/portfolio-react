@@ -4,6 +4,7 @@ import { CaseCard } from './CaseCard'
 import { cases } from '../data/cases'
 
 const dranes = cases.find((caseStudy) => caseStudy.id === 'dranes')!
+const pasion = cases.find((caseStudy) => caseStudy.id === 'pasion-mundialista')!
 
 describe('CaseCard', () => {
   it('renders the title, client and industry', () => {
@@ -38,7 +39,7 @@ describe('CaseCard', () => {
   })
 
   it('omits the site link when there is no url', () => {
-    render(<CaseCard caseStudy={dranes} />)
+    render(<CaseCard caseStudy={pasion} />)
     expect(screen.queryByRole('link', { name: /Ver el sitio/ })).not.toBeInTheDocument()
   })
 })

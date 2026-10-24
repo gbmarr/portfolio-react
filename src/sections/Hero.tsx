@@ -23,6 +23,7 @@ export function Hero() {
                 {copy.hero.ctaSecondary}
               </Button>
             </div>
+            <p className="mt-5 text-sm text-text-muted">{copy.hero.note}</p>
           </div>
 
           <div className="relative flex items-center justify-center gap-6" aria-hidden="true">
@@ -33,6 +34,26 @@ export function Hero() {
               <HeroMockup variant="phone" />
             </div>
           </div>
+        </div>
+
+        <div className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-border pt-6 text-sm">
+          <a
+            href={copy.hero.proof.dranes.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+          >
+            {copy.hero.proof.dranes.label} ↗
+          </a>
+          <a
+            href={copy.hero.proof.simplehc.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-text-muted underline-offset-4 transition-colors hover:text-accent hover:underline"
+          >
+            {copy.hero.proof.simplehc.label} ↗
+          </a>
+          <span className="text-text-muted">{copy.hero.proof.portal.label}</span>
         </div>
       </Container>
     </Section>

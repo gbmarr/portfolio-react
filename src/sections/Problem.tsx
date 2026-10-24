@@ -11,6 +11,7 @@ export function Problem() {
           {copy.problem.title}
         </h2>
         <p className="mt-6 text-lg leading-relaxed text-text-muted">{copy.problem.text}</p>
+        <p className="mt-4 text-lg leading-relaxed text-text-muted">{copy.problem.text2}</p>
       </Container>
     </Section>
   )

@@ -8,5 +8,6 @@ describe('Problem', () => {
     render(<Problem />)
     expect(screen.getByRole('heading', { name: copy.problem.title })).toBeInTheDocument()
     expect(screen.getByText(copy.problem.text)).toBeInTheDocument()
+    expect(screen.getByText(copy.problem.text2)).toBeInTheDocument()
   })
 })

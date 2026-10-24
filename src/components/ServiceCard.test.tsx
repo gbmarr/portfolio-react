@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ServiceCard } from './ServiceCard'
 import { services } from '../data/services'
+import { copy } from '../data/copy'
 
 const landing = services.find((service) => service.id === 'landing')!
 
@@ -12,14 +13,14 @@ describe('ServiceCard', () => {
     expect(screen.getByText(landing.audience)).toBeInTheDocument()
   })
 
-  it('renders the included and excluded items', () => {
+  it('renders the included items and what it needs from the client', () => {
     render(<ServiceCard service={landing} />)
     expect(screen.getByText('Incluye')).toBeInTheDocument()
-    expect(screen.getByText('No incluye')).toBeInTheDocument()
+    expect(screen.getByText(copy.services.requiresLabel)).toBeInTheDocument()
     for (const item of landing.includes) {
       expect(screen.getByText(item)).toBeInTheDocument()
     }
-    for (const item of landing.excludes) {
+    for (const item of landing.requires) {
       expect(screen.getByText(item)).toBeInTheDocument()
     }
   })
@@ -43,6 +44,6 @@ describe('ServiceCard', () => {
   it('renders a WhatsApp CTA with the service-specific message', () => {
     render(<ServiceCard service={landing} />)
     const cta = screen.getByRole('link', { name: 'Pedir presupuesto' })
-    expect(cta).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('una landing')))
+    expect(cta).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('una página')))
   })
 })
