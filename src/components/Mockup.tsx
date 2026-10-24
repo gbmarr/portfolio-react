@@ -29,7 +29,12 @@ export function Mockup({ alt, src, initials, variant = 'desktop' }: MockupProps)
         }
       >
         {src ? (
-          <img src={src} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            className={`h-full w-full ${isPhone ? 'object-contain' : 'object-cover'}`}
+          />
         ) : (
           <span className="font-display text-3xl font-semibold text-text-muted">
             {initials}

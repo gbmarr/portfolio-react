@@ -20,8 +20,18 @@ describe('Mockup', () => {
     expect(container.querySelector('.rounded-\\[2rem\\]')).toBeInTheDocument()
   })
 
+  it('shows mobile screenshots complete inside the phone frame', () => {
+    render(<Mockup src="/images/site.png" alt="Captura del sitio" variant="phone" />)
+    expect(screen.getByRole('img', { name: 'Captura del sitio' })).toHaveClass('object-contain')
+  })
+
   it('renders the desktop variant as a wide frame', () => {
     const { container } = render(<Mockup alt="Captura" variant="desktop" />)
     expect(container.querySelector('.aspect-video')).toBeInTheDocument()
+  })
+
+  it('covers the desktop frame with wide screenshots', () => {
+    render(<Mockup src="/images/site.png" alt="Captura del sitio" variant="desktop" />)
+    expect(screen.getByRole('img', { name: 'Captura del sitio' })).toHaveClass('object-cover')
   })
 })

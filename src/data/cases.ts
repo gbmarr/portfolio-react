@@ -12,6 +12,7 @@ export const cases: CaseStudy[] = [
     client: 'Dranes',
     industry: 'Entrenamiento personal',
     title: 'Dranes',
+    screenshot: '/images/dranes-cap.png',
     need: 'Un entrenador personal que manejaba planes, historial y progreso de sus clientes en libretas y planillas.',
     work: 'Diseñé y desarrollé el sitio y el MVP: planes de entrenamiento, historial y seguimiento de clientes.',
     result: 'Sitio en producción en dranes.com.ar.',
