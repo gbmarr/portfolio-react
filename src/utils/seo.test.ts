@@ -71,19 +71,15 @@ describe('applySeoMeta', () => {
 })
 
 describe('applyRobotsMeta', () => {
-  it.each([
-    '/login',
-    '/acceso-admin',
-    '/admin',
-    '/admin/proyectos/123',
-    '/panel',
-    '/panel/abc',
-  ])('marks %s as noindex for search engines', (path) => {
-    applyRobotsMeta(path)
-    expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
-      'noindex, nofollow'
-    )
-  })
+  it.each(['/login', '/acceso-admin', '/admin', '/admin/proyectos/123', '/panel', '/panel/abc'])(
+    'marks %s as noindex for search engines',
+    (path) => {
+      applyRobotsMeta(path)
+      expect(document.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe(
+        'noindex, nofollow'
+      )
+    }
+  )
 
   it('leaves public paths without a robots meta', () => {
     applyRobotsMeta('/')

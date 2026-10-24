@@ -35,8 +35,7 @@ export const faqs: FAQ[] = [
   {
     id: 'pagos',
     question: '¿Cómo son los pagos?',
-    answer:
-      '50% para reservar el cupo y 50% al publicar. Por transferencia o Mercado Pago.',
+    answer: '50% para reservar el cupo y 50% al publicar. Por transferencia o Mercado Pago.',
   },
   {
     id: 'plantilla',

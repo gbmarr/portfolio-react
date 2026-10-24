@@ -33,9 +33,7 @@ describe('getStageTemplate', () => {
     expect(stages).toContain('Configuración del blog/CMS')
     expect(stages).toContain('SEO técnico y analytics')
     expect(stages[stages.length - 1]).toBe('Publicación')
-    expect(stages.indexOf('Configuración del blog/CMS')).toBeLessThan(
-      stages.indexOf('Publicación'),
-    )
+    expect(stages.indexOf('Configuración del blog/CMS')).toBeLessThan(stages.indexOf('Publicación'))
   })
 
   it('ignora extras desconocidos y repetidos', () => {
@@ -47,7 +45,7 @@ describe('getStageTemplate', () => {
     const base = getStageTemplate('landing', [])
     const withAllExtras = getStageTemplate(
       'landing',
-      estimateExtras.map((extra) => extra.id),
+      estimateExtras.map((extra) => extra.id)
     )
     expect(withAllExtras).toHaveLength(base.length + estimateExtras.length)
     expect(withAllExtras[withAllExtras.length - 1]).toBe('Publicación')

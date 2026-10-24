@@ -90,7 +90,10 @@ describe('ProjectPreviewManager', () => {
 
   it('muestra el enlace y las capturas existentes', () => {
     renderManager({
-      project: project({ preview_url: 'https://staging.example.com', preview_label: 'Ver staging' }),
+      project: project({
+        preview_url: 'https://staging.example.com',
+        preview_label: 'Ver staging',
+      }),
       previews: [preview()],
     })
 

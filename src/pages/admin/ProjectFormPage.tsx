@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Button,  } from '../../components/Button'
+import { Button } from '../../components/Button'
 import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { createProject, getProject, updateProject } from '../../lib/projects'
 import { getBrief, upsertBrief } from '../../lib/briefs'

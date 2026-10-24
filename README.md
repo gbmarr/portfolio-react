@@ -8,41 +8,41 @@ Sitio público de servicios web para **estudios profesionales y oficios a domici
 
 ## Stack
 
-| Capa | Tecnología |
-|------|-----------|
-| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS 4 |
-| Routing | React Router 7 |
-| Backend | Supabase (Postgres + Auth + RLS + Edge Functions en Deno) |
+| Capa                   | Tecnología                                                     |
+| ---------------------- | -------------------------------------------------------------- |
+| Frontend               | React 19, TypeScript, Vite 8, Tailwind CSS 4                   |
+| Routing                | React Router 7                                                 |
+| Backend                | Supabase (Postgres + Auth + RLS + Edge Functions en Deno)      |
 | Formulario de contacto | Cloudflare Turnstile + Edge Function `contact-notify` + Resend |
-| Calidad | Vitest (Testing Library), ESLint, Prettier |
-| Deploy | Vercel (compatible Netlify) |
+| Calidad                | Vitest (Testing Library), ESLint, Prettier                     |
+| Deploy                 | Vercel (compatible Netlify)                                    |
 
 ## Superficies del sistema
 
-| Ruta | Superficie | Acceso |
-|------|-----------|--------|
-| `/` | Landing pública (servicios, casos, estimador, contacto) | Público |
-| `/login` | Login del cliente (magic link) | Público |
-| `/acceso-admin` | Login del administrador | **Interna** (no vinculada en la landing) |
-| `/admin/*` | Panel admin: dashboard, proyectos, clientes, mensajes | Requiere rol admin |
-| `/panel/*` | Portal del cliente: proyectos y brief | Requiere cliente autenticado |
+| Ruta            | Superficie                                              | Acceso                                   |
+| --------------- | ------------------------------------------------------- | ---------------------------------------- |
+| `/`             | Landing pública (servicios, casos, estimador, contacto) | Público                                  |
+| `/login`        | Login del cliente (magic link)                          | Público                                  |
+| `/acceso-admin` | Login del administrador                                 | **Interna** (no vinculada en la landing) |
+| `/admin/*`      | Panel admin: dashboard, proyectos, clientes, mensajes   | Requiere rol admin                       |
+| `/panel/*`      | Portal del cliente: proyectos y brief                   | Requiere cliente autenticado             |
 
 Las superficies privadas (`/login`, `/acceso-admin`, `/admin/*`, `/panel/*`) están excluidas de indexación (`X-Robots-Tag: noindex` en headers + meta tags). Todo el texto del sitio vive en español en `src/data/` (`copy.ts`, `profile.ts`, `cases.ts`, `estimate.ts`).
 
 ## Scripts
 
-| Script | Comando | Descripción |
-|--------|---------|-------------|
-| `dev` | `npm run dev` | Servidor de desarrollo (puerto 5173) |
-| `build` | `npm run build` | Typecheck + build de producción (`tsc -b && vite build`) |
-| `preview` | `npm run preview` | Previsualizar el build local |
-| `lint` | `npm run lint` | ESLint |
-| `format` | `npm run format` | Prettier (escribir) |
-| `format:check` | `npm run format:check` | Prettier (solo verificar) |
-| `typecheck` | `npm run typecheck` | `tsc -b` |
-| `test` | `npm run test` | Vitest (todos los tests) |
-| `test:watch` | `npm run test:watch` | Vitest en modo watch |
-| `coverage` | `npm run coverage` | Vitest con reporte de cobertura (umbral ≥ 80 %) |
+| Script         | Comando                | Descripción                                              |
+| -------------- | ---------------------- | -------------------------------------------------------- |
+| `dev`          | `npm run dev`          | Servidor de desarrollo (puerto 5173)                     |
+| `build`        | `npm run build`        | Typecheck + build de producción (`tsc -b && vite build`) |
+| `preview`      | `npm run preview`      | Previsualizar el build local                             |
+| `lint`         | `npm run lint`         | ESLint                                                   |
+| `format`       | `npm run format`       | Prettier (escribir)                                      |
+| `format:check` | `npm run format:check` | Prettier (solo verificar)                                |
+| `typecheck`    | `npm run typecheck`    | `tsc -b`                                                 |
+| `test`         | `npm run test`         | Vitest (todos los tests)                                 |
+| `test:watch`   | `npm run test:watch`   | Vitest en modo watch                                     |
+| `coverage`     | `npm run coverage`     | Vitest con reporte de cobertura (umbral ≥ 80 %)          |
 
 ## Setup local
 
@@ -61,7 +61,7 @@ Prerrequisitos: Node.js y `npm`, cuenta de [Supabase](https://supabase.com), [Cl
    ```
 
    Completá en `.env.local`:
-   - `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_PUBLISHABLE_KEY`: valores *publishable* de tu proyecto Supabase (Settings → API). Estas variables se inlinean en el bundle (prefijo `PUBLIC_`): **son públicas por diseño**; los secretos nunca van acá.
+   - `PUBLIC_SUPABASE_URL` y `PUBLIC_SUPABASE_PUBLISHABLE_KEY`: valores _publishable_ de tu proyecto Supabase (Settings → API). Estas variables se inlinean en el bundle (prefijo `PUBLIC_`): **son públicas por diseño**; los secretos nunca van acá.
    - `PUBLIC_TURNSTILE_SITE_KEY`: Site Key de Cloudflare Turnstile (hostnames del sitio + `localhost:5173`).
    - `PUBLIC_ARS_RATE` (opcional): cotización USD→ARS para el estimador; default `1400`.
 

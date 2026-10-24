@@ -132,11 +132,7 @@ export function AdminMfaPage() {
                 value={code}
                 onValueChange={(value) => setCode(value.replace(/\D/g, '').slice(0, 6))}
               />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={sending || code.length !== 6}
-              >
+              <Button type="submit" className="w-full" disabled={sending || code.length !== 6}>
                 {sending
                   ? panelCopy.adminMfa.verifying
                   : step === 'enroll'

@@ -12,30 +12,30 @@ import { ClientLayout } from '../pages/client/ClientLayout'
 // cargan recién cuando el visitante entra a una superficie con sesión, no en
 // la landing pública.
 const AdminDashboard = lazy(() =>
-  import('../pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })),
+  import('../pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard }))
 )
 const ProjectsListPage = lazy(() =>
-  import('../pages/admin/ProjectsListPage').then((m) => ({ default: m.ProjectsListPage })),
+  import('../pages/admin/ProjectsListPage').then((m) => ({ default: m.ProjectsListPage }))
 )
 const ProjectFormPage = lazy(() =>
-  import('../pages/admin/ProjectFormPage').then((m) => ({ default: m.ProjectFormPage })),
+  import('../pages/admin/ProjectFormPage').then((m) => ({ default: m.ProjectFormPage }))
 )
 const ProjectDetailPage = lazy(() =>
-  import('../pages/admin/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage })),
+  import('../pages/admin/ProjectDetailPage').then((m) => ({ default: m.ProjectDetailPage }))
 )
 const ClientsPage = lazy(() =>
-  import('../pages/admin/ClientsPage').then((m) => ({ default: m.ClientsPage })),
+  import('../pages/admin/ClientsPage').then((m) => ({ default: m.ClientsPage }))
 )
 const MessagesPage = lazy(() =>
-  import('../pages/admin/MessagesPage').then((m) => ({ default: m.MessagesPage })),
+  import('../pages/admin/MessagesPage').then((m) => ({ default: m.MessagesPage }))
 )
 const ClientProjectsPage = lazy(() =>
-  import('../pages/client/ClientProjectsPage').then((m) => ({ default: m.ClientProjectsPage })),
+  import('../pages/client/ClientProjectsPage').then((m) => ({ default: m.ClientProjectsPage }))
 )
 const ClientProjectDetailPage = lazy(() =>
   import('../pages/client/ClientProjectDetailPage').then((m) => ({
     default: m.ClientProjectDetailPage,
-  })),
+  }))
 )
 
 /** Fallback propio para no arrastrar el de AppRouter en cada chunk. */

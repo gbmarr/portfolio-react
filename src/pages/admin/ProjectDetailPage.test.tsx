@@ -92,7 +92,7 @@ function renderDetail() {
         <Route path="/admin/proyectos/:id" element={<ProjectDetailPage />} />
         <Route path="/admin/proyectos" element={<p>Lista de proyectos</p>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -169,7 +169,7 @@ describe('ProjectDetailPage', () => {
           nombre: 'Estudio Contable',
           objetivo: ['Conseguir más clientes', 'Vender online'],
         },
-      }),
+      })
     )
     renderDetail()
 
@@ -222,7 +222,9 @@ describe('ProjectDetailPage', () => {
     renderDetail()
     await screen.findByRole('heading', { name: 'Sitio web para Estudio' })
     await userEvent.click(screen.getByRole('button', { name: 'Finalizar proyecto' }))
-    await waitFor(() => expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'completado' }))
+    await waitFor(() =>
+      expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'completado' })
+    )
     expect(await screen.findByText(/20\/10\/2026/)).toBeInTheDocument()
   })
 
@@ -233,7 +235,9 @@ describe('ProjectDetailPage', () => {
     renderDetail()
     await screen.findByRole('heading', { name: 'Sitio web para Estudio' })
     await userEvent.click(screen.getByRole('button', { name: 'Reabrir proyecto' }))
-    await waitFor(() => expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'en_progreso' }))
+    await waitFor(() =>
+      expect(h.updateProject).toHaveBeenCalledWith('p1', { status: 'en_progreso' })
+    )
   })
 
   it('elimina el proyecto tras confirmar', async () => {
@@ -273,8 +277,8 @@ describe('ProjectDetailPage', () => {
     await waitFor(() =>
       expect(h.createStage).toHaveBeenCalledWith(
         'p1',
-        expect.objectContaining({ name: 'Maquetado', position: 0, client_visible: true }),
-      ),
+        expect.objectContaining({ name: 'Maquetado', position: 0, client_visible: true })
+      )
     )
   })
 
@@ -288,15 +292,15 @@ describe('ProjectDetailPage', () => {
     await waitFor(() => expect(h.createStage).toHaveBeenCalledTimes(9))
     expect(h.createStage).toHaveBeenCalledWith(
       'p1',
-      expect.objectContaining({ name: 'Contenido de secciones' }),
+      expect.objectContaining({ name: 'Contenido de secciones' })
     )
     expect(h.createStage).toHaveBeenCalledWith(
       'p1',
-      expect.objectContaining({ name: 'Configuración del blog/CMS' }),
+      expect.objectContaining({ name: 'Configuración del blog/CMS' })
     )
     expect(h.createStage).not.toHaveBeenCalledWith(
       'p1',
-      expect.objectContaining({ name: 'Diseño aprobado' }),
+      expect.objectContaining({ name: 'Diseño aprobado' })
     )
     expect(screen.getByText(/Se agregaron 9 etapas sugeridas/)).toBeInTheDocument()
   })
@@ -304,17 +308,19 @@ describe('ProjectDetailPage', () => {
   it('no agrega nada cuando ya están todas las etapas sugeridas', async () => {
     const user = userEvent.setup()
     mockDetailData()
-    h.listStages.mockResolvedValue([
-      'Relevamiento del brief',
-      'Propuesta de diseño',
-      'Contenido de secciones',
-      'Desarrollo',
-      'Revisión del cliente',
-      'Ajustes finales',
-      'Configuración del blog/CMS',
-      'SEO técnico y analytics',
-      'Publicación',
-    ].map((name, index) => stage({ id: `stage-${index}`, name, position: index })))
+    h.listStages.mockResolvedValue(
+      [
+        'Relevamiento del brief',
+        'Propuesta de diseño',
+        'Contenido de secciones',
+        'Desarrollo',
+        'Revisión del cliente',
+        'Ajustes finales',
+        'Configuración del blog/CMS',
+        'SEO técnico y analytics',
+        'Publicación',
+      ].map((name, index) => stage({ id: `stage-${index}`, name, position: index }))
+    )
     renderDetail()
 
     await user.click(await screen.findByRole('button', { name: 'Agregar etapas sugeridas' }))

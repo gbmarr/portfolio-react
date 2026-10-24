@@ -13,10 +13,7 @@ export function ProcessSteps({ steps }: ProcessStepsProps) {
           key={step.id}
           className="relative flex flex-col gap-3 rounded-xl border border-border bg-surface p-6"
         >
-          <span
-            aria-hidden="true"
-            className="font-display text-4xl font-bold text-accent/30"
-          >
+          <span aria-hidden="true" className="font-display text-4xl font-bold text-accent/30">
             {step.number}
           </span>
           <h3 className="font-display text-lg font-semibold text-text">{step.title}</h3>

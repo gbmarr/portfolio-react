@@ -37,9 +37,13 @@ const today = new Date('2026-10-05T12:00:00')
 describe('computeKpis', () => {
   it('cuenta proyectos activos y mensajes sin leer', () => {
     const kpis = computeKpis(
-      [project({ status: 'en_progreso' }), project({ status: 'lead' }), project({ status: 'completado' })],
+      [
+        project({ status: 'en_progreso' }),
+        project({ status: 'lead' }),
+        project({ status: 'completado' }),
+      ],
       [message(), message({ read_at: '2026-10-01' })],
-      today,
+      today
     )
     expect(kpis.activeProjects).toBe(1)
     expect(kpis.unreadMessages).toBe(1)
@@ -57,7 +61,7 @@ describe('computeKpis', () => {
         project({ deadline: null }), // sin fecha
       ],
       [],
-      today,
+      today
     )
     expect(kpis.upcomingDeadlines).toBe(2)
     expect(kpis.overdueDeadlines).toBe(1)

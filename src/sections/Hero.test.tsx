@@ -6,9 +6,7 @@ import { copy } from '../data/copy'
 describe('Hero', () => {
   it('states what I sell in plain language', () => {
     render(<Hero />)
-    expect(
-      screen.getByRole('heading', { level: 1, name: copy.hero.title }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: copy.hero.title })).toBeInTheDocument()
     expect(screen.getByText(copy.hero.subtitle)).toBeInTheDocument()
   })
 

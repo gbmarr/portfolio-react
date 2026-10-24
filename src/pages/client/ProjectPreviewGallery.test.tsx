@@ -58,7 +58,10 @@ describe('ProjectPreviewGallery', () => {
   it('muestra el botón del enlace externo con su etiqueta', () => {
     render(
       <ProjectPreviewGallery
-        project={project({ preview_url: 'https://staging.example.com', preview_label: 'Ver staging' })}
+        project={project({
+          preview_url: 'https://staging.example.com',
+          preview_label: 'Ver staging',
+        })}
         stages={[]}
         previews={[]}
       />
@@ -68,10 +71,7 @@ describe('ProjectPreviewGallery', () => {
       'href',
       'https://staging.example.com'
     )
-    expect(screen.getByRole('link', { name: 'Ver staging' })).toHaveAttribute(
-      'target',
-      '_blank'
-    )
+    expect(screen.getByRole('link', { name: 'Ver staging' })).toHaveAttribute('target', '_blank')
   })
 
   it('usa el texto por defecto si no hay etiqueta', () => {
@@ -98,11 +98,7 @@ describe('ProjectPreviewGallery', () => {
 
   it('muestra un aviso si la signed URL no se pudo generar', () => {
     render(
-      <ProjectPreviewGallery
-        project={project()}
-        stages={[]}
-        previews={[preview({ url: null })]}
-      />
+      <ProjectPreviewGallery project={project()} stages={[]} previews={[preview({ url: null })]} />
     )
 
     expect(screen.getByText('No se pudo cargar esta imagen.')).toBeInTheDocument()

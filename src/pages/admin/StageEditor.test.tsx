@@ -44,7 +44,9 @@ function renderEditor(over: Partial<typeof props> = {}) {
 
 describe('StageEditor', () => {
   it('renderiza las etapas con su nombre y estado', () => {
-    renderEditor({ stages: [stage(), stage({ id: 's2', name: 'Desarrollo', status: 'en_progreso' })] })
+    renderEditor({
+      stages: [stage(), stage({ id: 's2', name: 'Desarrollo', status: 'en_progreso' })],
+    })
     expect(screen.getByText('Diseño aprobado')).toBeInTheDocument()
     expect(screen.getByText('Desarrollo')).toBeInTheDocument()
     expect(screen.getAllByText('En progreso').length).toBeGreaterThan(0)
@@ -101,7 +103,9 @@ describe('StageEditor', () => {
 
     await user.type(screen.getByLabelText('Nueva etapa'), 'X')
     await user.click(screen.getByRole('button', { name: 'Agregar etapa' }))
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('No se pudo agregar la etapa.'))
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent('No se pudo agregar la etapa.')
+    )
   })
 
   it('cambia el estado de una etapa y registra fechas', async () => {
@@ -114,7 +118,7 @@ describe('StageEditor', () => {
     await waitFor(() => {
       expect(onUpdate).toHaveBeenCalledWith(
         'stage-1',
-        expect.objectContaining({ status: 'completada', completed_at: expect.any(String) }),
+        expect.objectContaining({ status: 'completada', completed_at: expect.any(String) })
       )
     })
   })
@@ -126,18 +130,13 @@ describe('StageEditor', () => {
 
     await user.click(screen.getByRole('button', { name: 'Visibilidad de Diseño aprobado' }))
 
-    await waitFor(() =>
-      expect(onUpdate).toHaveBeenCalledWith('stage-1', { client_visible: false }),
-    )
+    await waitFor(() => expect(onUpdate).toHaveBeenCalledWith('stage-1', { client_visible: false }))
   })
 
   it('mueve etapas con las flechas', async () => {
     const user = userEvent.setup()
     const onMove = vi.fn<() => Promise<void>>(async () => {})
-    const stages = [
-      stage({ id: 's1', name: 'Uno' }),
-      stage({ id: 's2', name: 'Dos', position: 1 }),
-    ]
+    const stages = [stage({ id: 's1', name: 'Uno' }), stage({ id: 's2', name: 'Dos', position: 1 })]
     renderEditor({ stages, onMove })
 
     await user.click(screen.getByRole('button', { name: 'Bajar Uno' }))
@@ -165,7 +164,7 @@ describe('StageEditor', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() =>
-      expect(onUpdate).toHaveBeenCalledWith('stage-1', { name: 'Diseño final', description: null }),
+      expect(onUpdate).toHaveBeenCalledWith('stage-1', { name: 'Diseño final', description: null })
     )
   })
 

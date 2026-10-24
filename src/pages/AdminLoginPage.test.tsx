@@ -22,7 +22,7 @@ function renderAdminLogin() {
         <Route path="/admin" element={<div>admin-page</div>} />
         <Route path="/panel" element={<div>panel-page</div>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -53,7 +53,7 @@ describe('AdminLoginPage (acceso de gestión)', () => {
     renderAdminLogin()
     expect(screen.getByRole('alert')).toHaveTextContent(panelCopy.adminLogin.notConfigured)
     expect(
-      screen.getByRole('link', { name: new RegExp(panelCopy.adminLogin.backToSite) }),
+      screen.getByRole('link', { name: new RegExp(panelCopy.adminLogin.backToSite) })
     ).toHaveAttribute('href', '/')
   })
 
@@ -92,7 +92,7 @@ describe('AdminLoginPage (acceso de gestión)', () => {
     await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.submit }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      panelCopy.adminLogin.invalidCredentials,
+      panelCopy.adminLogin.invalidCredentials
     )
   })
 

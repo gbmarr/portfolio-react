@@ -139,7 +139,9 @@ describe('AuthProvider', () => {
     })
     const { result } = renderHook(() => useAuth(), { wrapper })
 
-    const err = (await result.current.signInWithMagicLink('sin-cuenta@test.com').catch((e: unknown) => e)) as {
+    const err = (await result.current
+      .signInWithMagicLink('sin-cuenta@test.com')
+      .catch((e: unknown) => e)) as {
       message: string
       code?: string
     }
@@ -153,7 +155,7 @@ describe('AuthProvider', () => {
     const { result } = renderHook(() => useAuth(), { wrapper })
 
     await expect(result.current.signInWithPassword('a@b.com', 'x')).rejects.toThrow(
-      'invalid_credentials',
+      'invalid_credentials'
     )
     expect(mocks.signInWithPassword).toHaveBeenCalledWith({ email: 'a@b.com', password: 'x' })
   })
@@ -176,7 +178,7 @@ describe('AuthProvider', () => {
     expect(result.current.configured).toBe(false)
     expect(mocks.onAuthStateChange).not.toHaveBeenCalled()
     await expect(result.current.signInWithPassword('a@b.com', 'x')).rejects.toThrow(
-      'Supabase no está configurado',
+      'Supabase no está configurado'
     )
   })
 
@@ -247,7 +249,11 @@ describe('AuthProvider', () => {
     const { result } = renderHook(() => useAuth(), { wrapper })
 
     await expect(result.current.verifyMfa('f-1', 'c-1', '123456')).resolves.toBeUndefined()
-    expect(mocks.verify).toHaveBeenCalledWith({ factorId: 'f-1', challengeId: 'c-1', code: '123456' })
+    expect(mocks.verify).toHaveBeenCalledWith({
+      factorId: 'f-1',
+      challengeId: 'c-1',
+      code: '123456',
+    })
 
     mocks.verify.mockResolvedValue({ error: { message: 'invalid' } })
     await expect(result.current.verifyMfa('f-1', 'c-1', '000000')).rejects.toThrow('invalid')

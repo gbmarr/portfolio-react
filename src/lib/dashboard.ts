@@ -18,7 +18,7 @@ const OPEN_STATUSES: ProjectStatus[] = ['lead', 'en_progreso', 'pausado']
 export function computeKpis(
   projects: Project[],
   messages: ContactMessage[],
-  today: Date = new Date(),
+  today: Date = new Date()
 ): DashboardKpis {
   const activeProjects = projects.filter((project) => project.status === 'en_progreso').length
 

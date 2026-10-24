@@ -13,8 +13,7 @@ export const ALLOWED_PREVIEW_MIME_TYPES = [
 ] as const
 
 export type PreviewValidation =
-  | { ok: true; mime: (typeof ALLOWED_PREVIEW_MIME_TYPES)[number] }
-  | { ok: false; message: string }
+  { ok: true; mime: (typeof ALLOWED_PREVIEW_MIME_TYPES)[number] } | { ok: false; message: string }
 
 const EXTENSION_BY_MIME: Record<(typeof ALLOWED_PREVIEW_MIME_TYPES)[number], string> = {
   'image/jpeg': 'jpg',

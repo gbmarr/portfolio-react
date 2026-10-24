@@ -56,10 +56,7 @@ for (const target of TARGETS) {
 
   for (const width of target.widths) {
     const output = join(OUT_DIR, `${target.name}-${width}.webp`)
-    await sharp(input)
-      .resize({ width, withoutEnlargement: true })
-      .webp(WEBP)
-      .toFile(output)
+    await sharp(input).resize({ width, withoutEnlargement: true }).webp(WEBP).toFile(output)
     rows.push([
       `${basename(output)} (${width}w de ${meta.width}px)`,
       kb(original),
@@ -106,7 +103,11 @@ if ((await sizeOf(iconSource)) > 0) {
     .png()
     .toFile(join(PUBLIC_DIR, 'apple-touch-icon.png'))
 
-  rows.push(['apple-touch-icon.png', kb(await sizeOf(iconSource)), kb(await sizeOf(join(PUBLIC_DIR, 'apple-touch-icon.png')))])
+  rows.push([
+    'apple-touch-icon.png',
+    kb(await sizeOf(iconSource)),
+    kb(await sizeOf(join(PUBLIC_DIR, 'apple-touch-icon.png'))),
+  ])
 }
 
 console.log('\nArchivo / origen            antes        después')

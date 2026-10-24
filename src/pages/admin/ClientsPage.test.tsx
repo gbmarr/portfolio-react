@@ -41,7 +41,7 @@ describe('ClientsPage', () => {
     h.listClients.mockRejectedValue(new Error('boom'))
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
@@ -54,7 +54,12 @@ describe('ClientsPage', () => {
   it('distingue clientes activos de pendientes', async () => {
     h.listClients.mockResolvedValue([
       client(),
-      client({ email: 'activo@example.com', active: true, full_name: 'Ana Pérez', projectCount: 3 }),
+      client({
+        email: 'activo@example.com',
+        active: true,
+        full_name: 'Ana Pérez',
+        projectCount: 3,
+      }),
     ])
     renderPage()
 
@@ -110,7 +115,7 @@ describe('ClientsPage', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Invitar' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'No se pudo enviar la invitación a falla@example.com.',
+      'No se pudo enviar la invitación a falla@example.com.'
     )
   })
 })

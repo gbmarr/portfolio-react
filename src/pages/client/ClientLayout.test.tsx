@@ -19,7 +19,7 @@ function renderLayout() {
         </Route>
         <Route path="/login" element={<p>Login</p>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 

@@ -42,9 +42,7 @@ describe('audit log de acciones sensibles (RT-04)', () => {
       'contact_messages',
       'profiles',
     ]) {
-      expect(migration).toMatch(
-        new RegExp(`after insert or update or delete on public\\.${table}`)
-      )
+      expect(migration).toMatch(new RegExp(`after insert or update or delete on public\\.${table}`))
     }
   })
 

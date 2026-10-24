@@ -49,7 +49,7 @@ function renderAt(path: string) {
         <Route path="/admin/proyectos/:id" element={<p>Detalle del proyecto</p>} />
         <Route path="/admin/proyectos" element={<p>Lista de proyectos</p>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -68,7 +68,7 @@ describe('ProjectFormPage', () => {
     h.getBrief.mockResolvedValue(null)
     renderAt('/admin/proyectos/p1/editar')
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
@@ -83,15 +83,17 @@ describe('ProjectFormPage', () => {
     await user.type(screen.getByLabelText('Email del cliente'), 'Panaderia@Example.com')
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    await waitFor(() => expect(h.createProject).toHaveBeenCalledWith({
-      title: 'Sitio para Panadería',
-      client_email: 'panaderia@example.com',
-      type: 'web',
-      status: 'lead',
-      start_date: null,
-      deadline: null,
-      description: null,
-    }))
+    await waitFor(() =>
+      expect(h.createProject).toHaveBeenCalledWith({
+        title: 'Sitio para Panadería',
+        client_email: 'panaderia@example.com',
+        type: 'web',
+        status: 'lead',
+        start_date: null,
+        deadline: null,
+        description: null,
+      })
+    )
     // El servicio por defecto es landing, sin extras.
     expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'landing', [])
     expect(await screen.findByText('Detalle del proyecto')).toBeInTheDocument()
@@ -105,7 +107,7 @@ describe('ProjectFormPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
     expect(screen.getByRole('alert')).toHaveTextContent(
-      'Completá el título y el email del cliente.',
+      'Completá el título y el email del cliente.'
     )
     expect(h.createProject).not.toHaveBeenCalled()
   })
@@ -120,9 +122,7 @@ describe('ProjectFormPage', () => {
     await user.type(screen.getByLabelText('Email del cliente'), 'no-soy-email')
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'El email del cliente no es válido.',
-    )
+    expect(screen.getByRole('alert')).toHaveTextContent('El email del cliente no es válido.')
     expect(h.createProject).not.toHaveBeenCalled()
   })
 
@@ -137,7 +137,9 @@ describe('ProjectFormPage', () => {
 
   it('precarga datos en modo edición y actualiza', async () => {
     const user = userEvent.setup()
-    h.listClients.mockResolvedValue([{ email: 'otro@example.com', projectCount: 0, active: false, full_name: null }])
+    h.listClients.mockResolvedValue([
+      { email: 'otro@example.com', projectCount: 0, active: false, full_name: null },
+    ])
     h.getProject.mockResolvedValue(project())
     h.getBrief.mockResolvedValue(null)
     h.updateProject.mockResolvedValue({ id: 'p1' })
@@ -156,14 +158,16 @@ describe('ProjectFormPage', () => {
     await waitFor(() =>
       expect(h.updateProject).toHaveBeenCalledWith(
         'p1',
-        expect.objectContaining({ title: 'Sitio existente v2', status: 'lead' }),
-      ),
+        expect.objectContaining({ title: 'Sitio existente v2', status: 'lead' })
+      )
     )
     expect(h.upsertBrief).toHaveBeenCalledWith('p1', 'landing', [])
   })
 
   it('muestra la lista de clientes conocidos como datalist', async () => {
-    h.listClients.mockResolvedValue([{ email: 'cliente@example.com', projectCount: 2, active: true, full_name: null }])
+    h.listClients.mockResolvedValue([
+      { email: 'cliente@example.com', projectCount: 2, active: true, full_name: null },
+    ])
     h.createProject.mockResolvedValue({ id: 'x' })
     renderAt('/admin/proyectos/nuevo')
 
@@ -178,11 +182,9 @@ describe('ProjectFormPage', () => {
 
     expect(await screen.findByLabelText('Servicio')).toBeInTheDocument()
     // Landing: blog y tienda no aplican.
+    expect(screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ })).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ }),
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('checkbox', { name: /Módulo de tienda online/ }),
+      screen.queryByRole('checkbox', { name: /Módulo de tienda online/ })
     ).not.toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: /SEO técnico avanzado/ })).toBeInTheDocument()
   })
@@ -212,7 +214,7 @@ describe('ProjectFormPage', () => {
     await user.click(screen.getByRole('button', { name: 'Guardar' }))
 
     await waitFor(() =>
-      expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'medida', ['ecommerce', 'blog']),
+      expect(h.upsertBrief).toHaveBeenCalledWith('p-new', 'medida', ['ecommerce', 'blog'])
     )
   })
 

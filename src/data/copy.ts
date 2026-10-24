@@ -64,8 +64,7 @@ export const copy = {
   process: {
     eyebrow: 'Cómo trabajo',
     title: 'De la primera charla al sitio publicado',
-    subtitle:
-      'Cuatro pasos. Vos aportás el conocimiento de tu negocio; yo me encargo del resto.',
+    subtitle: 'Cuatro pasos. Vos aportás el conocimiento de tu negocio; yo me encargo del resto.',
   },
   cases: {
     eyebrow: 'Trabajos',
@@ -104,8 +103,7 @@ export const copy = {
   },
   cta: {
     title: 'Que la próxima búsqueda termine en tu teléfono.',
-    subtitle:
-      'Contame qué hacés y te digo si puedo ayudarte. Tomo 2 proyectos por mes.',
+    subtitle: 'Contame qué hacés y te digo si puedo ayudarte. Tomo 2 proyectos por mes.',
     button: 'Pedí tu presupuesto cerrado',
   },
   contact: {

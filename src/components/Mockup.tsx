@@ -41,9 +41,7 @@ export function Mockup({ alt, src, srcSet, initials, variant = 'desktop' }: Mock
             className={`h-full w-full ${isPhone ? 'object-contain' : 'object-cover'}`}
           />
         ) : (
-          <span className="font-display text-3xl font-semibold text-text-muted">
-            {initials}
-          </span>
+          <span className="font-display text-3xl font-semibold text-text-muted">{initials}</span>
         )}
       </div>
     </div>

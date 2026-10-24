@@ -1,0 +1,15 @@
+# Dependencias y artefactos de build
+node_modules
+dist
+coverage
+.vercel
+.playwright
+
+# Assets binarios y archivos servidos tal cual
+assets/
+public/
+
+# Documentación y tooling de agentes (se mantienen con su propio formato)
+.agents/
+.opencode/
+conductor/

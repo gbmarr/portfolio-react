@@ -6,16 +6,16 @@
 // Es importado desde `./index.ts` de la Edge Function contact-notify.
 
 export type MailSendErrorBody = {
-  ok: false;
-  error: "mail-send";
-};
+  ok: false
+  error: 'mail-send'
+}
 
 /** Cuerpo de error para el cliente: genérico, SIN `detail`. */
 export function mailSendErrorBody(): MailSendErrorBody {
-  return { ok: false, error: "mail-send" };
+  return { ok: false, error: 'mail-send' }
 }
 
 /** Registra el detalle técnico del proveedor solo server-side. */
 export function logMailError(detail: string): void {
-  console.error("[contact-notify] mail-send falló - detail:", detail);
+  console.error('[contact-notify] mail-send falló - detail:', detail)
 }

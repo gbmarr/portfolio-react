@@ -195,9 +195,7 @@ describe('normalizePreviewUrl', () => {
   })
 
   it('agrega https cuando falta el esquema y normaliza la URL', () => {
-    expect(normalizePreviewUrl('preview.example.com/home')).toBe(
-      'https://preview.example.com/home'
-    )
+    expect(normalizePreviewUrl('preview.example.com/home')).toBe('https://preview.example.com/home')
   })
 
   it('conserva una URL HTTPS válida', () => {

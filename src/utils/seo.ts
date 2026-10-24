@@ -33,7 +33,7 @@ const PRIVATE_PATH_PREFIXES = ['/login', '/acceso-admin', '/admin', '/panel']
 /** `true` si la ruta corresponde a una superficie privada del sitio. */
 export function isPrivatePath(pathname: string): boolean {
   return PRIVATE_PATH_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   )
 }
 

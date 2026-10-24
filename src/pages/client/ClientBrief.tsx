@@ -51,7 +51,7 @@ function ChipsField({
 
   function toggle(option: string) {
     onValueChange(
-      value.includes(option) ? value.filter((item) => item !== option) : [...value, option],
+      value.includes(option) ? value.filter((item) => item !== option) : [...value, option]
     )
   }
 
@@ -255,11 +255,11 @@ export function ClientBrief({ brief, onSaved }: ClientBriefProps) {
   const template = useMemo(() => getBriefTemplate(brief.service_type), [brief.service_type])
   const sections = useMemo(
     () => [...template.sections, ...getExtraSections(template, brief.extra_ids)],
-    [template, brief.extra_ids],
+    [template, brief.extra_ids]
   )
   const requiredFields = useMemo(
     () => getRequiredFields(template, brief.extra_ids),
-    [template, brief.extra_ids],
+    [template, brief.extra_ids]
   )
 
   const done = requiredFields.filter((field) => hasAnswer(answers[field.id])).length

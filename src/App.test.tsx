@@ -16,33 +16,17 @@ describe('App', () => {
 
   it('renders the home page sections without duplication', () => {
     render(<App />)
-    expect(
-      screen.getByRole('heading', { level: 2, name: copy.problem.title })
-    ).toBeInTheDocument()
-    expect(
-      screen.getAllByRole('heading', { level: 2, name: copy.benefits.title })
-    ).toHaveLength(1)
-    expect(
-      screen.getAllByRole('heading', { level: 2, name: copy.industries.title })
-    ).toHaveLength(1)
-    expect(
-      screen.getAllByRole('heading', { level: 2, name: copy.services.title })
-    ).toHaveLength(1)
-    expect(
-      screen.getAllByRole('heading', { level: 2, name: copy.cases.title })
-    ).toHaveLength(1)
-    expect(
-      screen.getByRole('heading', { level: 2, name: copy.about.title })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: copy.faq.title })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: copy.cta.title })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: copy.contact.title })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: copy.problem.title })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 2, name: copy.benefits.title })).toHaveLength(1)
+    expect(screen.getAllByRole('heading', { level: 2, name: copy.industries.title })).toHaveLength(
+      1
+    )
+    expect(screen.getAllByRole('heading', { level: 2, name: copy.services.title })).toHaveLength(1)
+    expect(screen.getAllByRole('heading', { level: 2, name: copy.cases.title })).toHaveLength(1)
+    expect(screen.getByRole('heading', { level: 2, name: copy.about.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: copy.faq.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: copy.cta.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: copy.contact.title })).toBeInTheDocument()
   })
 
   it('renders the footer', () => {

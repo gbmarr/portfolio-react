@@ -115,7 +115,7 @@ function renderPage() {
       <Routes>
         <Route path="/panel/:id" element={<ClientProjectDetailPage />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -147,14 +147,20 @@ describe('ClientProjectDetailPage', () => {
     h.listStages.mockRejectedValue(new Error('boom'))
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
   it('muestra timeline con solo etapas visibles y sus estados', async () => {
     h.listStages.mockResolvedValue([
       stage(),
-      stage({ id: 's2', name: 'Maquetado', status: 'en_progreso', started_at: null, completed_at: null }),
+      stage({
+        id: 's2',
+        name: 'Maquetado',
+        status: 'en_progreso',
+        started_at: null,
+        completed_at: null,
+      }),
       stage({
         id: 's3',
         name: 'Interna',
@@ -178,9 +184,7 @@ describe('ClientProjectDetailPage', () => {
   })
 
   it('muestra el card de proyecto terminado cuando el estado es completado', async () => {
-    h.getProject.mockResolvedValue(
-      project({ status: 'completado', completed_at: '2026-10-20' }),
-    )
+    h.getProject.mockResolvedValue(project({ status: 'completado', completed_at: '2026-10-20' }))
     renderPage()
     expect(await screen.findByText(/Proyecto terminado/)).toBeInTheDocument()
     expect(screen.getByText(/Entregado el/)).toBeInTheDocument()
@@ -200,7 +204,13 @@ describe('ClientProjectDetailPage', () => {
     ])
     h.listStages.mockResolvedValue([
       stage(),
-      stage({ id: 's2', name: 'Maquetado', status: 'revision', started_at: null, completed_at: null }),
+      stage({
+        id: 's2',
+        name: 'Maquetado',
+        status: 'revision',
+        started_at: null,
+        completed_at: null,
+      }),
     ])
 
     renderPage()
@@ -233,7 +243,7 @@ describe('ClientProjectDetailPage', () => {
         client_id: 'client-1',
         decision: 'aprobado' as ApprovalDecision,
         comment: 'Vamos con este diseño',
-      }),
+      })
     )
     expect(await screen.findByText('Decisión enviada.')).toBeInTheDocument()
   })
@@ -320,7 +330,7 @@ describe('ClientProjectDetailPage', () => {
     const user = userEvent.setup()
     h.getBrief.mockResolvedValue(brief())
     h.updateBriefAnswers.mockResolvedValue(
-      brief({ answers: { nombre: 'Estudio' }, status: 'pendiente' }),
+      brief({ answers: { nombre: 'Estudio' }, status: 'pendiente' })
     )
 
     renderPage()
@@ -332,8 +342,8 @@ describe('ClientProjectDetailPage', () => {
     await waitFor(() =>
       expect(h.updateBriefAnswers).toHaveBeenCalledWith(
         'p1',
-        expect.objectContaining({ nombre: 'Estudio' }),
-      ),
+        expect.objectContaining({ nombre: 'Estudio' })
+      )
     )
     expect(await screen.findByText('Guardamos tus respuestas.')).toBeInTheDocument()
   })
@@ -388,8 +398,8 @@ describe('ClientProjectDetailPage', () => {
     await waitFor(() =>
       expect(h.updateBriefAnswers).toHaveBeenCalledWith(
         'p1',
-        expect.objectContaining({ objetivo: ['Conseguir más clientes'] }),
-      ),
+        expect.objectContaining({ objetivo: ['Conseguir más clientes'] })
+      )
     )
   })
 
@@ -408,8 +418,8 @@ describe('ClientProjectDetailPage', () => {
     await waitFor(() =>
       expect(h.updateBriefAnswers).toHaveBeenCalledWith(
         'p1',
-        expect.objectContaining({ objetivo: ['Aumentar reservas'] }),
-      ),
+        expect.objectContaining({ objetivo: ['Aumentar reservas'] })
+      )
     )
   })
 

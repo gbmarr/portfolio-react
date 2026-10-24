@@ -1,9 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import {
-  buildContactPayload,
-  contactFunctionUrl,
-  validateContactPayload,
-} from './contactPayload'
+import { buildContactPayload, contactFunctionUrl, validateContactPayload } from './contactPayload'
 
 const base = {
   name: 'Ana Pérez',
@@ -58,12 +54,14 @@ describe('validateContactPayload', () => {
   })
 
   it('rechaza caracteres de control (CRLF) en nombre y email (SEC-005)', () => {
-    expect(
-      validateContactPayload({ ...base, name: 'Ana\r\nBcc: attacker@example.com' }),
-    ).toEqual({ ok: false, reason: 'name' })
-    expect(
-      validateContactPayload({ ...base, email: 'ana@example.com\nbcc:x@y.com' }),
-    ).toEqual({ ok: false, reason: 'email' })
+    expect(validateContactPayload({ ...base, name: 'Ana\r\nBcc: attacker@example.com' })).toEqual({
+      ok: false,
+      reason: 'name',
+    })
+    expect(validateContactPayload({ ...base, email: 'ana@example.com\nbcc:x@y.com' })).toEqual({
+      ok: false,
+      reason: 'email',
+    })
   })
 
   it('recorta antes de validar', () => {
@@ -76,8 +74,8 @@ describe('buildContactPayload', () => {
     expect(
       buildContactPayload(
         { name: '  Ana Pérez  ', email: ' ana@example.com ', message: '  Necesito una landing  ' },
-        '  mock-token  ',
-      ),
+        '  mock-token  '
+      )
     ).toEqual({
       name: 'Ana Pérez',
       email: 'ana@example.com',
@@ -91,7 +89,7 @@ describe('contactFunctionUrl', () => {
   it('deriva la URL de funciones desde PUBLIC_SUPABASE_URL', () => {
     vi.stubEnv('PUBLIC_SUPABASE_URL', 'https://jntueibgkfwptigpncmh.supabase.co')
     expect(contactFunctionUrl()).toBe(
-      'https://jntueibgkfwptigpncmh.functions.supabase.co/contact-notify',
+      'https://jntueibgkfwptigpncmh.functions.supabase.co/contact-notify'
     )
     vi.unstubAllEnvs()
   })

@@ -13,9 +13,7 @@ describe('Footer', () => {
   it('renders the copyright notice with the current year and name', () => {
     render(<Footer />)
     const year = new Date().getFullYear()
-    expect(
-      screen.getByText(`© ${year} ${profile.name}. ${copy.footer.rights}`)
-    ).toBeInTheDocument()
+    expect(screen.getByText(`© ${year} ${profile.name}. ${copy.footer.rights}`)).toBeInTheDocument()
   })
 
   it('renders a footer landmark', () => {

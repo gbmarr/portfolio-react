@@ -11,7 +11,7 @@ const options = [
 describe('SelectField', () => {
   it('renderiza label y opciones', () => {
     render(
-      <SelectField id="tipo" label="Tipo" value="web" onValueChange={() => {}} options={options} />,
+      <SelectField id="tipo" label="Tipo" value="web" onValueChange={() => {}} options={options} />
     )
     expect(screen.getByLabelText('Tipo')).toHaveValue('web')
     expect(screen.getByRole('option', { name: 'App' })).toBeInTheDocument()
@@ -20,7 +20,13 @@ describe('SelectField', () => {
   it('notifica cambios', async () => {
     const onValueChange = vi.fn()
     render(
-      <SelectField id="tipo" label="Tipo" value="web" onValueChange={onValueChange} options={options} />,
+      <SelectField
+        id="tipo"
+        label="Tipo"
+        value="web"
+        onValueChange={onValueChange}
+        options={options}
+      />
     )
     await userEvent.selectOptions(screen.getByLabelText('Tipo'), 'app')
     expect(onValueChange).toHaveBeenCalledWith('app')
@@ -35,7 +41,7 @@ describe('SelectField', () => {
         onValueChange={() => {}}
         options={options}
         required
-      />,
+      />
     )
     expect(screen.getByLabelText('Tipo')).toBeRequired()
   })

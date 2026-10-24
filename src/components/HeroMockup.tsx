@@ -37,12 +37,7 @@ export function HeroMockup({ variant = 'desktop' }: HeroMockupProps) {
 
 function DesktopScene() {
   return (
-    <svg
-      viewBox="0 0 400 225"
-      className="block h-full w-full"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg viewBox="0 0 400 225" className="block h-full w-full" aria-hidden="true" focusable="false">
       {/* Barra del navegador */}
       <rect width="400" height="34" rx="8" fill="#1e293b" />
       <circle cx="18" cy="17" r="5" fill="#22d3ee" opacity="0.85" />
@@ -72,12 +67,7 @@ function DesktopScene() {
 
 function PhoneScene() {
   return (
-    <svg
-      viewBox="0 0 180 380"
-      className="block h-full w-full"
-      aria-hidden="true"
-      focusable="false"
-    >
+    <svg viewBox="0 0 180 380" className="block h-full w-full" aria-hidden="true" focusable="false">
       {/* Barra de estado */}
       <rect x="16" y="12" width="56" height="8" rx="4" fill="#334155" />
       <rect x="122" y="12" width="42" height="8" rx="4" fill="#334155" />

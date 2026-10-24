@@ -15,7 +15,7 @@ const TIER_IDS: EstimateTierId[] = ['landing', 'institucional', 'medida']
 function allFieldsFor(template: BriefTemplate): BriefField[] {
   const sections = template.sections
   const extraSections = Object.values(template.extraSections).filter(
-    (section): section is NonNullable<typeof section> => section != null,
+    (section): section is NonNullable<typeof section> => section != null
   )
   return [...sections, ...extraSections].flatMap((section) => section.fields)
 }
@@ -71,7 +71,7 @@ describe('briefTemplates', () => {
   it('tiene campos obligatorios en cada tier', () => {
     for (const tier of TIER_IDS) {
       const serviceRequired = briefTemplates[tier].sections.flatMap((section) =>
-        section.fields.filter((field) => field.required),
+        section.fields.filter((field) => field.required)
       )
       expect(serviceRequired.length).toBeGreaterThanOrEqual(4)
     }

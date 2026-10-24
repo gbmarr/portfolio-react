@@ -19,14 +19,14 @@ const h = vi.hoisted(() => {
       single: () => Promise.resolve(result),
       then: (
         onFulfilled: (value: TableResult) => unknown,
-        onRejected?: (reason: unknown) => unknown,
+        onRejected?: (reason: unknown) => unknown
       ) => Promise.resolve(result).then(onFulfilled, onRejected),
     }
     return builder
   }
 
   const from = vi.fn((table: string) =>
-    makeBuilder(tableResults.get(table) ?? { data: [], error: null }),
+    makeBuilder(tableResults.get(table) ?? { data: [], error: null })
   )
 
   return { tableResults, from, makeBuilder }
@@ -124,7 +124,7 @@ describe('proyectos', () => {
         start_date: null,
         deadline: null,
         description: null,
-      }),
+      })
     ).rejects.toThrow('check constraint')
   })
 
@@ -157,7 +157,7 @@ describe('etapas', () => {
         position: 0,
         status: 'pendiente',
         client_visible: true,
-      }),
+      })
     ).resolves.toEqual({ id: 's1' })
     await expect(updateStage('s1', { status: 'completada' })).resolves.toEqual({ id: 's1' })
   })
@@ -177,9 +177,9 @@ describe('etapas', () => {
   })
 
   it('reorderStages lanza en el primer error', async () => {
-    h.from.mockImplementationOnce(() => h.makeBuilder({ data: [], error: null })).mockImplementationOnce(
-      () => h.makeBuilder({ data: [], error: { message: 'fail' } }),
-    )
+    h.from
+      .mockImplementationOnce(() => h.makeBuilder({ data: [], error: null }))
+      .mockImplementationOnce(() => h.makeBuilder({ data: [], error: { message: 'fail' } }))
     await expect(reorderStages(['a', 'b'])).rejects.toThrow('fail')
   })
 })
@@ -199,7 +199,7 @@ describe('aprobaciones', () => {
         client_id: 'u1',
         decision: 'aprobado',
         comment: null,
-      }),
+      })
     ).resolves.toEqual({ id: 'a1' })
 
     h.tableResults.set('milestone_approvals', { data: null, error: { message: 'fk' } })
@@ -210,7 +210,7 @@ describe('aprobaciones', () => {
         client_id: 'u1',
         decision: 'rechazado',
         comment: null,
-      }),
+      })
     ).rejects.toThrow('fk')
   })
 })

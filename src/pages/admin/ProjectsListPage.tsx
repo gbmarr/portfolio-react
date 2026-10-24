@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import {  } from '../../components/Button'
+import {} from '../../components/Button'
 import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { listProjects } from '../../lib/projects'
 import { formatDate } from '../../lib/format'

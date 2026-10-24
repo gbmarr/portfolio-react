@@ -61,7 +61,7 @@ function renderDashboard() {
   return render(
     <MemoryRouter initialEntries={['/admin']}>
       <AdminDashboard />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -78,7 +78,7 @@ describe('AdminDashboard', () => {
     h.listMessages.mockResolvedValue([])
     renderDashboard()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 

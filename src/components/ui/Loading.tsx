@@ -7,10 +7,7 @@ import { panelCopy } from '../../data/panel'
  */
 export function Loading() {
   return (
-    <p
-      role="status"
-      className="flex items-center gap-3 text-text-muted motion-safe:animate-pulse"
-    >
+    <p role="status" className="flex items-center gap-3 text-text-muted motion-safe:animate-pulse">
       <span
         aria-hidden="true"
         className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent motion-safe:animate-pulse"

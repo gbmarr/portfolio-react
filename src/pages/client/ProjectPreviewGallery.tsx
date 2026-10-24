@@ -24,12 +24,7 @@ export function ProjectPreviewGallery({ project, stages, previews }: ProjectPrev
           <p className="mt-1 text-sm text-text-muted">{copy.intro}</p>
         </div>
         {project.preview_url && (
-          <Button
-            size="sm"
-            href={project.preview_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <Button size="sm" href={project.preview_url} target="_blank" rel="noopener noreferrer">
             {project.preview_label || copy.open}
           </Button>
         )}

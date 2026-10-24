@@ -61,7 +61,7 @@ export function IndustryChip({ item }: IndustryChipProps) {
         tooltipHeight: tooltip.offsetHeight,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
-      }),
+      })
     )
   }, [])
 

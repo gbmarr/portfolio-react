@@ -21,7 +21,7 @@ function renderLogin(state?: { from?: string }) {
         <Route path="/admin" element={<div>admin-page</div>} />
         <Route path="/panel" element={<div>panel-page</div>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -47,10 +47,9 @@ describe('LoginPage (cliente)', () => {
     authOverrides({ configured: false })
     renderLogin()
     expect(screen.getByRole('alert')).toHaveTextContent(panelCopy.login.notConfigured)
-    expect(screen.getByRole('link', { name: new RegExp(panelCopy.login.backToSite) })).toHaveAttribute(
-      'href',
-      '/',
-    )
+    expect(
+      screen.getByRole('link', { name: new RegExp(panelCopy.login.backToSite) })
+    ).toHaveAttribute('href', '/')
   })
 
   it('redirige a /panel cuando hay sesión de client', async () => {
@@ -85,9 +84,9 @@ describe('LoginPage (cliente)', () => {
   })
 
   it('muestra la misma confirmación cuando el email no está autorizado (SEC-005)', async () => {
-    const signInWithMagicLink = vi.fn().mockRejectedValue(
-      Object.assign(new Error('Email not found'), { code: 'user_not_found' }),
-    )
+    const signInWithMagicLink = vi
+      .fn()
+      .mockRejectedValue(Object.assign(new Error('Email not found'), { code: 'user_not_found' }))
     authOverrides({ signInWithMagicLink })
     renderLogin()
 

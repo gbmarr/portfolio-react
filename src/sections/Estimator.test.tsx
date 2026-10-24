@@ -81,9 +81,7 @@ describe('Estimator', () => {
 
     await user.click(screen.getByRole('radio', { name: /sitio de una página/i }))
     expect(resultPanel()).toHaveTextContent('USD 350')
-    expect(
-      screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ })
-    ).not.toBeInTheDocument()
+    expect(screen.queryByRole('checkbox', { name: /Blog \/ CMS editable/ })).not.toBeInTheDocument()
   })
 
   it('links the WhatsApp CTA with a preloaded estimate message', () => {

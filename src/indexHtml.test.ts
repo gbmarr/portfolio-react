@@ -7,7 +7,7 @@ import indexHtml from '../index.html?raw'
 describe('index.html', () => {
   it('no usa manejadores de eventos inline', () => {
     expect(indexHtml).not.toMatch(
-      /\son(?:click|load|error|mouseover|focus|blur|submit|change|input|keydown|keyup|keypress|touchstart|touchend|scroll|wheel|animationend|transitionend)\s*=/i,
+      /\son(?:click|load|error|mouseover|focus|blur|submit|change|input|keydown|keyup|keypress|touchstart|touchend|scroll|wheel|animationend|transitionend)\s*=/i
     )
   })
 })

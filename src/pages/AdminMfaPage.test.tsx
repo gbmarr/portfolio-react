@@ -19,7 +19,7 @@ function renderMfaPage() {
         <Route path="/admin/mfa" element={<AdminMfaPage />} />
         <Route path="/" element={<div>home-page</div>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 

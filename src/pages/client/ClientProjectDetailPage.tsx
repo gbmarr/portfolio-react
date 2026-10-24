@@ -1,6 +1,6 @@
 import { useCallback, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Button,  } from '../../components/Button'
+import { Button } from '../../components/Button'
 import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
@@ -261,11 +261,7 @@ export function ClientProjectDetailPage() {
                             onValueChange={setComment}
                           />
                           <div className="flex gap-3">
-                            <Button
-                              type="submit"
-                              size="sm"
-                              disabled={sendingStage === stage.id}
-                            >
+                            <Button type="submit" size="sm" disabled={sendingStage === stage.id}>
                               {sendingStage === stage.id
                                 ? panelCopy.client.deciding
                                 : panelCopy.client.sendDecision}

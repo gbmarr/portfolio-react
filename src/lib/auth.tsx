@@ -6,7 +6,9 @@ import { AuthContext, type AalLevel, type AuthContextValue } from './auth-contex
 
 function assertConfigured(): void {
   if (!isSupabaseConfigured) {
-    throw new Error('Supabase no está configurado (faltan PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_PUBLISHABLE_KEY)')
+    throw new Error(
+      'Supabase no está configurado (faltan PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_PUBLISHABLE_KEY)'
+    )
   }
 }
 
@@ -21,7 +23,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   // Perfil junto al usuario al que pertenece: permite derivar "cargando"
   // (userId actual !== userId del perfil) sin setState sincrónico en effects.
-  const [profileState, setProfileState] = useState<{ userId: string | null; profile: Profile | null }>({
+  const [profileState, setProfileState] = useState<{
+    userId: string | null
+    profile: Profile | null
+  }>({
     userId: null,
     profile: null,
   })
@@ -186,7 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Al verificar, Supabase renueva la sesión en segundo plano y el effect de
       // AAL detecta el nuevo objeto `session` con currentLevel = aal2.
     },
-    [],
+    []
   )
 
   const value = useMemo<AuthContextValue>(
@@ -221,7 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       enrollMfa,
       challengeMfa,
       verifyMfa,
-    ],
+    ]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

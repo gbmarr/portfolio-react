@@ -19,8 +19,13 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
 
   it('script-src y connect-src incluyen challenges.cloudflare.com', () => {
     for (const csp of cspValues) {
-      expect(csp).toContain("script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com;")
-      expect(csp).toContain('connect-src ' + "'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com https://jntueibgkfwptigpncmh.supabase.co https://jntueibgkfwptigpncmh.functions.supabase.co;")
+      expect(csp).toContain(
+        "script-src 'self' https://va.vercel-scripts.com https://challenges.cloudflare.com;"
+      )
+      expect(csp).toContain(
+        'connect-src ' +
+          "'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com https://challenges.cloudflare.com https://jntueibgkfwptigpncmh.supabase.co https://jntueibgkfwptigpncmh.functions.supabase.co;"
+      )
     }
   })
 
@@ -43,7 +48,7 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
 
   it('no permite inline handlers ni unsafe-inline en script-src', () => {
     for (const csp of cspValues) {
-      expect(csp).not.toContain("script-src-attr")
+      expect(csp).not.toContain('script-src-attr')
       expect(csp).not.toContain("script-src 'self' 'unsafe-inline'")
       expect(csp).not.toContain("'unsafe-eval'")
     }

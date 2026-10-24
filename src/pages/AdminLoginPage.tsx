@@ -13,8 +13,7 @@ type Status = 'idle' | 'submitting'
  * Solo admins: email + contraseña.
  */
 export function AdminLoginPage() {
-  const { session, profile, loading, configured, signInWithPassword } =
-    useAuth()
+  const { session, profile, loading, configured, signInWithPassword } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 

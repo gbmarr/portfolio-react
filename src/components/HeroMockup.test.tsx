@@ -26,6 +26,6 @@ describe('HeroMockup', () => {
 
 function svgWithRole(container: HTMLElement): boolean {
   return Array.from(container.querySelectorAll('svg')).some(
-    (svg) => svg.getAttribute('role') !== null,
+    (svg) => svg.getAttribute('role') !== null
   )
 }

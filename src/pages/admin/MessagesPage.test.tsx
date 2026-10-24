@@ -42,7 +42,7 @@ describe('MessagesPage', () => {
     h.listMessages.mockRejectedValue(new Error('boom'))
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
@@ -55,7 +55,12 @@ describe('MessagesPage', () => {
   it('lista mensajes con contador de no leídos', async () => {
     h.listMessages.mockResolvedValue([
       message(),
-      message({ id: 'm2', read_at: '2026-09-02T00:00:00Z', name: 'Leo Gómez', subject: 'Otra consulta' }),
+      message({
+        id: 'm2',
+        read_at: '2026-09-02T00:00:00Z',
+        name: 'Leo Gómez',
+        subject: 'Otra consulta',
+      }),
     ])
     renderPage()
 
@@ -75,7 +80,10 @@ describe('MessagesPage', () => {
     expect(screen.getByText(/quiero un sitio/i)).toBeInTheDocument()
     const reply = screen.getByRole('link', { name: /Responder por email/ })
     expect(reply).toHaveAttribute('href', expect.stringContaining('mailto:ana@example.com'))
-    expect(reply).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('Re: Consulta por sitio')))
+    expect(reply).toHaveAttribute(
+      'href',
+      expect.stringContaining(encodeURIComponent('Re: Consulta por sitio'))
+    )
   })
 
   it('no genera un link mailto para un email con caracteres peligrosos', async () => {
@@ -88,9 +96,7 @@ describe('MessagesPage', () => {
     await user.click(await screen.findByText('Ana López'))
 
     expect(screen.queryByRole('link', { name: /Responder por email/ })).not.toBeInTheDocument()
-    expect(
-      screen.getByText('victim@example.com%0d%0abcc:attacker@example.com'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('victim@example.com%0d%0abcc:attacker@example.com')).toBeInTheDocument()
   })
 
   it('marca leído y actualiza el contador', async () => {

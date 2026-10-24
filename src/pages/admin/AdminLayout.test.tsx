@@ -19,7 +19,7 @@ function renderLayout() {
         </Route>
         <Route path="/login" element={<p>Login</p>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -30,9 +30,18 @@ describe('AdminLayout', () => {
 
     expect(screen.getByText('Gestión')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Resumen' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Proyectos' })).toHaveAttribute('href', '/admin/proyectos')
-    expect(screen.getByRole('link', { name: 'Clientes' })).toHaveAttribute('href', '/admin/clientes')
-    expect(screen.getByRole('link', { name: 'Mensajes' })).toHaveAttribute('href', '/admin/mensajes')
+    expect(screen.getByRole('link', { name: 'Proyectos' })).toHaveAttribute(
+      'href',
+      '/admin/proyectos'
+    )
+    expect(screen.getByRole('link', { name: 'Clientes' })).toHaveAttribute(
+      'href',
+      '/admin/clientes'
+    )
+    expect(screen.getByRole('link', { name: 'Mensajes' })).toHaveAttribute(
+      'href',
+      '/admin/mensajes'
+    )
     expect(screen.getByRole('link', { name: 'Ver sitio' })).toHaveAttribute('href', '/')
     expect(screen.getByText('Contenido admin')).toBeInTheDocument()
   })

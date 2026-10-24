@@ -25,7 +25,7 @@ function renderGuard(guard: ReactNode, path = '/protegido') {
         <Route path="/admin/mfa" element={<div>pantalla-mfa</div>} />
         <Route path="/admin/proyectos" element={<div>pantalla-proyectos</div>} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -161,7 +161,7 @@ describe('RequireAdminMfa', () => {
           <Route path="/panel" element={<div>pantalla-panel</div>} />
           <Route path="/admin" element={<div>pantalla-admin</div>} />
         </Routes>
-      </MemoryRouter>,
+      </MemoryRouter>
     )
   }
 
@@ -231,7 +231,7 @@ describe('RequireAdminMfa', () => {
           </Route>
           <Route path="/admin/proyectos" element={<div>pantalla-proyectos</div>} />
         </Routes>
-      </MemoryRouter>,
+      </MemoryRouter>
     )
     expect(screen.getByText('pantalla-proyectos')).toBeInTheDocument()
   })

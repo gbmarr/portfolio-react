@@ -29,7 +29,7 @@ describe('FormField', () => {
         type="email"
         required
         maxLength={10}
-      />,
+      />
     )
     const input = screen.getByLabelText('Email')
     expect(input).toHaveAttribute('type', 'email')

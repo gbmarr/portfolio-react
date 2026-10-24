@@ -10,7 +10,11 @@ export function HowItWorks() {
   return (
     <Section id="como-trabajo" className="bg-surface/40">
       <Container>
-        <SectionHeading eyebrow={copy.process.eyebrow} title={copy.process.title} subtitle={copy.process.subtitle} />
+        <SectionHeading
+          eyebrow={copy.process.eyebrow}
+          title={copy.process.title}
+          subtitle={copy.process.subtitle}
+        />
         <ProcessSteps steps={processSteps} />
       </Container>
     </Section>

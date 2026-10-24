@@ -37,7 +37,7 @@ function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/admin/proyectos']}>
       <ProjectsListPage />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
 }
 
@@ -53,7 +53,7 @@ describe('ProjectsListPage', () => {
     h.listProjects.mockRejectedValue(new Error('boom'))
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Algo salió mal. Probá de nuevo en unos minutos.',
+      'Algo salió mal. Probá de nuevo en unos minutos.'
     )
   })
 
@@ -66,14 +66,21 @@ describe('ProjectsListPage', () => {
   it('lista los proyectos en una tabla con link al detalle', async () => {
     h.listProjects.mockResolvedValue([
       project(),
-      project({ id: 'p2', title: 'Landing para Clínica', type: 'landing', status: 'lead', client_email: 'otro@example.com', deadline: '2026-12-20' }),
+      project({
+        id: 'p2',
+        title: 'Landing para Clínica',
+        type: 'landing',
+        status: 'lead',
+        client_email: 'otro@example.com',
+        deadline: '2026-12-20',
+      }),
     ])
     renderPage()
 
     expect(await screen.findByText('Sitio web para Estudio')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sitio web para Estudio' })).toHaveAttribute(
       'href',
-      '/admin/proyectos/p1',
+      '/admin/proyectos/p1'
     )
     expect(screen.getByText('Landing para Clínica')).toBeInTheDocument()
     expect(screen.getByText('cliente@example.com')).toBeInTheDocument()

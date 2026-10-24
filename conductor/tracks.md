@@ -131,4 +131,11 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
 - [x] **Track: Craft de interfaz y peso de la página**
       _Link: [./tracks/design_craft_perf_20261024/](./tracks/design_craft_perf_20261024/)_ — auditoría con la skill `emil-design-eng` y ejecución del plan en tres frentes: (1) **peso** — `AuthProvider` y las rutas privadas salen a un chunk lazy (`PrivateRoutes.tsx`), capturas recomprimidas a WebP con `scripts/optimize-images.mjs` (956 kB → 23 kB), 1,39 MB de PNGs sin referencias fuera de `public/`, fuentes self-hosted y OG image corregida; (2) **craft** — tokens de easing propios, `hover-fine`, `Reveal` 260 ms con stagger 60 ms, `active:scale-[0.97]` en botones, menú móvil y FAQ animados, tooltips con `transform-origin` y modo instantáneo, barra de progreso con `scaleX`; (3) **accesibilidad** — `prefers-reduced-motion` global, `scroll-padding-top` para el navbar sticky, contraste del footer, `aria-live` del estimador con debounce. **Completado 2026-10-24**: 85 archivos / 580 tests, coverage 93,26 % statements, JS inicial 152 kB → 92 kB gzip. Pendiente: smoke visual en dispositivo real y Lighthouse post-deploy.
 
+---
+
+## Baseline de formato (2026-10-24)
+
+- [x] **Track: Baseline de formato y correcciones de configuración**
+      _Link: [./tracks/format_baseline_20261024/](./tracks/format_baseline_20261024/)_ — `format:check` fallaba en 390 archivos y arrastraba dos defectos reales: la CSP de `vercel.json` tenía `font-src https://fonts.gstatic.com` sin `'self'` (habría bloqueado las fuentes self-hosted en producción) y el `metadata.json` de `sec_approval_rls_20261012` era JSON inválido. Se agregó `.prettierignore` (excluye `.agents/`, `.opencode/`, `conductor/`, `public/`, `assets/`), se reformateó el árbol (102 archivos, diff simétrico 521/521) y se verificó que el bundle no cambia de hash. **Completado 2026-10-24**: 580 tests verdes, coverage 93,26 % statements.
+
 

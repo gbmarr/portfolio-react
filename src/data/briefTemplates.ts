@@ -59,14 +59,7 @@ const tipografiaOptions = [
   'Merriweather',
 ]
 
-const idiomasOptions = [
-  'Español',
-  'Inglés',
-  'Portugués',
-  'Francés',
-  'Italiano',
-  'Alemán',
-]
+const idiomasOptions = ['Español', 'Inglés', 'Portugués', 'Francés', 'Italiano', 'Alemán']
 
 const linksExternosSection: BriefSection = {
   id: 'archivos',
@@ -124,7 +117,13 @@ const landingSections: BriefSection[] = [
     id: 'identidad',
     title: 'Identidad de marca',
     fields: [
-      { id: 'color_principal', label: 'Color principal', hint: 'Cargá el color de tu marca.', kind: 'color', required: true },
+      {
+        id: 'color_principal',
+        label: 'Color principal',
+        hint: 'Cargá el color de tu marca.',
+        kind: 'color',
+        required: true,
+      },
       { id: 'color_secundario', label: 'Color secundario', kind: 'color', required: false },
       {
         id: 'tipografia',
@@ -469,10 +468,10 @@ export function hasAnswer(value: string | string[] | undefined): boolean {
 export function computeBriefStatus(
   template: BriefTemplate,
   extraIds: string[],
-  answers: Record<string, string | string[]>,
+  answers: Record<string, string | string[]>
 ): 'pendiente' | 'completado' {
   const allAnswered = getRequiredFields(template, extraIds).every((field) =>
-    hasAnswer(answers[field.id]),
+    hasAnswer(answers[field.id])
   )
   return allAnswered ? 'completado' : 'pendiente'
 }

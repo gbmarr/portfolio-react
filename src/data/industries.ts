@@ -14,13 +14,11 @@ export const industries: IndustryGroup[] = [
       },
       {
         name: 'Abogados',
-        benefit:
-          'En qué casos trabajás, cómo es la primera consulta y cómo contactarte.',
+        benefit: 'En qué casos trabajás, cómo es la primera consulta y cómo contactarte.',
       },
       {
         name: 'Escribanos',
-        benefit:
-          'Requisitos, turnos y ubicación claros para que la consulta llegue a una cita.',
+        benefit: 'Requisitos, turnos y ubicación claros para que la consulta llegue a una cita.',
       },
     ],
   },
@@ -35,13 +33,11 @@ export const industries: IndustryGroup[] = [
       },
       {
         name: 'Plomeros',
-        benefit:
-          'Cobertura, disponibilidad y un botón de llamada que funciona en el celular.',
+        benefit: 'Cobertura, disponibilidad y un botón de llamada que funciona en el celular.',
       },
       {
         name: 'Gasistas',
-        benefit:
-          'Matrícula, servicios y urgencias a la vista para que confíen antes de escribir.',
+        benefit: 'Matrícula, servicios y urgencias a la vista para que confíen antes de escribir.',
       },
     ],
   },
