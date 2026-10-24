@@ -1,4 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
+import { Button } from '../../components/Button'
 import { Badge } from '../../components/ui/Badge'
 import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
@@ -196,13 +197,9 @@ export function ProjectPreviewManager({
           />
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="submit"
-            disabled={savingLink}
-            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button type="submit" size="sm" disabled={savingLink}>
             {savingLink ? copy.saving : copy.saveLink}
-          </button>
+          </Button>
           {(project.preview_url || previewUrl) && (
             <button
               type="button"

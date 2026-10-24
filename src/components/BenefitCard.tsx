@@ -68,7 +68,7 @@ function BenefitIconGlyph({ icon }: { icon: BenefitIcon }) {
 /** Tarjeta de beneficio: por qué le conviene a un negocio tener un sitio web. */
 export function BenefitCard({ benefit }: BenefitCardProps) {
   return (
-    <article className="flex h-full flex-col gap-4 rounded-xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow">
+    <article className="flex h-full flex-col gap-4 rounded-xl border border-border bg-surface p-6 transition-[transform,border-color] duration-200 ease-out hover-fine:-translate-y-1 hover-fine:border-accent/40 hover-fine:shadow-glow motion-reduce:hover-fine:translate-y-0">
       <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
         <BenefitIconGlyph icon={benefit.icon} />
       </span>

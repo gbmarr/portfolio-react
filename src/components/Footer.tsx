@@ -13,12 +13,12 @@ export function Footer() {
           {/* Ancla simple (sin Link) para no requerir contexto de router. */}
           <a
             href="/login"
-            className="text-xs text-text-muted/70 underline-offset-4 transition-colors hover:text-accent hover:underline"
+            className="text-xs text-text-muted underline-offset-4 transition-colors hover-fine:text-accent hover-fine:underline"
           >
             {copy.footer.clientAccess}
           </a>
         </p>
-        <p className="mt-2 text-center text-xs text-text-muted/70">
+        <p className="mt-2 text-center text-xs text-text-muted">
           © {year} {profile.name}. {copy.footer.rights}
         </p>
       </Container>

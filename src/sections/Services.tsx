@@ -1,4 +1,5 @@
 import { Container } from '../components/Container'
+import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { ServiceCard } from '../components/ServiceCard'
@@ -17,8 +18,10 @@ export function Services() {
           subtitle={copy.services.subtitle}
         />
         <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-          {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
+          {services.map((service, index) => (
+            <Reveal key={service.id} delay={index * 60} className="h-full">
+              <ServiceCard service={service} />
+            </Reveal>
           ))}
         </div>
         <div className="mt-12 text-center">

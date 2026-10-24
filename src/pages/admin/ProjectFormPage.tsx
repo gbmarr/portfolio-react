@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Button,  } from '../../components/Button'
+import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { createProject, getProject, updateProject } from '../../lib/projects'
 import { getBrief, upsertBrief } from '../../lib/briefs'
 import { listClients } from '../../lib/clients'
@@ -291,16 +293,12 @@ export function ProjectFormPage() {
         {error && <ErrorAlert>{error}</ErrorAlert>}
 
         <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="rounded-full bg-accent px-6 py-3 font-semibold text-background transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button type="submit" disabled={submitting}>
             {submitting ? 'Guardando…' : 'Guardar'}
-          </button>
+          </Button>
           <Link
             to="/admin/proyectos"
-            className="rounded-full border border-border px-6 py-3 font-medium text-text transition-colors hover:border-accent hover:text-accent"
+            className={`${baseButtonClasses} ${buttonSizeClasses.md} border border-border text-text hover-fine:border-accent hover-fine:text-accent`}
           >
             Cancelar
           </Link>

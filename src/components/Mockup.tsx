@@ -1,13 +1,15 @@
 interface MockupProps {
   alt: string
   src?: string
+  /** Variantes de ancho para que el navegador elija según DPR. */
+  srcSet?: string
   /** Si no hay captura, se muestran iniciales. */
   initials?: string
   variant?: 'phone' | 'desktop'
 }
 
 /** Marco visual para capturas de sitios, en formato celular o escritorio. */
-export function Mockup({ alt, src, initials, variant = 'desktop' }: MockupProps) {
+export function Mockup({ alt, src, srcSet, initials, variant = 'desktop' }: MockupProps) {
   const isPhone = variant === 'phone'
 
   return (
@@ -31,8 +33,11 @@ export function Mockup({ alt, src, initials, variant = 'desktop' }: MockupProps)
         {src ? (
           <img
             src={src}
+            srcSet={srcSet}
+            sizes={srcSet ? (isPhone ? '190px' : '(min-width: 768px) 50vw, 100vw') : undefined}
             alt={alt}
             loading="lazy"
+            decoding="async"
             className={`h-full w-full ${isPhone ? 'object-contain' : 'object-cover'}`}
           />
         ) : (

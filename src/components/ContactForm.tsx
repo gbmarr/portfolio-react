@@ -9,6 +9,7 @@ import {
   validateContactPayload,
 } from '../utils/contactPayload'
 import { TurnstileWidget } from './Turnstile'
+import { fieldClasses } from './ui/FormField'
 
 export interface ContactFormData {
   name: string
@@ -96,9 +97,6 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
     }
   }
 
-  const inputClasses =
-    'w-full rounded-lg border border-border bg-background px-4 py-3 text-text placeholder:text-text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent/50'
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Honeypot anti-spam: un bot que lo completa recibe éxito falso. */}
@@ -122,7 +120,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           required
           autoComplete="name"
           maxLength={CONTACT_LIMITS.nameMax}
-          className={inputClasses}
+          className={fieldClasses}
         />
       </div>
 
@@ -138,7 +136,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           autoComplete="email"
           inputMode="email"
           maxLength={CONTACT_LIMITS.emailMax}
-          className={inputClasses}
+          className={fieldClasses}
         />
       </div>
 
@@ -152,7 +150,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           rows={4}
           required
           maxLength={CONTACT_LIMITS.messageMax}
-          className={inputClasses}
+          className={`${fieldClasses} resize-y`}
         />
       </div>
 
@@ -165,7 +163,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       {status === 'success' && (
         <p
           role="status"
-          className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent"
+          className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-accent transition-[opacity,transform] duration-200 ease-out starting:translate-y-1 starting:opacity-0"
         >
           {copy.contact.form.success}
         </p>
@@ -173,7 +171,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
       {status === 'error' && (
         <p
           role="alert"
-          className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+          className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300 transition-[opacity,transform] duration-200 ease-out starting:translate-y-1 starting:opacity-0"
         >
           {copy.contact.form.error}
         </p>

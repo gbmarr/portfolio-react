@@ -85,8 +85,10 @@ export function ClientProjectsPage() {
                     className="h-1.5 w-full overflow-hidden rounded-full bg-border/60"
                   >
                     <div
-                      className={`h-full rounded-full transition-all ${percent === 100 ? 'bg-emerald-300' : 'bg-accent'}`}
-                      style={{ width: `${percent}%` }}
+                      className={`h-full w-full origin-left rounded-full transition-transform duration-[400ms] ease-out motion-reduce:transition-none ${
+                        percent === 100 ? 'bg-emerald-300' : 'bg-accent'
+                      }`}
+                      style={{ transform: `scaleX(${percent / 100})` }}
                     />
                   </div>
                   <p className="mt-1.5 text-xs text-text-muted">

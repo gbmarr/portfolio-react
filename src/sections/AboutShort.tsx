@@ -11,8 +11,10 @@ export function AboutShort() {
         <SectionHeading eyebrow={copy.about.eyebrow} title={copy.about.title} />
         <div className="grid items-center gap-10 sm:grid-cols-[auto_1fr]">
           <img
-            src="/images/profile-photo.webp"
+            src="/images/profile-photo-288.webp"
             alt={copy.about.photoAlt}
+            width={288}
+            height={288}
             className="mx-auto h-36 w-36 rounded-full border-2 border-accent/40 object-cover shadow-glow"
           />
           <p className="text-center leading-relaxed text-text-muted sm:text-left sm:text-lg">

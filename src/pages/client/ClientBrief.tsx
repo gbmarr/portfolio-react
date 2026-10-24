@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Button } from '../../components/Button'
 import { Badge } from '../../components/ui/Badge'
 import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
@@ -339,14 +340,9 @@ export function ClientBrief({ brief, onSaved }: ClientBriefProps) {
         </p>
       )}
 
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving}
-        className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button size="sm" onClick={handleSave} disabled={saving}>
         {saving ? panelCopy.client.brief.saving : panelCopy.client.brief.save}
-      </button>
+      </Button>
     </section>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 interface ScrollRevealResult<T extends HTMLElement> {
   ref: React.RefObject<T | null>
@@ -13,6 +13,10 @@ function prefersReducedMotion(): boolean {
  * Reveals an element once it scrolls into view.
  * Falls back to "immediately visible" when IntersectionObserver is
  * unavailable or the user prefers reduced motion.
+ *
+ * El primer frame se resuelve antes del paint: si el elemento ya está en el
+ * viewport al montar (above the fold), se muestra sin esperar al observer.
+ * Sin esto, el contenido de la primera pantalla parpadea invisible.
  */
 export function useScrollReveal<T extends HTMLElement>(threshold = 0.15): ScrollRevealResult<T> {
   const ref = useRef<T>(null)
@@ -22,6 +26,17 @@ export function useScrollReveal<T extends HTMLElement>(threshold = 0.15): Scroll
     }
     return false
   })
+
+  useLayoutEffect(() => {
+    if (isVisible) return
+    const element = ref.current
+    if (!element || typeof element.getBoundingClientRect !== 'function') return
+
+    const rect = element.getBoundingClientRect()
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      setIsVisible(true)
+    }
+  }, [isVisible])
 
   useEffect(() => {
     if (isVisible) return

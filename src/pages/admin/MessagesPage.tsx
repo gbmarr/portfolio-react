@@ -74,10 +74,13 @@ export function MessagesPage() {
                   aria-expanded={expanded}
                 >
                   {!message.read_at && (
-                    <span
-                      className="h-2 w-2 shrink-0 rounded-full bg-accent"
-                      aria-label="Sin leer"
-                    />
+                    <>
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full bg-accent"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">Mensaje sin leer.</span>
+                    </>
                   )}
                   <span className="font-medium text-text">{message.name}</span>
                   <span className="text-sm text-text-muted">{message.subject}</span>
@@ -86,43 +89,51 @@ export function MessagesPage() {
                   </span>
                 </button>
 
-                {expanded && (
-                  <div className="mt-3 space-y-3 border-t border-border pt-3">
-                    <p className="whitespace-pre-wrap text-sm text-text">{message.message}</p>
-                    <div className="flex flex-wrap items-center gap-3">
-                      {replyAddress ? (
-                        <a
-                          href={`mailto:${replyAddress}?subject=${encodeURIComponent(
-                            message.subject
-                              ? `Re: ${message.subject}`
-                              : 'Re: consulta desde tu portfolio'
-                          )}`}
-                          className="text-sm text-accent hover:underline"
-                        >
-                          Responder por email ({message.email})
-                        </a>
-                      ) : (
-                        <span className="text-sm text-text-muted">{message.email}</span>
-                      )}
-                      <div className="ml-auto flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleToggleRead(message)}
-                          className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-accent hover:text-accent"
-                        >
-                          {message.read_at ? 'Marcar no leído' : 'Marcar leído'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(message)}
-                          className="rounded border border-border px-2 py-1 text-xs text-text-muted hover:border-red-400 hover:text-red-300"
-                        >
-                          Eliminar
-                        </button>
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-[220ms] ease-out motion-reduce:transition-none ${
+                    expanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                  aria-hidden={!expanded}
+                  inert={!expanded}
+                >
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="mt-3 space-y-3 border-t border-border pt-3">
+                      <p className="whitespace-pre-wrap text-sm text-text">{message.message}</p>
+                      <div className="flex flex-wrap items-center gap-3">
+                        {replyAddress ? (
+                          <a
+                            href={`mailto:${replyAddress}?subject=${encodeURIComponent(
+                              message.subject
+                                ? `Re: ${message.subject}`
+                                : 'Re: consulta desde tu portfolio'
+                            )}`}
+                            className="rounded text-sm text-accent hover-fine:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                          >
+                            Responder por email ({message.email})
+                          </a>
+                        ) : (
+                          <span className="text-sm text-text-muted">{message.email}</span>
+                        )}
+                        <div className="ml-auto flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleRead(message)}
+                            className="rounded border border-border px-2 py-1 text-xs text-text-muted transition-colors duration-150 hover-fine:border-accent hover-fine:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                          >
+                            {message.read_at ? 'Marcar no leído' : 'Marcar leído'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(message)}
+                            className="rounded border border-border px-2 py-1 text-xs text-text-muted transition-colors duration-150 hover-fine:border-red-400 hover-fine:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/50"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
               </li>
             )
           })}

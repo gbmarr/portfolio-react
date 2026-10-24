@@ -1,3 +1,4 @@
+import { Button } from '../../components/Button'
 import { panelCopy } from '../../data/panel'
 import type { Project, ProjectPreviewWithUrl, ProjectStage } from '../../lib/types'
 
@@ -23,14 +24,14 @@ export function ProjectPreviewGallery({ project, stages, previews }: ProjectPrev
           <p className="mt-1 text-sm text-text-muted">{copy.intro}</p>
         </div>
         {project.preview_url && (
-          <a
+          <Button
+            size="sm"
             href={project.preview_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
             {project.preview_label || copy.open}
-          </a>
+          </Button>
         )}
       </div>
 

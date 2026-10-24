@@ -9,12 +9,14 @@ function resultPanel() {
 }
 
 describe('Estimator', () => {
-  it('renders the section heading, disclaimer and an aria-live result', () => {
+  it('renders the section heading, disclaimer and an accessible live result', () => {
     render(<Estimator />)
     expect(
       screen.getByRole('heading', { level: 2, name: copy.estimator.title })
     ).toBeInTheDocument()
-    expect(resultPanel()).toHaveAttribute('aria-live', 'polite')
+    // El anuncio vive en una región propia (solo el rango) para no leer cada
+    // paso del slider; el panel visible ya no es la live region.
+    expect(resultPanel().querySelector('[aria-live="polite"]')).not.toBeNull()
     expect(screen.getByText(copy.estimator.disclaimer)).toBeInTheDocument()
   })
 

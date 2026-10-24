@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import {  } from '../../components/Button'
+import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { listProjects } from '../../lib/projects'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
@@ -17,7 +19,7 @@ export function ProjectsListPage() {
         <h1 className="font-display text-2xl font-semibold text-text">{panelCopy.nav.projects}</h1>
         <Link
           to="/admin/proyectos/nuevo"
-          className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-accent/90"
+          className={`${baseButtonClasses} ${buttonSizeClasses.sm} bg-accent text-background hover-fine:bg-accent-hover`}
         >
           Nuevo proyecto
         </Link>

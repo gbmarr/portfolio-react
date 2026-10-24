@@ -154,7 +154,7 @@ export const copy = {
     description:
       'Diseño sitios para contadores, abogados, escribanos, electricistas, plomeros y gasistas. Que te encuentren, confíen y llamen. Presupuesto cerrado en 48 h.',
     locale: 'es_AR',
-    ogImage: 'https://gabrielmarrero.com.ar/images/pasion-cap-1.png',
+    ogImage: 'https://gabrielmarrero.com.ar/images/og-image.jpg',
     siteName: 'Gabriel Marrero - Desarrollador Web',
   },
 } as const

@@ -1,5 +1,7 @@
 import { useCallback, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Button,  } from '../../components/Button'
+import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
 import { Badge } from '../../components/ui/Badge'
 import { TextAreaField } from '../../components/ui/TextAreaField'
 import { Loading } from '../../components/ui/Loading'
@@ -259,15 +261,15 @@ export function ClientProjectDetailPage() {
                             onValueChange={setComment}
                           />
                           <div className="flex gap-3">
-                            <button
+                            <Button
                               type="submit"
+                              size="sm"
                               disabled={sendingStage === stage.id}
-                              className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                               {sendingStage === stage.id
                                 ? panelCopy.client.deciding
                                 : panelCopy.client.sendDecision}
-                            </button>
+                            </Button>
                             <button
                               type="button"
                               onClick={() => {
@@ -285,14 +287,14 @@ export function ClientProjectDetailPage() {
                           <button
                             type="button"
                             onClick={() => setPending({ stageId: stage.id, decision: 'aprobado' })}
-                            className="rounded-full bg-emerald-300 px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+                            className={`${baseButtonClasses} ${buttonSizeClasses.sm} bg-emerald-300 text-background hover-fine:bg-emerald-200`}
                           >
                             {panelCopy.client.approve}
                           </button>
                           <button
                             type="button"
                             onClick={() => setPending({ stageId: stage.id, decision: 'rechazado' })}
-                            className="rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+                            className={`${baseButtonClasses} ${buttonSizeClasses.sm} bg-red-300 text-background hover-fine:bg-red-200`}
                           >
                             {panelCopy.client.reject}
                           </button>

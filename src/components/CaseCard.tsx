@@ -19,9 +19,10 @@ function getInitials(name: string): string {
 /** Mini caso de trabajo: contexto, qué se hizo y resultado. */
 export function CaseCard({ caseStudy }: CaseCardProps) {
   return (
-    <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow sm:p-8">
+    <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-[transform,border-color] duration-200 ease-out hover-fine:-translate-y-1 hover-fine:border-accent/40 hover-fine:shadow-glow motion-reduce:hover-fine:translate-y-0 sm:p-8">
       <Mockup
         src={caseStudy.screenshot}
+        srcSet={caseStudy.screenshotSrcSet}
         alt={`Captura de ${caseStudy.title}`}
         initials={getInitials(caseStudy.title)}
         variant="phone"

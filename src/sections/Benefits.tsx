@@ -1,4 +1,5 @@
 import { Container } from '../components/Container'
+import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { BenefitCard } from '../components/BenefitCard'
@@ -19,8 +20,10 @@ export function Benefits() {
           subtitle={copy.benefits.subtitle}
         />
         <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {benefits.map((benefit) => (
-            <BenefitCard key={benefit.id} benefit={benefit} />
+          {benefits.map((benefit, index) => (
+            <Reveal key={benefit.id} delay={(index % 3) * 60} className="h-full">
+              <BenefitCard benefit={benefit} />
+            </Reveal>
           ))}
         </div>
       </Container>

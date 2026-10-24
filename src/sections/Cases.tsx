@@ -1,5 +1,6 @@
 import { CaseCard } from '../components/CaseCard'
 import { Container } from '../components/Container'
+import { Reveal } from '../components/Reveal'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
 import { copy } from '../data/copy'
@@ -16,8 +17,10 @@ export function Cases() {
           subtitle={copy.cases.subtitle}
         />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {cases.map((caseStudy) => (
-            <CaseCard key={caseStudy.id} caseStudy={caseStudy} />
+          {cases.map((caseStudy, index) => (
+            <Reveal key={caseStudy.id} delay={(index % 3) * 60} className="h-full">
+              <CaseCard caseStudy={caseStudy} />
+            </Reveal>
           ))}
         </div>
         <p className="mx-auto mt-12 max-w-2xl text-center text-sm text-text-muted">

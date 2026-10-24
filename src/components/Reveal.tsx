@@ -4,6 +4,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 interface RevealProps {
   children: ReactNode
   className?: string
+  /** Retardo en ms. Para grillas usar 40–80ms por ítem (stagger). */
   delay?: number
 }
 
@@ -20,8 +21,8 @@ export function Reveal({ children, className = '', delay = 0 }: RevealProps) {
     <div
       ref={ref}
       style={style}
-      className={`transition-all duration-500 ease-out ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+      className={`transition-[opacity,transform] duration-[260ms] ease-out ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       } ${className}`}
     >
       {children}

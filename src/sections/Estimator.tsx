@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Container } from '../components/Container'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
@@ -53,6 +53,14 @@ export function Estimator() {
   }
 
   const rangeLabel = `USD ${result.minUsd.toLocaleString('es-AR')} – USD ${result.maxUsd.toLocaleString('es-AR')}`
+
+  // Anuncio accesible con debounce: sin esto el lector de pantalla lee un
+  // precio nuevo por cada paso del slider o cada checkbox.
+  const [announcedRange, setAnnouncedRange] = useState(rangeLabel)
+  useEffect(() => {
+    const timer = setTimeout(() => setAnnouncedRange(rangeLabel), 400)
+    return () => clearTimeout(timer)
+  }, [rangeLabel])
 
   return (
     <Section id="estimador">
@@ -141,14 +149,18 @@ export function Estimator() {
 
           <div
             data-testid="estimate-result"
-            aria-live="polite"
             className="space-y-3 rounded-xl border border-accent/30 bg-surface p-5"
           >
+            <p className="sr-only" aria-live="polite" aria-atomic="true">
+              {announcedRange}
+            </p>
             <p className="text-sm font-semibold uppercase tracking-wide text-text-muted">
               {copy.estimator.resultLabel}
             </p>
-            <p className="font-display text-3xl font-semibold text-text">{rangeLabel}</p>
-            <p className="text-sm text-text-muted">
+            <p className="font-display text-3xl font-semibold tabular-nums text-text">
+              {rangeLabel}
+            </p>
+            <p className="text-sm tabular-nums text-text-muted">
               {copy.estimator.arsApproxLabel}: {formatMoney(result.minArs, 'ARS')} –{' '}
               {formatMoney(result.maxArs, 'ARS')}
             </p>
@@ -161,7 +173,7 @@ export function Estimator() {
                 {result.breakdown.map((row) => (
                   <li key={row.label} className="flex justify-between gap-4">
                     <span>{row.label}</span>
-                    <span>
+                    <span className="tabular-nums">
                       USD {row.amountUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
                     </span>
                   </li>
@@ -176,7 +188,7 @@ export function Estimator() {
             <Button href={whatsappUrl}>{copy.estimator.ctaWhatsApp}</Button>
             <a
               href="#contacto"
-              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent"
+              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover-fine:border-accent hover-fine:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               {copy.estimator.maintenanceChip}
             </a>

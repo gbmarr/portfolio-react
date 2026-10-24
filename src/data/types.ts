@@ -64,6 +64,8 @@ export interface CaseStudy {
   industry: string
   title: string
   screenshot?: string
+  /** Variantes de ancho de la captura, para `srcset`. */
+  screenshotSrcSet?: string
   /** Qué necesitaba (1-2 líneas). */
   need: string
   /** Qué hice (1-2 líneas). */

@@ -14,6 +14,14 @@ const INITIAL_PLACEMENT: TooltipPlacement = {
 }
 
 /**
+ * Al mover el puntero de un chip a otro, el tooltip nuevo aparece sin animación.
+ * El delay/animation inicial existe para evitar aperturas accidentales; una vez
+ * que el usuario está leyendo chips, no debe esperar de nuevo.
+ */
+const INSTANT_WINDOW_MS = 400
+let lastTooltipClosedAt = 0
+
+/**
  * Chip de rubro con burbuja flotante que muestra el beneficio particular del
  * rubro.
  *
@@ -29,6 +37,7 @@ const INITIAL_PLACEMENT: TooltipPlacement = {
 export function IndustryChip({ item }: IndustryChipProps) {
   const [open, setOpen] = useState(false)
   const [pinned, setPinned] = useState(false)
+  const [instant, setInstant] = useState(false)
   const [placement, setPlacement] = useState<TooltipPlacement>(INITIAL_PLACEMENT)
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const tooltipRef = useRef<HTMLSpanElement>(null)
@@ -66,6 +75,7 @@ export function IndustryChip({ item }: IndustryChipProps) {
     if (!open) return
 
     const close = () => {
+      lastTooltipClosedAt = Date.now()
       setOpen(false)
       setPinned(false)
     }
@@ -79,26 +89,44 @@ export function IndustryChip({ item }: IndustryChipProps) {
     }
   }, [open, updatePlacement])
 
+  const openTooltip = () => {
+    setInstant(Date.now() - lastTooltipClosedAt < INSTANT_WINDOW_MS)
+    setOpen(true)
+  }
+
   const handleClick = () => {
     const nextPinned = !pinned
     setPinned(nextPinned)
-    setOpen(nextPinned)
+    if (nextPinned) openTooltip()
+    else {
+      lastTooltipClosedAt = Date.now()
+      setOpen(false)
+    }
   }
 
   const closeTooltip = () => {
+    lastTooltipClosedAt = Date.now()
     setOpen(false)
     setPinned(false)
   }
+
+  // Escala desde el trigger, no desde el centro: el tooltip "sale" del chip y
+  // de la flecha que ya calculó la lógica de posicionamiento.
+  const originX = placement.arrowLeft === null ? '50%' : `${placement.arrowLeft}px`
+  const originY = placement.vertical === 'above' ? '100%' : '0%'
 
   return (
     <span
       ref={wrapperRef}
       className="relative inline-block"
       onMouseEnter={() => {
-        if (!pinned) setOpen(true)
+        if (!pinned) openTooltip()
       }}
       onMouseLeave={() => {
-        if (!pinned) setOpen(false)
+        if (!pinned) {
+          lastTooltipClosedAt = Date.now()
+          setOpen(false)
+        }
       }}
     >
       <button
@@ -109,7 +137,7 @@ export function IndustryChip({ item }: IndustryChipProps) {
         onKeyDown={(event) => {
           if (event.key === 'Escape') closeTooltip()
         }}
-        className="rounded-full border border-border bg-surface px-3 py-1 text-sm text-text-muted transition-colors hover:border-accent/40 hover:text-text focus-visible:border-accent/40 focus-visible:text-text focus-visible:outline-2 focus-visible:outline-accent/60 focus-visible:outline-offset-2"
+        className="rounded-full border border-border bg-surface px-3 py-1 text-sm text-text-muted transition-colors hover-fine:border-accent/40 hover-fine:text-text focus-visible:border-accent/40 focus-visible:text-text focus-visible:outline-2 focus-visible:outline-accent/60 focus-visible:outline-offset-2"
       >
         {item.name}
       </button>
@@ -118,10 +146,14 @@ export function IndustryChip({ item }: IndustryChipProps) {
         id={tooltipId}
         role="tooltip"
         aria-hidden={!open}
-        style={{ left: placement.left }}
-        className={`absolute z-20 w-max max-w-[min(280px,calc(100vw-2rem))] rounded-lg border border-border bg-background px-3 py-2 text-xs leading-relaxed text-text-muted shadow-glow transition-opacity duration-150 ${
+        style={{ left: placement.left, transformOrigin: `${originX} ${originY}` }}
+        className={`absolute z-20 w-max max-w-[min(280px,calc(100vw-2rem))] rounded-lg border border-border bg-background px-3 py-2 text-xs leading-relaxed text-text-muted shadow-glow transition-[opacity,transform] ease-out ${
           placement.vertical === 'above' ? 'bottom-full mb-2' : 'top-full mt-2'
-        } ${open ? 'visible opacity-100' : 'invisible opacity-0'}`}
+        } ${instant ? 'duration-0' : 'duration-[150ms]'} ${
+          open
+            ? 'visible scale-100 opacity-100'
+            : 'pointer-events-none invisible scale-[0.97] opacity-0'
+        }`}
       >
         {item.benefit}
         <span

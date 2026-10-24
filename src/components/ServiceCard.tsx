@@ -26,7 +26,7 @@ function CheckIcon() {
 /** Tarjeta de servicio: para quién es, qué incluye, qué necesito, plazo y CTA. */
 export function ServiceCard({ service }: ServiceCardProps) {
   return (
-    <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-all duration-200 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow sm:p-8">
+    <article className="flex h-full flex-col gap-5 rounded-xl border border-border bg-surface p-6 transition-[transform,border-color] duration-200 ease-out hover-fine:-translate-y-1 hover-fine:border-accent/40 hover-fine:shadow-glow motion-reduce:hover-fine:translate-y-0 sm:p-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h3 className="font-display text-2xl font-semibold text-text">{service.name}</h3>
         <span className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">

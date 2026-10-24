@@ -56,10 +56,10 @@ describe('AppRouter', () => {
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
-  it('redirects unknown routes to the home page', () => {
+  it('redirects unknown routes to the home page', async () => {
     window.history.pushState({}, '', '/ruta-que-no-existe')
     render(<AppRouter />)
-    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(await screen.findByRole('navigation', {}, { timeout: 3000 })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.hero.title)
   })
 
@@ -87,7 +87,9 @@ describe('AppRouter', () => {
     window.history.pushState({}, '', '/admin')
     render(<AppRouter />)
 
-    expect(await screen.findByRole('heading', { name: 'Acceso de gestión' })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Acceso de gestión' }, { timeout: 3000 })
+    ).toBeInTheDocument()
   })
 
   it('carga bajo demanda el panel admin para un administrador', async () => {

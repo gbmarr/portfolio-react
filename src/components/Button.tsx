@@ -1,37 +1,47 @@
 import type { MouseEventHandler, ReactNode } from 'react'
+import { baseButtonClasses, buttonSizeClasses } from './buttonClasses'
 
 interface ButtonProps {
   children: ReactNode
   variant?: 'primary' | 'secondary'
+  size?: 'md' | 'sm'
   href?: string
+  target?: string
+  rel?: string
   type?: 'button' | 'submit' | 'reset'
   className?: string
   disabled?: boolean
   onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
-const baseClasses =
-  'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background'
-
 const variantClasses = {
-  primary: 'bg-accent text-background hover:bg-accent/90',
-  secondary: 'border border-border text-text hover:border-accent hover:text-accent',
+  // Aclarar en hover (no oscurecer): sobre fondo oscuro un botón que se
+  // apaga parece deshabilitado justo cuando el usuario lo apunta.
+  primary: 'bg-accent text-background hover-fine:bg-accent-hover',
+  secondary: 'border border-border text-text hover-fine:border-accent hover-fine:text-accent',
 } as const
+
+const disabledClasses = 'cursor-not-allowed opacity-60'
 
 export function Button({
   children,
   variant = 'primary',
+  size = 'md',
   href,
+  target,
+  rel,
   type = 'button',
   className = '',
   disabled = false,
   onClick,
 }: ButtonProps) {
-  const classes = `${baseClasses} ${variantClasses[variant]} ${disabled ? 'cursor-not-allowed opacity-60' : ''} ${className}`
+  const classes = `${baseButtonClasses} ${buttonSizeClasses[size]} ${variantClasses[variant]} ${disabled ? disabledClasses : ''} ${className}`
 
-  if (href) {
+  // Un ancla no puede estar deshabilitada: si no hay destino válido, el
+  // elemento correcto es un button.
+  if (href && !disabled) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} target={target} rel={rel} className={classes}>
         {children}
       </a>
     )

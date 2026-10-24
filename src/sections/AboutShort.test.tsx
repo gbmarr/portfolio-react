@@ -9,6 +9,6 @@ describe('AboutShort', () => {
     expect(screen.getByRole('heading', { name: copy.about.title })).toBeInTheDocument()
     expect(screen.getByText(copy.about.text)).toBeInTheDocument()
     const photo = screen.getByRole('img', { name: copy.about.photoAlt })
-    expect(photo).toHaveAttribute('src', '/images/profile-photo.webp')
+    expect(photo).toHaveAttribute('src', '/images/profile-photo-288.webp')
   })
 })

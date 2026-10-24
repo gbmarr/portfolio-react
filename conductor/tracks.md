@@ -124,4 +124,11 @@ Tracks creados con spec + plan a partir de la **revisión de arquitectura del co
 - [x] **Track: Skills de Emil Kowalski (subset curado)**
       _Link: [./tracks/emil_skills_20261024/](./tracks/emil_skills_20261024/)_ — se evaluaron `emilkowalski/skills` e `pbakaus/impeccable`. Se instalaron 8 skills de Emil en `.agents/skills/` (`emil-design-eng`, `animate`, `review-animations`, `improve-animations`, `animation-performance`, `animation-vocabulary`, `mobile-native`, `break-ui`) y se registraron en `skills-lock.json`; Impeccable se descartó por conflicto con el design system y telemetría/hooks. `portfolio-design` conserva precedencia sobre tokens/colores/tipografía. **Completado 2026-10-24** (suite completa verde).
 
+---
+
+## Craft de interfaz y peso de la página (2026-10-24)
+
+- [x] **Track: Craft de interfaz y peso de la página**
+      _Link: [./tracks/design_craft_perf_20261024/](./tracks/design_craft_perf_20261024/)_ — auditoría con la skill `emil-design-eng` y ejecución del plan en tres frentes: (1) **peso** — `AuthProvider` y las rutas privadas salen a un chunk lazy (`PrivateRoutes.tsx`), capturas recomprimidas a WebP con `scripts/optimize-images.mjs` (956 kB → 23 kB), 1,39 MB de PNGs sin referencias fuera de `public/`, fuentes self-hosted y OG image corregida; (2) **craft** — tokens de easing propios, `hover-fine`, `Reveal` 260 ms con stagger 60 ms, `active:scale-[0.97]` en botones, menú móvil y FAQ animados, tooltips con `transform-origin` y modo instantáneo, barra de progreso con `scaleX`; (3) **accesibilidad** — `prefers-reduced-motion` global, `scroll-padding-top` para el navbar sticky, contraste del footer, `aria-live` del estimador con debounce. **Completado 2026-10-24**: 85 archivos / 580 tests, coverage 93,26 % statements, JS inicial 152 kB → 92 kB gzip. Pendiente: smoke visual en dispositivo real y Lighthouse post-deploy.
+
 

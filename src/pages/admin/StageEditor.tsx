@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Button } from '../../components/Button'
 import { Badge } from '../../components/ui/Badge'
 import { FormField } from '../../components/ui/FormField'
 import { SelectField } from '../../components/ui/SelectField'
@@ -134,13 +135,9 @@ export function StageEditor({
                     onValueChange={setEditDescription}
                   />
                   <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => saveEditing(stage)}
-                      className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-background hover:bg-accent/90"
-                    >
+                    <Button size="sm" onClick={() => saveEditing(stage)}>
                       Guardar
-                    </button>
+                    </Button>
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
