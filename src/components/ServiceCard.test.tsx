@@ -30,20 +30,14 @@ describe('ServiceCard', () => {
     expect(screen.getByText(`Plazo: ${landing.timeline}`)).toBeInTheDocument()
   })
 
-  it('renders the from-price when available', () => {
+  it('does not render any price', () => {
     render(<ServiceCard service={landing} />)
-    expect(screen.getByText(`Desde USD ${landing.priceFromUsd}`)).toBeInTheDocument()
+    expect(screen.queryByText(/USD|ARS|Desde/)).toBeNull()
   })
 
-  it('hides the from-price when the service does not declare one', () => {
-    const withoutPrice = { ...landing, priceFromUsd: undefined }
-    render(<ServiceCard service={withoutPrice} />)
-    expect(screen.queryByText(/Desde USD/)).toBeNull()
-  })
-
-  it('renders a WhatsApp CTA with the service-specific message', () => {
+  it('links the CTA to the quote request form', () => {
     render(<ServiceCard service={landing} />)
     const cta = screen.getByRole('link', { name: 'Pedir presupuesto' })
-    expect(cta).toHaveAttribute('href', expect.stringContaining(encodeURIComponent('una página')))
+    expect(cta).toHaveAttribute('href', '#estimador')
   })
 })

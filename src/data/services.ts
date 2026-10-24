@@ -27,7 +27,6 @@ export const services: Service[] = [
       'Logo (o te ayudo a definir uno)',
     ],
     timeline: '1 a 2 semanas',
-    priceFromUsd: 350,
     whatsappMessage:
       'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio de una página.',
   },
@@ -50,7 +49,6 @@ export const services: Service[] = [
       'Logo (o te ayudo a definir uno)',
     ],
     timeline: '2 a 4 semanas',
-    priceFromUsd: 600,
     whatsappMessage:
       'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio profesional completo.',
   },

@@ -50,8 +50,6 @@ export interface Service {
   requires: string[]
   /** Plazo estimado. */
   timeline: string
-  /** Precio de partida en USD ("desde"), si se desea publicar. */
-  priceFromUsd?: number
   /** Mensaje de WhatsApp predefinido específico del servicio. */
   whatsappMessage: string
 }

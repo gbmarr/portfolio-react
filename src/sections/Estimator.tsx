@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useRef, useState, type FormEvent } from 'react'
+import { Button } from '../components/Button'
 import { Container } from '../components/Container'
+import { LegalConsent } from '../components/LegalConsent'
 import { Section } from '../components/Section'
 import { SectionHeading } from '../components/SectionHeading'
-import { Button } from '../components/Button'
+import { TurnstileWidget } from '../components/Turnstile'
+import { FormField } from '../components/ui/FormField'
+import { TextAreaField } from '../components/ui/TextAreaField'
 import { copy } from '../data/copy'
 import {
   estimateTiers,
@@ -10,35 +14,54 @@ import {
   isExtraAllowed,
   type EstimateTierId,
 } from '../data/estimate'
+import { buildEstimateTimeline, MAX_SECTIONS, MIN_SECTIONS } from '../lib/estimate'
 import {
-  buildEstimateWhatsAppMessage,
-  computeEstimate,
-  MAX_SECTIONS,
-  MIN_SECTIONS,
-  type EstimateInput,
-} from '../lib/estimate'
-import { formatMoney } from '../lib/format'
-import { profile } from '../data/profile'
+  QUOTE_LIMITS,
+  TURNSTILE_ACTION_QUOTE,
+  type QuoteTierId,
+} from '../shared/quote-contract'
+import {
+  buildQuoteFormPayload,
+  contactFunctionUrl,
+  validateQuoteForm,
+  validateQuotePayload,
+  type QuoteFormData,
+} from '../utils/quotePayload'
+
+const MIN_SUBMIT_INTERVAL_MS = 3000
+
+type SubmitStatus = 'idle' | 'sending' | 'success' | 'error'
 
 /**
- * Estimador de presupuesto: 100% client-side (fair-use: cero functions, cero
- * fetch). Da un rango orientativo y deriva a WhatsApp para el cierre.
+ * Solicitud de presupuesto: el visitante arma un brief (tier, secciones,
+ * extras) y deja su email. No se muestran precios: el presupuesto se envía
+ * después de revisar la solicitud. El backend solo guarda el brief y avisa
+ * al owner; no envía emails automáticos al solicitante.
  */
 export function Estimator() {
   const [tier, setTier] = useState<EstimateTierId>('landing')
-  const [sections, setSections] = useState(5)
+  const [sections, setSections] = useState(0)
   const [selectedExtras, setSelectedExtras] = useState<string[]>([])
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [notes, setNotes] = useState('')
+  const [consentAccepted, setConsentAccepted] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [status, setStatus] = useState<SubmitStatus>('idle')
+  const lastSubmitAt = useRef(0)
 
-  const input: EstimateInput = useMemo(
-    () => ({ tier, sections, extras: selectedExtras }),
+  const visibleExtras = useMemo(() => getVisibleExtras(tier), [tier])
+  const timeline = useMemo(
+    () => buildEstimateTimeline({ tier, sections, extras: selectedExtras }),
     [tier, sections, selectedExtras]
   )
-  const result = useMemo(() => computeEstimate(input), [input])
-  const visibleExtras = useMemo(() => getVisibleExtras(tier), [tier])
-  const whatsappUrl = useMemo(() => {
-    const message = buildEstimateWhatsAppMessage(input, result)
-    return `https://wa.me/${profile.whatsappNumber}?text=${encodeURIComponent(message)}`
-  }, [input, result])
+  const selectedExtraLabels = useMemo(() => {
+    const labels = visibleExtras
+      .filter((extra) => extra.includedFor?.includes(tier) || selectedExtras.includes(extra.id))
+      .map((extra) => extra.label)
+
+    return labels.length > 0 ? labels.join(', ') : copy.estimator.noExtras
+  }, [tier, visibleExtras, selectedExtras])
 
   function toggleExtra(id: string) {
     setSelectedExtras((current) =>
@@ -49,18 +72,76 @@ export function Estimator() {
   /** Al cambiar de tier, descarta los extras que dejan de aplicar. */
   function handleTierChange(nextTier: EstimateTierId) {
     setTier(nextTier)
+    setSections(nextTier === 'institucional' ? 5 : 0)
     setSelectedExtras((current) => current.filter((id) => isExtraAllowed(nextTier, id)))
   }
 
-  const rangeLabel = `USD ${result.minUsd.toLocaleString('es-AR')} – USD ${result.maxUsd.toLocaleString('es-AR')}`
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
 
-  // Anuncio accesible con debounce: sin esto el lector de pantalla lee un
-  // precio nuevo por cada paso del slider o cada checkbox.
-  const [announcedRange, setAnnouncedRange] = useState(rangeLabel)
-  useEffect(() => {
-    const timer = setTimeout(() => setAnnouncedRange(rangeLabel), 400)
-    return () => clearTimeout(timer)
-  }, [rangeLabel])
+    const form = event.currentTarget
+    const formData = new FormData(form)
+
+    // Honeypot: un humano no lo ve ni lo completa. Respondemos éxito falso
+    // para no darle señal al bot.
+    if (String(formData.get('botcheck') ?? '') !== '') {
+      setStatus('success')
+      return
+    }
+
+    const now = Date.now()
+    if (now - lastSubmitAt.current < MIN_SUBMIT_INTERVAL_MS) {
+      setStatus('error')
+      return
+    }
+
+    const data: QuoteFormData = {
+      name,
+      email,
+      tier: tier as QuoteTierId,
+      sections,
+      extras: selectedExtras,
+      notes,
+      consentAccepted,
+    }
+
+    const formValidation = validateQuoteForm(data)
+    if (!formValidation.ok) {
+      setStatus('error')
+      return
+    }
+
+    const url = contactFunctionUrl()
+    if (!url) {
+      setStatus('error')
+      return
+    }
+
+    lastSubmitAt.current = now
+    setStatus('sending')
+
+    try {
+      const payload = buildQuoteFormPayload(data, turnstileToken)
+      const payloadValidation = validateQuotePayload(payload)
+      if (!payloadValidation.ok) {
+        throw new Error(`invalid quote payload: ${payloadValidation.reason}`)
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        throw new Error(`quote request failed: ${response.status}`)
+      }
+
+      setStatus('success')
+    } catch {
+      setStatus('error')
+    }
+  }
 
   return (
     <Section id="estimador">
@@ -72,7 +153,20 @@ export function Estimator() {
         />
         <p className="mb-6 text-center text-sm font-medium text-accent">{copy.estimator.slots}</p>
 
-        <div className="space-y-8 rounded-xl border border-border bg-background/60 p-6 sm:p-8">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="space-y-6 rounded-xl border border-border bg-background/60 p-6 sm:p-8"
+        >
+          <input
+            type="text"
+            name="botcheck"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
+
           <fieldset>
             <legend className="mb-3 text-sm font-semibold uppercase tracking-wide text-text">
               {copy.estimator.tierLegend}
@@ -122,10 +216,6 @@ export function Estimator() {
             <div className="space-y-2">
               {visibleExtras.map((extra) => {
                 const isIncluded = extra.includedFor?.includes(tier) ?? false
-                const priceLabel =
-                  extra.kind === 'fixed'
-                    ? `+USD ${extra.amountUsd}`
-                    : `+${Math.round(extra.percent * 100)}%`
                 return (
                   <label key={extra.id} className="flex items-center gap-3 text-sm text-text-muted">
                     <input
@@ -136,7 +226,7 @@ export function Estimator() {
                       className="h-4 w-4 accent-accent"
                     />
                     <span>
-                      {extra.label} ({priceLabel})
+                      {extra.label}
                       {isIncluded && (
                         <span className="ml-1 text-accent">— {copy.estimator.includedNote}</span>
                       )}
@@ -148,52 +238,86 @@ export function Estimator() {
           </fieldset>
 
           <div
-            data-testid="estimate-result"
-            className="space-y-3 rounded-xl border border-accent/30 bg-surface p-5"
+            data-testid="quote-summary"
+            className="space-y-2 rounded-xl border border-accent/30 bg-surface p-5"
           >
-            <p className="sr-only" aria-live="polite" aria-atomic="true">
-              {announcedRange}
-            </p>
             <p className="text-sm font-semibold uppercase tracking-wide text-text-muted">
-              {copy.estimator.resultLabel}
+              {copy.estimator.summaryLabel}
             </p>
-            <p className="font-display text-3xl font-semibold tabular-nums text-text">
-              {rangeLabel}
-            </p>
-            <p className="text-sm tabular-nums text-text-muted">
-              {copy.estimator.arsApproxLabel}: {formatMoney(result.minArs, 'ARS')} –{' '}
-              {formatMoney(result.maxArs, 'ARS')}
+            <p className="text-sm text-text">
+              {copy.estimator.timelineLabel}:{' '}
+              <span aria-live="polite" aria-atomic="true">
+                {timeline}
+              </span>
             </p>
             <p className="text-sm text-text-muted">
-              {copy.estimator.timelineLabel}: {result.timeline}
+              {copy.estimator.extrasLegend}: {selectedExtraLabels}
             </p>
-            <div className="text-sm text-text-muted">
-              <p className="mb-1 font-semibold">{copy.estimator.breakdownLabel}:</p>
-              <ul className="space-y-1">
-                {result.breakdown.map((row) => (
-                  <li key={row.label} className="flex justify-between gap-4">
-                    <span>{row.label}</span>
-                    <span className="tabular-nums">
-                      USD {row.amountUsd.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              id="quote-name"
+              label={copy.estimator.form.name}
+              value={name}
+              onValueChange={setName}
+              name="name"
+              autoComplete="name"
+              maxLength={QUOTE_LIMITS.nameMax}
+              required
+            />
+            <FormField
+              id="quote-email"
+              label={copy.estimator.form.email}
+              value={email}
+              onValueChange={setEmail}
+              name="email"
+              type="email"
+              autoComplete="email"
+              maxLength={QUOTE_LIMITS.emailMax}
+              required
+            />
+          </div>
+
+          <TextAreaField
+            id="quote-notes"
+            label={copy.estimator.form.notes}
+            value={notes}
+            onValueChange={setNotes}
+            name="notes"
+            rows={4}
+            maxLength={QUOTE_LIMITS.notesMax}
+          />
+
+          <LegalConsent
+            id="quote-consent"
+            checked={consentAccepted}
+            onChange={setConsentAccepted}
+          />
+
+          <TurnstileWidget
+            siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''}
+            action={TURNSTILE_ACTION_QUOTE}
+            onChange={setTurnstileToken}
+          />
+
+          <Button type="submit" disabled={status === 'sending'} className="w-full sm:w-auto">
+            {status === 'sending' ? copy.estimator.form.sending : copy.estimator.form.submit}
+          </Button>
+
+          {status === 'success' && (
+            <p role="status" className="text-sm text-accent">
+              {copy.estimator.form.success}
+            </p>
+          )}
+          {status === 'error' && (
+            <p role="alert" className="text-sm text-red-400">
+              {copy.estimator.form.error}
+            </p>
+          )}
 
           <p className="text-sm text-text-muted">{copy.estimator.disclaimer}</p>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <Button href={whatsappUrl}>{copy.estimator.ctaWhatsApp}</Button>
-            <a
-              href="#contacto"
-              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover-fine:border-accent hover-fine:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              {copy.estimator.maintenanceChip}
-            </a>
-          </div>
-        </div>
+        </form>
       </Container>
     </Section>
   )

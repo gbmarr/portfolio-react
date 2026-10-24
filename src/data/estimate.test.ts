@@ -5,7 +5,6 @@ import {
   getSelectableExtras,
   getVisibleExtras,
   isExtraAllowed,
-  resolveArsRate,
   type EstimateTierId,
 } from './estimate'
 
@@ -61,36 +60,5 @@ describe('matriz de compatibilidad tier ↔ extra', () => {
         expect(extra.includedFor.length).toBeGreaterThan(0)
       }
     }
-  })
-})
-
-describe('resolveArsRate', () => {
-  const FALLBACK = 1400
-
-  it('usa el valor válido cuando es un número positivo', () => {
-    expect(resolveArsRate('1450')).toBe(1450)
-  })
-
-  it('ignora espacios en blanco alrededor del valor', () => {
-    expect(resolveArsRate(' 1450 ')).toBe(1450)
-  })
-
-  it('cae al fallback cuando el valor es vacío o indefinido', () => {
-    expect(resolveArsRate('')).toBe(FALLBACK)
-    expect(resolveArsRate(undefined)).toBe(FALLBACK)
-  })
-
-  it('cae al fallback cuando el valor no es numérico', () => {
-    expect(resolveArsRate('abc')).toBe(FALLBACK)
-    expect(resolveArsRate('1450usd')).toBe(FALLBACK)
-  })
-
-  it('cae al fallback cuando el valor es negativo o cero', () => {
-    expect(resolveArsRate('-1450')).toBe(FALLBACK)
-    expect(resolveArsRate('0')).toBe(FALLBACK)
-  })
-
-  it('cae al fallback cuando el valor es NaN', () => {
-    expect(resolveArsRate('NaN')).toBe(FALLBACK)
   })
 })

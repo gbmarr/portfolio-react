@@ -1,6 +1,6 @@
 import type { Service } from '../data/types'
 import { copy } from '../data/copy'
-import { WhatsAppButton } from './WhatsAppButton'
+import { Button } from './Button'
 
 interface ServiceCardProps {
   service: Service
@@ -65,18 +65,15 @@ export function ServiceCard({ service }: ServiceCardProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-5">
-        {service.priceFromUsd != null && (
-          <span className="text-sm font-semibold text-text">
-            {copy.services.priceLabel} USD {service.priceFromUsd.toLocaleString('es-AR')}
-          </span>
-        )}
         <span className="text-sm text-text-muted">
           {copy.services.timelineLabel}: {service.timeline}
         </span>
       </div>
 
       <div className="mt-auto">
-        <WhatsAppButton serviceId={service.id} label={copy.services.ctaLabel} className="w-full" />
+        <Button href="#estimador" className="w-full">
+          {copy.services.ctaLabel}
+        </Button>
       </div>
     </article>
   )
