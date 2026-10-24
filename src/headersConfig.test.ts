@@ -67,6 +67,14 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
     }
   })
 
+  it('sirve las fuentes desde el propio dominio: font-src self y sin Google Fonts', () => {
+    for (const csp of cspValues) {
+      expect(csp).toContain("font-src 'self';")
+      expect(csp).not.toContain('fonts.gstatic.com')
+      expect(csp).not.toContain('fonts.googleapis.com')
+    }
+  })
+
   it('declara HSTS explícitamente en vercel.json y netlify.toml (SEC-009)', () => {
     expect(vercelRaw).toContain('"Strict-Transport-Security"')
     expect(vercelRaw).toContain('"max-age=63072000"')
