@@ -87,6 +87,24 @@ export interface ContactMessage {
   created_at: string
 }
 
+export type QuoteRequestStatus = 'new' | 'contacted' | 'closed'
+
+/** Solicitud de presupuesto de la landing. Sin montos: el owner responde manualmente. */
+export interface QuoteRequest {
+  id: string
+  name: string
+  email: string
+  tier: EstimateTierId
+  sections: number
+  extras: string[]
+  notes: string | null
+  consent_at: string
+  consent_version: string
+  status: QuoteRequestStatus
+  created_at: string
+  contacted_at: string | null
+}
+
 export type ApprovalDecision = 'aprobado' | 'rechazado'
 
 export interface MilestoneApproval {

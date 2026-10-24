@@ -1,7 +1,17 @@
 import { describe, it, expect } from 'vitest'
 
 import { CONTACT_LIMITS, TURNSTILE_ACTION } from '../../../src/shared/contact-contract'
-import { isDisposableEmail, isTurnstileResponseValid, validateContactInput } from './validation'
+import {
+  QUOTE_CONSENT_VERSION,
+  TURNSTILE_ACTION_QUOTE,
+  type QuotePayload,
+} from '../../../src/shared/quote-contract'
+import {
+  isDisposableEmail,
+  isTurnstileResponseValid,
+  validateContactInput,
+  validateQuoteInput,
+} from './validation'
 
 describe('isDisposableEmail (SEC-007)', () => {
   it('detecta dominios desechables (case-insensitive y con espacios)', () => {
@@ -86,6 +96,104 @@ describe('validateContactInput (SEC-005)', () => {
       ok: false,
       reason: 'turnstile',
     })
+  })
+})
+
+describe('validateQuoteInput', () => {
+  const baseQuote: QuotePayload = {
+    kind: 'quote',
+    name: 'Ana Pérez',
+    email: 'Ana@Example.com',
+    tier: 'landing',
+    sections: 0,
+    extras: ['integraciones'],
+    notes: 'Necesito una landing para mi estudio.',
+    consentAccepted: true,
+    consentVersion: QUOTE_CONSENT_VERSION,
+    turnstileToken: 'mock-token',
+  }
+
+  it('acepta un payload válido y normaliza el email a minúsculas', () => {
+    const result = validateQuoteInput(baseQuote)
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.payload.email).toBe('ana@example.com')
+      expect(result.payload.name).toBe('Ana Pérez')
+      expect(result.payload.turnstileToken).toBe('mock-token')
+    }
+  })
+
+  it('rechaza emails inválidos, con control chars o desechables', () => {
+    expect(validateQuoteInput({ ...baseQuote, email: 'no-es-email' })).toEqual({
+      ok: false,
+      reason: 'email',
+    })
+    expect(validateQuoteInput({ ...baseQuote, email: 'ana@example.com\nbcc:x@y.com' })).toEqual({
+      ok: false,
+      reason: 'email',
+    })
+    expect(validateQuoteInput({ ...baseQuote, email: 'spam@mailinator.com' })).toEqual({
+      ok: false,
+      reason: 'email',
+    })
+  })
+
+  it('rechaza tier, secciones y extras inválidos', () => {
+    expect(validateQuoteInput({ ...baseQuote, tier: 'express' })).toEqual({
+      ok: false,
+      reason: 'tier',
+    })
+    expect(validateQuoteInput({ ...baseQuote, sections: 4 })).toEqual({
+      ok: false,
+      reason: 'sections',
+    })
+    expect(validateQuoteInput({ ...baseQuote, extras: ['blog'] })).toEqual({
+      ok: false,
+      reason: 'extras',
+    })
+    expect(
+      validateQuoteInput({ ...baseQuote, extras: 'seo' as unknown as string[] })
+    ).toEqual({ ok: false, reason: 'extras' })
+  })
+
+  it('exige consentimiento vigente y token de Turnstile', () => {
+    expect(validateQuoteInput({ ...baseQuote, consentAccepted: false })).toEqual({
+      ok: false,
+      reason: 'consent',
+    })
+    expect(validateQuoteInput({ ...baseQuote, consentVersion: '2020-01-01' })).toEqual({
+      ok: false,
+      reason: 'consent',
+    })
+    expect(validateQuoteInput({ ...baseQuote, turnstileToken: '' })).toEqual({
+      ok: false,
+      reason: 'turnstile',
+    })
+  })
+
+  it('normaliza el payload con la versión de consentimiento y el token recortado', () => {
+    const result = validateQuoteInput({
+      ...baseQuote,
+      name: '  Ana Pérez  ',
+      notes: '  Necesito una landing.  ',
+      turnstileToken: '  token  ',
+    })
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.payload).toEqual({
+        ...baseQuote,
+        name: 'Ana Pérez',
+        email: 'ana@example.com',
+        notes: 'Necesito una landing.',
+        consentVersion: QUOTE_CONSENT_VERSION,
+        turnstileToken: 'token',
+      })
+    }
+  })
+
+  it('la acción de Turnstile para presupuesto es distinta de la de contacto', () => {
+    expect(TURNSTILE_ACTION_QUOTE).toBe('quote')
+    expect(TURNSTILE_ACTION_QUOTE).not.toBe(TURNSTILE_ACTION)
   })
 })
 

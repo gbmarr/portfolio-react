@@ -11,6 +11,12 @@
 // Los límites, `hasControlChars`, el patrón de email y `TURNSTILE_ACTION` viven
 // en el contrato compartido con el cliente (un solo lugar para la política).
 import { CONTACT_LIMITS, hasControlChars } from '../../../src/shared/contact-contract.ts'
+import {
+  buildQuotePayload,
+  validateQuoteFields,
+  type QuotePayload,
+  type QuoteValidationReason,
+} from '../../../src/shared/quote-contract.ts'
 
 export interface ContactPayload {
   name: string
@@ -122,4 +128,56 @@ export function validateContactInput(raw: Partial<ContactPayload>): ContactValid
   }
   if (!turnstileToken) return { ok: false, reason: 'turnstile' }
   return { ok: true, payload: { name, email, message, turnstileToken } }
+}
+
+export type QuoteInputValidation =
+  | { ok: true; payload: QuotePayload }
+  | { ok: false; reason: QuoteValidationReason }
+
+/**
+ * Valida y normaliza una solicitud de presupuesto (kind = 'quote').
+ *
+ * A diferencia del contacto, acá el email es obligatorio y debe ser un email
+ * real: es el canal por el que el owner responde el presupuesto. Se normaliza
+ * a minúsculas porque la tabla exige `email = lower(email)`.
+ */
+export function validateQuoteInput(
+  raw: Partial<QuotePayload> | null | undefined
+): QuoteInputValidation {
+  const input = raw ?? {}
+  const name = typeof input.name === 'string' ? input.name.trim() : ''
+  const email = typeof input.email === 'string' ? input.email.trim().toLowerCase() : ''
+  const tier = typeof input.tier === 'string' ? input.tier : ''
+  const sections = typeof input.sections === 'number' ? input.sections : Number.NaN
+  // `null` fuerza el branch "no es array" de validateQuoteFields en vez de
+  // convertir silenciosamente un string malicioso en una lista vacía.
+  const extras = Array.isArray(input.extras) ? input.extras : (null as unknown as string[])
+  const notes = typeof input.notes === 'string' ? input.notes.trim() : ''
+  const consentAccepted = input.consentAccepted === true
+  const consentVersion = typeof input.consentVersion === 'string' ? input.consentVersion.trim() : ''
+  const turnstileToken =
+    typeof input.turnstileToken === 'string' ? input.turnstileToken.trim() : ''
+
+  const fields = validateQuoteFields({
+    name,
+    email,
+    tier,
+    sections,
+    extras,
+    notes,
+    consentAccepted,
+    consentVersion,
+  })
+  if (!fields.ok) return fields
+
+  if (isDisposableEmail(email)) return { ok: false, reason: 'email' }
+  if (!turnstileToken) return { ok: false, reason: 'turnstile' }
+
+  return {
+    ok: true,
+    payload: buildQuotePayload(
+      { name, email, tier, sections, extras, notes, consentAccepted, consentVersion },
+      turnstileToken
+    ),
+  }
 }

@@ -27,10 +27,15 @@ import { createClient } from 'npm:@supabase/supabase-js@2.117.3'
 import { logMailError, mailSendErrorBody } from './email-result.ts'
 // Contrato compartido con el cliente (límites, patrón de email, acción Turnstile).
 import { isSafeEmail, TURNSTILE_ACTION } from '../../../src/shared/contact-contract.ts'
+import {
+  TURNSTILE_ACTION_QUOTE,
+  type QuotePayload,
+} from '../../../src/shared/quote-contract.ts'
 // SEC-005: validación de contenido (pura, testeada con Vitest).
 import {
   isTurnstileResponseValid,
   validateContactInput,
+  validateQuoteInput,
   type ContactPayload,
   type TurnstileVerifyResponse,
 } from './validation.ts'
@@ -81,7 +86,11 @@ function json(body: unknown, status: number, headers: Record<string, string> = {
   })
 }
 
-async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
+async function verifyTurnstile(
+  token: string,
+  req: Request,
+  expectedAction: string
+): Promise<boolean> {
   // Fallback al nombre histórico TURNSTILE_SECRET_KEY para no romper dashboards
   // que ya cargaron el secret con ese nombre (2026-10-10).
   const secret = Deno.env.get('TURNSTILE_SECRET') ?? Deno.env.get('TURNSTILE_SECRET_KEY')
@@ -100,7 +109,7 @@ async function verifyTurnstile(token: string, req: Request): Promise<boolean> {
     const data = (await res.json()) as TurnstileVerifyResponse
     return isTurnstileResponseValid(data, {
       allowedHostnames: TURNSTILE_ALLOWED_HOSTNAMES,
-      expectedAction: TURNSTILE_ACTION,
+      expectedAction,
     })
   } catch {
     return false
@@ -149,30 +158,43 @@ async function sendResendMail(
   }
 }
 
-serve(async (req) => {
-  const origin = req.headers.get('origin')
-  const headers = cors(origin)
+type RequestBody = Record<string, unknown>
 
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers })
-  }
-  if (req.method !== 'POST') {
-    return json({ ok: false, error: 'method' }, 405, headers)
-  }
+const QUOTE_TIER_LABELS: Record<string, string> = {
+  landing: 'Sitio de una página',
+  institucional: 'Sitio institucional',
+  medida: 'Proyecto a medida',
+}
 
-  let raw: Partial<ContactPayload>
-  try {
-    raw = await req.json()
-  } catch {
-    return json({ ok: false, error: 'invalid-json' }, 400, headers)
-  }
+const QUOTE_EXTRA_LABELS: Record<string, string> = {
+  blog: 'Blog',
+  integraciones: 'Integraciones',
+  multidioma: 'Multidioma',
+  logo: 'Diseño de logo',
+  copy: 'Redacción de copy',
+  ecommerce: 'E-commerce',
+  seo: 'SEO',
+}
 
-  const check = validateContactInput(raw)
+function isRateLimitError(message: string): boolean {
+  return (
+    message.includes('Demasiados') ||
+    message.includes('Demasiadas') ||
+    message.toLowerCase().includes('too many')
+  )
+}
+
+async function handleContact(
+  raw: RequestBody,
+  req: Request,
+  headers: Record<string, string>
+): Promise<Response> {
+  const check = validateContactInput(raw as unknown as Partial<ContactPayload>)
   if (!check.ok) {
     return json({ ok: false, error: 'invalid-payload', reason: check.reason }, 400, headers)
   }
 
-  const turnstileOk = await verifyTurnstile(check.payload.turnstileToken, req)
+  const turnstileOk = await verifyTurnstile(check.payload.turnstileToken, req, TURNSTILE_ACTION)
   if (!turnstileOk) {
     return json({ ok: false, error: 'turnstile' }, 400, headers)
   }
@@ -199,9 +221,7 @@ serve(async (req) => {
     const { error } = ip ? await query.setHeader('x-client-ip', ip.slice(0, 64)) : await query
 
     if (error) {
-      // El trigger 0010 (throttle_contact_messages) lanza una excepción.
-      const msg = String(error.message ?? '')
-      if (msg.includes('Demasiados envíos') || msg.toLowerCase().includes('too many')) {
+      if (isRateLimitError(String(error.message ?? ''))) {
         return json({ ok: false, error: 'rate-limited' }, 429, headers)
       }
       return json({ ok: false, error: 'db-error' }, 500, headers)
@@ -221,14 +241,141 @@ serve(async (req) => {
       replyTo: isSafeEmail(email) ? email : undefined,
     })
     if (!sent.ok) {
-      // SEC-004: el detalle del proveedor queda solo en logs server-side.
       logMailError(sent.detail)
       return json(mailSendErrorBody(), 500, headers)
     }
 
     return json({ ok: true }, 200, headers)
   } catch (err) {
-    console.error('contact-notify error', err)
+    console.error('contact-notify contact error', err)
     return json({ ok: false, error: 'internal' }, 500, headers)
   }
+}
+
+async function handleQuote(
+  raw: RequestBody,
+  req: Request,
+  headers: Record<string, string>
+): Promise<Response> {
+  const check = validateQuoteInput(raw as unknown as Partial<QuotePayload>)
+  if (!check.ok) {
+    return json({ ok: false, error: 'invalid-payload', reason: check.reason }, 400, headers)
+  }
+
+  const turnstileOk = await verifyTurnstile(
+    check.payload.turnstileToken,
+    req,
+    TURNSTILE_ACTION_QUOTE
+  )
+  if (!turnstileOk) {
+    return json({ ok: false, error: 'turnstile' }, 400, headers)
+  }
+
+  try {
+    const { name, email, tier, sections, extras, notes, consentVersion } = check.payload
+    const consentAt = new Date().toISOString()
+    const mailFrom = Deno.env.get('MAIL_FROM') ?? 'hola@gabrielmarrero.com.ar'
+    const mailTo = Deno.env.get('MAIL_TO') ?? 'hola@gabrielmarrero.com.ar'
+
+    // 1) Guardar la solicitud PRIMERO. El trigger 0018 aplica rate limit
+    // fail-closed (IP/email/global) antes de gastar la API de email.
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    if (!supabaseUrl || !serviceKey) {
+      return json({ ok: false, error: 'db-misconfigured' }, 500, headers)
+    }
+    const supabase = createClient(supabaseUrl, serviceKey)
+    const ip = clientIp(req)
+    const query = supabase.from('quote_requests').insert({
+      name,
+      email,
+      tier,
+      sections,
+      extras,
+      notes: notes || null,
+      consent_at: consentAt,
+      consent_version: consentVersion,
+      status: 'new',
+    })
+    const { error } = ip ? await query.setHeader('x-client-ip', ip.slice(0, 64)) : await query
+
+    if (error) {
+      if (isRateLimitError(String(error.message ?? ''))) {
+        return json({ ok: false, error: 'rate-limited' }, 429, headers)
+      }
+      return json({ ok: false, error: 'db-error' }, 500, headers)
+    }
+
+    // 2) Avisar SOLO al owner. El solicitante recibe el presupuesto cuando el
+    // owner responde manualmente; no hay email automático al usuario.
+    const apiKey = Deno.env.get('MAIL_PROVIDER_API_KEY')
+    if (!apiKey) {
+      return json({ ok: false, error: 'mail-misconfigured' }, 500, headers)
+    }
+
+    const tierLabel = QUOTE_TIER_LABELS[tier] ?? tier
+    const extraLabels = extras.map((id) => QUOTE_EXTRA_LABELS[id] ?? id)
+    const text = [
+      `Nombre: ${name}`,
+      `Email: ${email}`,
+      `Tipo: ${tierLabel}`,
+      `Secciones: ${sections > 0 ? sections : 'No aplica'}`,
+      `Extras: ${extraLabels.length ? extraLabels.join(', ') : 'Ninguno'}`,
+      '',
+      'Notas:',
+      notes || 'Sin notas.',
+      '',
+      `Consentimiento: aceptado (versión ${consentVersion}) el ${consentAt}.`,
+      '',
+      'Respondé este email para enviarle el presupuesto al solicitante.',
+    ].join('\n')
+
+    const sent = await sendResendMail(apiKey, {
+      from: mailFrom,
+      to: mailTo,
+      subject: `Solicitud de presupuesto — ${tierLabel} — ${name}`,
+      text,
+      replyTo: isSafeEmail(email) ? email : undefined,
+    })
+    if (!sent.ok) {
+      logMailError(sent.detail)
+      return json(mailSendErrorBody(), 500, headers)
+    }
+
+    return json({ ok: true }, 200, headers)
+  } catch (err) {
+    console.error('contact-notify quote error', err)
+    return json({ ok: false, error: 'internal' }, 500, headers)
+  }
+}
+
+serve(async (req) => {
+  const origin = req.headers.get('origin')
+  const headers = cors(origin)
+
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers })
+  }
+  if (req.method !== 'POST') {
+    return json({ ok: false, error: 'method' }, 405, headers)
+  }
+
+  let parsed: unknown
+  try {
+    parsed = await req.json()
+  } catch {
+    return json({ ok: false, error: 'invalid-json' }, 400, headers)
+  }
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    return json({ ok: false, error: 'invalid-payload', reason: 'kind' }, 400, headers)
+  }
+
+  const raw = parsed as RequestBody
+  if (raw.kind !== undefined && raw.kind !== 'contact' && raw.kind !== 'quote') {
+    return json({ ok: false, error: 'invalid-payload', reason: 'kind' }, 400, headers)
+  }
+
+  return raw.kind === 'quote'
+    ? await handleQuote(raw, req, headers)
+    : await handleContact(raw, req, headers)
 })

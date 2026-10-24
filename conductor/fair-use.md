@@ -24,9 +24,10 @@ Por eso el producto fue ajustado (track `fairuse_20261008`): el panel admin/clie
 
 1. **Cero serverless functions para el negocio.** No crear carpeta `api/`, middleware transaccional ni más edge functions. Toda la lógica del sitio es client-side; las llamadas externas van directas desde el browser a Supabase (y hoy Web3Forms).
    - **Única excepción:** `supabase/functions/contact-notify` (track `own_email_notifications_20261009`) — una Edge Function en **Supabase (Deno, no Vercel)** que envía el formulario de contacto por email propio (`hola@gabrielmarrero.com.ar` vía la **Resend API** con Bearer key y dominio verificado) + validación Cloudflare Turnstile, reemplazando a Web3Forms. **No se puede duplicar ni ampliar sin actualizar este documento** y revisar los límites del plan.
+   - **Extensión aprobada (track `quote_request_20261024`):** la misma función acepta `kind: 'contact' | 'quote'`. El flujo `quote` valida una solicitud de presupuesto (tier, secciones, extras, notas, email y consentimiento), la guarda en `quote_requests` **sin columnas de dinero** y envía **solo al owner** un email con el detalle; no manda nada al solicitante. No crea una segunda función ni Vercel Functions. Rate limit: 1/min por IP, 3/hora por email, 60/hora global, fail-closed.
 2. **Cero cobros/transactions en este deploy.** Ningún checkout, pasarela de pago, suscripción ni procesamiento de pagos vía Vercel.
-3. **Cero gestión de montos en el panel.** `payments`, `amount`, `currency` fueron eliminados (migración `0002_drop_billing.sql`). No reintroducirlos: si vuelven los cobros gestionables, toca Pro u otro hosting.
-4. **El estimador es 100% client-side.** Si algún día se necesita server-side (IA, cotización dinámica real), evaluar antes Pro u otro runtime.
+3. **Cero gestión de montos en el panel.** `payments`, `amount`, `currency` fueron eliminados (migración `0002_drop_billing.sql`). No reintroducirlos: si vuelven los cobros gestionables, toca Pro u otro hosting. `quote_requests` guarda selecciones y consentimiento, nunca importes; el presupuesto se responde por fuera de la plataforma.
+4. **El estimador es 100% client-side.** El formulario de presupuesto no calcula precios: solo arma el brief y lo envía. Si algún día se necesita server-side (IA, cotización dinámica real), evaluar antes Pro u otro runtime.
 5. **Copy comercial sí, operación no.** CTAs, FAQ de pagos y precios "desde" son marketing permitido; lo prohibido es la operación transaccional en la plataforma.
 6. **Datos de clientes backups** nunca se versionan: `supabase/backups/` está en `.gitignore`.
 
@@ -42,5 +43,5 @@ Por eso el producto fue ajustado (track `fairuse_20261008`): el panel admin/clie
 - `api/`, `functions/`, `@vercel/node`, `edge` config en `vercel.json` (Vercel debe seguir con **0 functions**; la única función del proyecto está en `supabase/functions/contact-notify`)
 - Imports de `stripe`, `mercadopago`, `paypal`, `checkout`
 - Inputs/renders de montos en `src/pages/admin/` o `src/pages/client/`
-- Tablas o columnas de dinero nuevas en `supabase/migrations/`
+- Tablas o columnas de dinero nuevas en `supabase/migrations/` (la tabla `quote_requests` está permitida porque no tiene montos)
 - `fetch` a APIs propias — permitido **solo** hacia `https://<ref>.functions.supabase.co/contact-notify` (la función de contacto); cualquier otra API propia debe pasar por este documento
