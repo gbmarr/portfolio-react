@@ -119,6 +119,7 @@ export const copy = {
       sending: 'Enviando…',
       success: '¡Gracias! Te respondo a la brevedad.',
       error: 'Algo salió mal al enviar. Escribime por WhatsApp y lo resolvemos al toque.',
+      consentError: 'Tenés que aceptar la Política de Privacidad y los Términos para enviar.',
     },
     sendEmail: 'Enviar email',
   },
@@ -153,6 +154,8 @@ export const copy = {
     terms: 'Términos y Condiciones',
     consent:
       'Leí y acepto la Política de Privacidad y los Términos, y autorizo a Gabriel Marrero a contactarme para responder mi consulta.',
+    lastUpdated: 'Última actualización: 24 de octubre de 2026',
+    backHome: 'Volver al inicio',
   },
   footer: {
     tagline: 'Sitios para estudios profesionales y oficios. Hechos por Gabriel Marrero.',

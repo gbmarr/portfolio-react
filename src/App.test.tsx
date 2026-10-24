@@ -1,21 +1,34 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import App from './App'
 import { copy } from './data/copy'
 
 describe('App', () => {
   it('renders the hero with a clear value proposition', () => {
-    render(<App />)
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.hero.title)
   })
 
   it('renders the navigation bar', () => {
-    render(<App />)
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )
     expect(screen.getByRole('navigation')).toBeInTheDocument()
   })
 
   it('renders the home page sections without duplication', () => {
-    render(<App />)
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )
     expect(screen.getByRole('heading', { level: 2, name: copy.problem.title })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2, name: copy.benefits.title })).toHaveLength(1)
     expect(screen.getAllByRole('heading', { level: 2, name: copy.industries.title })).toHaveLength(
@@ -30,7 +43,11 @@ describe('App', () => {
   })
 
   it('renders the footer', () => {
-    render(<App />)
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    )
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
 })

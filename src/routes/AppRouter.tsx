@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import App from '../App'
+import { PrivacyPage } from '../pages/legal/PrivacyPage'
+import { TermsPage } from '../pages/legal/TermsPage'
 import { applyRobotsMeta } from '../utils/seo'
 
 /**
@@ -45,6 +47,7 @@ export function RouteFallback() {
  * - `/acceso-admin` es el acceso de gestión (path oculto, solo admins).
  * - `/admin/*` es el panel de administración (requiere rol admin).
  * - `/panel/*` es el panel del cliente (requiere sesión).
+ * - `/privacidad` y `/terminos` son páginas legales públicas.
  * - Cualquier ruta desconocida redirige al home (el sitio público es la
  *   superficie por defecto).
  */
@@ -54,6 +57,8 @@ export function AppRouter() {
       <RobotsMeta />
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/privacidad" element={<PrivacyPage />} />
+        <Route path="/terminos" element={<TermsPage />} />
         <Route
           path="*"
           element={

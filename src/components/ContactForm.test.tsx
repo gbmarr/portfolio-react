@@ -1,7 +1,10 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
+import type { ReactElement } from 'react'
 import { ContactForm, MIN_SUBMIT_INTERVAL_MS } from './ContactForm'
+import { copy } from '../data/copy'
 
 const h = vi.hoisted(() => ({
   fetchMock: vi.fn(),
@@ -17,10 +20,15 @@ vi.mock('./Turnstile', () => ({
   },
 }))
 
+function renderForm(ui: ReactElement) {
+  return render(<MemoryRouter>{ui}</MemoryRouter>)
+}
+
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
   await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
   await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+  await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
   await user.click(screen.getByRole('button', { name: 'Enviar' }))
 }
 
@@ -39,24 +47,50 @@ describe('ContactForm', () => {
   })
 
   it('renders the three short fields', () => {
-    render(<ContactForm />)
+    renderForm(<ContactForm />)
     expect(screen.getByLabelText('Tu nombre')).toBeInTheDocument()
     expect(screen.getByLabelText('Tu email o WhatsApp')).toBeInTheDocument()
     expect(screen.getByLabelText('Contame qué necesitás')).toBeInTheDocument()
   })
 
   it('includes an invisible honeypot field', () => {
-    const { container } = render(<ContactForm />)
+    const { container } = renderForm(<ContactForm />)
     const honeypot = container.querySelector('input[name="botcheck"]')
     expect(honeypot).toBeInTheDocument()
     expect(honeypot).toHaveAttribute('tabindex', '-1')
     expect(honeypot).toHaveAttribute('aria-hidden', 'true')
   })
 
+  it('links to the privacy policy and terms', () => {
+    renderForm(<ContactForm />)
+    expect(screen.getByRole('link', { name: copy.legal.privacy })).toHaveAttribute(
+      'href',
+      '/privacidad'
+    )
+    expect(screen.getByRole('link', { name: copy.legal.terms })).toHaveAttribute(
+      'href',
+      '/terminos'
+    )
+  })
+
+  it('no envía sin aceptar el consentimiento', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderForm(<ContactForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
+    await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
+    await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('button', { name: 'Enviar' }))
+
+    expect(onSubmit).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent(copy.contact.form.consentError)
+  })
+
   it('submits the filled data and shows the success message (custom resolver)', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     await fillForm(user)
 
@@ -71,7 +105,7 @@ describe('ContactForm', () => {
   it('envía el payload con el token de Turnstile a la función de contacto', async () => {
     const user = userEvent.setup()
     h.fetchMock.mockResolvedValue({ ok: true, status: 200 })
-    render(<ContactForm />)
+    renderForm(<ContactForm />)
 
     act(() => {
       h.turnstileOnChange?.('tok-123')
@@ -93,7 +127,7 @@ describe('ContactForm', () => {
   it('muestra error si la función rechaza (p. ej. rate limit 429)', async () => {
     const user = userEvent.setup()
     h.fetchMock.mockResolvedValue({ ok: false, status: 429 })
-    render(<ContactForm />)
+    renderForm(<ContactForm />)
 
     act(() => {
       h.turnstileOnChange?.('tok-123')
@@ -106,7 +140,7 @@ describe('ContactForm', () => {
 
   it('no envía si falta el token de Turnstile', async () => {
     const user = userEvent.setup()
-    render(<ContactForm />)
+    renderForm(<ContactForm />)
 
     await fillForm(user)
 
@@ -117,11 +151,12 @@ describe('ContactForm', () => {
   it('trims whitespace before submitting', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     await user.type(screen.getByLabelText('Tu nombre'), '  Ana Pérez  ')
     await user.type(screen.getByLabelText('Tu email o WhatsApp'), '  ana@example.com ')
     await user.type(screen.getByLabelText('Contame qué necesitás'), '  Necesito una landing  ')
+    await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
     expect(onSubmit).toHaveBeenCalledWith({
@@ -134,11 +169,12 @@ describe('ContactForm', () => {
   it('rejects a message that is too short', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
     await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contame qué necesitás'), 'Hola')
+    await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
     expect(onSubmit).not.toHaveBeenCalled()
@@ -148,11 +184,12 @@ describe('ContactForm', () => {
   it('shows an error message when the submit fails', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockRejectedValue(new Error('fail'))
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
     await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Algo salió mal')
@@ -161,13 +198,14 @@ describe('ContactForm', () => {
   it('rechaza un email con caracteres de control', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     fireEvent.change(screen.getByLabelText('Tu email o WhatsApp'), {
       target: { value: 'ana@example.com\u0007bcc:attacker@example.com' },
     })
     await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
     await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
     expect(onSubmit).not.toHaveBeenCalled()
@@ -177,13 +215,14 @@ describe('ContactForm', () => {
   it('rechaza un nombre con caracteres de control (CRLF)', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<ContactForm onSubmit={onSubmit} />)
+    renderForm(<ContactForm onSubmit={onSubmit} />)
 
     fireEvent.change(screen.getByLabelText('Tu nombre'), {
       target: { value: 'Ana\u0007Bcc: attacker@example.com' },
     })
     await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+    await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
     await user.click(screen.getByRole('button', { name: 'Enviar' }))
 
     expect(onSubmit).not.toHaveBeenCalled()
@@ -197,12 +236,13 @@ describe('ContactForm', () => {
     try {
       const user = userEvent.setup({ delay: null })
       const onSubmit = vi.fn()
-      render(<ContactForm onSubmit={onSubmit} />)
+      renderForm(<ContactForm onSubmit={onSubmit} />)
 
       const fill = async () => {
         await user.type(screen.getByLabelText('Tu nombre'), 'Ana Pérez')
         await user.type(screen.getByLabelText('Tu email o WhatsApp'), 'ana@example.com')
         await user.type(screen.getByLabelText('Contame qué necesitás'), 'Necesito una landing page')
+        await user.click(screen.getByRole('checkbox', { name: /Leí y acepto/ }))
       }
 
       await fill()

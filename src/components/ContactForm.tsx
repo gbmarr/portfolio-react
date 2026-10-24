@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { copy } from '../data/copy'
 import { CONTACT_LIMITS } from '../shared/contact-contract'
 import { Button } from './Button'
+import { LegalConsent } from './LegalConsent'
 import {
   buildContactPayload,
   contactFunctionUrl,
@@ -31,9 +32,16 @@ export const MIN_SUBMIT_INTERVAL_MS = 3000
 /** Formulario corto: nombre, email o WhatsApp, y mensaje. Nada más. */
 export function ContactForm({ onSubmit }: ContactFormProps) {
   const [status, setStatus] = useState<Status>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>(copy.contact.form.error)
+  const [consentAccepted, setConsentAccepted] = useState(false)
   const lastSubmitAt = useRef(0)
   const [turnstileToken, setTurnstileToken] = useState('')
   const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
+
+  function fail(message: string = copy.contact.form.error) {
+    setErrorMessage(message)
+    setStatus('error')
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -48,13 +56,18 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
     // Envíos demasiado seguidos (o en menos de 3 s desde el anterior) son bots.
     const now = Date.now()
     if (now - lastSubmitAt.current < MIN_SUBMIT_INTERVAL_MS) {
-      setStatus('error')
+      fail()
       return
     }
 
     // Límites y saneamiento: la política vive en el módulo de contacto.
     if (!validateContactFields(data).ok) {
-      setStatus('error')
+      fail()
+      return
+    }
+
+    if (!consentAccepted) {
+      fail(copy.contact.form.consentError)
       return
     }
 
@@ -68,6 +81,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
         // sin llegar a la función (ni gastar el rate-limit).
         if (String(formData.get('botcheck') ?? '') !== '') {
           setStatus('success')
+          setConsentAccepted(false)
           form.reset()
           return
         }
@@ -91,14 +105,15 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
         }
       }
       setStatus('success')
+      setConsentAccepted(false)
       form.reset()
     } catch {
-      setStatus('error')
+      fail()
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
       {/* Honeypot anti-spam: un bot que lo completa recibe éxito falso. */}
       <input
         type="text"
@@ -154,6 +169,12 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
         />
       </div>
 
+      <LegalConsent
+        id="contact-consent"
+        checked={consentAccepted}
+        onChange={setConsentAccepted}
+      />
+
       {siteKey ? <TurnstileWidget siteKey={siteKey} onChange={setTurnstileToken} /> : null}
 
       <Button type="submit" className="w-full" disabled={status === 'sending'}>
@@ -173,7 +194,7 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
           role="alert"
           className="rounded-lg border border-red-400/40 bg-red-400/10 px-4 py-3 text-sm text-red-300 transition-[opacity,transform] duration-200 ease-out starting:translate-y-1 starting:opacity-0"
         >
-          {copy.contact.form.error}
+          {errorMessage}
         </p>
       )}
     </form>

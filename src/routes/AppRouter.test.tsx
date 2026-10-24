@@ -22,6 +22,7 @@ vi.mock('../lib/projects', () => ({
 }))
 vi.mock('../lib/messages', () => ({ listMessages: vi.fn(async () => []) }))
 vi.mock('../lib/briefs', () => ({ listBriefs: vi.fn(async () => []) }))
+vi.mock('../lib/quoteRequests', () => ({ listQuoteRequests: vi.fn(async () => []) }))
 
 afterEach(() => {
   document.head.querySelector('meta[name="robots"]')?.remove()
@@ -54,6 +55,20 @@ describe('AppRouter', () => {
     render(<AppRouter />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(copy.hero.title)
     expect(screen.getByRole('navigation')).toBeInTheDocument()
+  })
+
+  it('renders the privacy policy at /privacidad', () => {
+    window.history.pushState({}, '', '/privacidad')
+    render(<AppRouter />)
+    expect(screen.getByRole('heading', { level: 1, name: copy.legal.privacy })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation')).toBeNull()
+  })
+
+  it('renders the terms at /terminos', () => {
+    window.history.pushState({}, '', '/terminos')
+    render(<AppRouter />)
+    expect(screen.getByRole('heading', { level: 1, name: copy.legal.terms })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation')).toBeNull()
   })
 
   it('redirects unknown routes to the home page', async () => {

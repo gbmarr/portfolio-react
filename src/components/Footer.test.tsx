@@ -26,4 +26,16 @@ describe('Footer', () => {
     const link = screen.getByRole('link', { name: copy.footer.clientAccess })
     expect(link).toHaveAttribute('href', '/login')
   })
+
+  it('renders links to the privacy policy and terms', () => {
+    render(<Footer />)
+    expect(screen.getByRole('link', { name: copy.legal.privacy })).toHaveAttribute(
+      'href',
+      '/privacidad'
+    )
+    expect(screen.getByRole('link', { name: copy.legal.terms })).toHaveAttribute(
+      'href',
+      '/terminos'
+    )
+  })
 })
