@@ -42,6 +42,10 @@ describe('AdminLayout', () => {
       'href',
       '/admin/mensajes'
     )
+    expect(screen.getByRole('link', { name: 'Presupuestos' })).toHaveAttribute(
+      'href',
+      '/admin/presupuestos'
+    )
     expect(screen.getByRole('link', { name: 'Ver sitio' })).toHaveAttribute('href', '/')
     expect(screen.getByText('Contenido admin')).toBeInTheDocument()
   })

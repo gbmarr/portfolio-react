@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { computeKpis, type DashboardKpis } from '../../lib/dashboard'
 import { listProjects } from '../../lib/projects'
 import { listMessages } from '../../lib/messages'
+import { listQuoteRequests } from '../../lib/quoteRequests'
 import { listBriefs } from '../../lib/briefs'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { Loading } from '../../components/ui/Loading'
@@ -9,7 +10,7 @@ import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { panelCopy } from '../../data/panel'
 
 type BriefStats = { completed: number; pending: number }
-type DashboardData = { kpis: DashboardKpis; briefs: BriefStats }
+type DashboardData = { kpis: DashboardKpis; briefs: BriefStats; newQuotes: number }
 
 function StatCard({
   label,
@@ -38,15 +39,17 @@ function StatCard({
 /** Resumen operativo: actividad, vencimientos y mensajes. */
 export function AdminDashboard() {
   const { data, error, loading } = useAsyncData(async () => {
-    const [projects, messages, briefs] = await Promise.all([
+    const [projects, messages, briefs, quotes] = await Promise.all([
       listProjects(),
       listMessages(),
       listBriefs(),
+      listQuoteRequests(),
     ])
     const completed = briefs.filter((brief) => brief.status === 'completado').length
     return {
       kpis: computeKpis(projects, messages),
       briefs: { completed, pending: briefs.length - completed },
+      newQuotes: quotes.filter((quote) => quote.status === 'new').length,
     } satisfies DashboardData
   }, [])
 
@@ -58,7 +61,7 @@ export function AdminDashboard() {
     return <ErrorAlert>{error ?? panelCopy.error.generic}</ErrorAlert>
   }
 
-  const { kpis, briefs } = data
+  const { kpis, briefs, newQuotes } = data
 
   return (
     <div className="space-y-8">
@@ -82,6 +85,15 @@ export function AdminDashboard() {
             {kpis.unreadMessages}
           </p>
           <p className="mt-1 text-xs text-text-muted">sin leer</p>
+        </Link>
+        <Link
+          to="/admin/presupuestos"
+          data-testid="stat-Presupuestos"
+          className="rounded-xl border border-border bg-background/60 p-5 transition-colors hover:border-accent"
+        >
+          <p className="text-sm text-text-muted">{panelCopy.nav.quotes}</p>
+          <p className="mt-1 font-display text-3xl font-semibold text-text">{newQuotes}</p>
+          <p className="mt-1 text-xs text-text-muted">nuevas</p>
         </Link>
         <StatCard label="Briefs completados" value={briefs.completed} />
         <StatCard label="Briefs pendientes" value={briefs.pending} />

@@ -2,20 +2,23 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { AdminDashboard } from './AdminDashboard'
-import type { ContactMessage, Project, ProjectBrief } from '../../lib/types'
+import type { ContactMessage, Project, ProjectBrief, QuoteRequest } from '../../lib/types'
 
 const h = vi.hoisted(() => ({
   listProjects: vi.fn(),
   listMessages: vi.fn(),
   listBriefs: vi.fn(),
+  listQuoteRequests: vi.fn(),
 }))
 
 vi.mock('../../lib/projects', () => ({ listProjects: h.listProjects }))
 vi.mock('../../lib/messages', () => ({ listMessages: h.listMessages }))
 vi.mock('../../lib/briefs', () => ({ listBriefs: h.listBriefs }))
+vi.mock('../../lib/quoteRequests', () => ({ listQuoteRequests: h.listQuoteRequests }))
 
 beforeEach(() => {
   h.listBriefs.mockResolvedValue([])
+  h.listQuoteRequests.mockResolvedValue([])
 })
 
 const DAY_MS = 86_400_000
@@ -42,6 +45,22 @@ const message = (over: Partial<ContactMessage> = {}): ContactMessage => ({
   subject: 'Consulta',
   read_at: null,
   created_at: '2026-09-01T00:00:00Z',
+  ...over,
+})
+
+const quote = (over: Partial<QuoteRequest> = {}): QuoteRequest => ({
+  id: 'q1',
+  name: 'Ana',
+  email: 'ana@example.com',
+  tier: 'landing',
+  sections: 0,
+  extras: [],
+  notes: null,
+  consent_at: '2026-10-24T00:00:00Z',
+  consent_version: '2026-10-24',
+  status: 'new',
+  created_at: '2026-10-24T00:00:00Z',
+  contacted_at: null,
   ...over,
 })
 
@@ -106,6 +125,25 @@ describe('AdminDashboard', () => {
     expect(stat('Entregas vencidas').getByText('0')).toBeInTheDocument()
     expect(screen.getByText('sin leer')).toBeInTheDocument()
     expect(stat('Mensajes').getByText('1')).toBeInTheDocument()
+  })
+
+  it('resume solicitudes de presupuesto nuevas', async () => {
+    h.listProjects.mockResolvedValue([])
+    h.listMessages.mockResolvedValue([])
+    h.listQuoteRequests.mockResolvedValue([
+      quote(),
+      quote({ id: 'q2' }),
+      quote({ id: 'q3', status: 'contacted', contacted_at: '2026-10-24T01:00:00Z' }),
+    ])
+
+    renderDashboard()
+
+    await screen.findByText('Proyectos en curso')
+    expect(within(screen.getByTestId('stat-Presupuestos')).getByText('2')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Presupuestos/ })).toHaveAttribute(
+      'href',
+      '/admin/presupuestos'
+    )
   })
 
   it('resume briefs completados y pendientes', async () => {

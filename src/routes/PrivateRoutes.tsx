@@ -29,6 +29,9 @@ const ClientsPage = lazy(() =>
 const MessagesPage = lazy(() =>
   import('../pages/admin/MessagesPage').then((m) => ({ default: m.MessagesPage }))
 )
+const QuoteRequestsPage = lazy(() =>
+  import('../pages/admin/QuoteRequestsPage').then((m) => ({ default: m.QuoteRequestsPage }))
+)
 const ClientProjectsPage = lazy(() =>
   import('../pages/client/ClientProjectsPage').then((m) => ({ default: m.ClientProjectsPage }))
 )
@@ -131,6 +134,14 @@ export default function PrivateRoutes() {
               element={
                 <Suspended>
                   <MessagesPage />
+                </Suspended>
+              }
+            />
+            <Route
+              path="presupuestos"
+              element={
+                <Suspended>
+                  <QuoteRequestsPage />
                 </Suspended>
               }
             />
