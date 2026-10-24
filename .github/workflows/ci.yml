@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   check:
-    name: install / lint / typecheck / test / build / audit / sbom
+    name: install / format / lint / typecheck / test / build / audit / sbom
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -35,6 +35,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Format (Prettier)
+        run: npm run format:check
 
       - name: Typecheck
         run: npm run typecheck
