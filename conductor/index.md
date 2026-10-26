@@ -8,6 +8,10 @@
 - [Services Catalog](./servicios.md)
 - [Vercel Hobby Fair-use & Guardrails](./fair-use.md)
 
+## Operations
+
+- [Atención al cliente](./atencion-cliente.md)
+
 ## Workflow
 
 - [Workflow](./workflow.md)
