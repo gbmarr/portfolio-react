@@ -10,11 +10,11 @@ export const profile: Profile = {
   location: 'Argentina',
   // SEO local: se puede afinar a ciudad/zona (ej. 'Tandil') cuando el usuario lo defina.
   city: 'Argentina',
-  email: 'gab.bmar.05@email.com',
+  email: 'hola@gabrielmarrero.com.ar',
   phone: '+54 9 2262 339680',
   whatsappNumber: '5492262339680',
   whatsappMessage:
-    'Hola Gabriel, vi tu web y quiero un presupuesto. Mi rubro es ______ y estoy en ______.',
+    'Hola Gabriel, vi tu web y quiero un presupuesto para mi negocio. ¿Me contás cómo seguimos?',
   socialLinks: {
     github: 'https://github.com/gbmarr',
     linkedin: 'https://www.linkedin.com/in/gabrielmarrerok/',

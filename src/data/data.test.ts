@@ -17,10 +17,24 @@ describe('profile data', () => {
     expect(profile.bio).toBeTruthy()
     expect(profile.location).toBeTruthy()
     expect(profile.city).toBeTruthy()
-    expect(profile.email).toMatch(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)
+    expect(profile.email).toBe('hola@gabrielmarrero.com.ar')
+    expect(profile.email).not.toContain('gab.bmar.05')
     expect(profile.whatsappNumber).toMatch(/^\d+$/)
     expect(profile.whatsappMessage).toBeTruthy()
     expect(profile.phone).toBeTruthy()
+  })
+
+  it('no usa placeholders vacíos en los mensajes de WhatsApp', () => {
+    const messages = [
+      profile.whatsappMessage,
+      ...services.map((service) => service.whatsappMessage),
+    ]
+
+    for (const message of messages) {
+      expect(message).not.toMatch(/_{2,}/)
+      expect(message).not.toMatch(/\[[^\]]*\]/)
+      expect(message.trim()).toBe(message)
+    }
   })
 
   it('has valid social links', () => {
@@ -49,6 +63,10 @@ describe('services data', () => {
   it('builds a wa.me link with a predefined message', () => {
     expect(buildWhatsAppUrl()).toMatch(whatsappUrlPattern)
     expect(buildWhatsAppUrl('landing')).toMatch(whatsappUrlPattern)
+    expect(buildWhatsAppUrl()).toContain(encodeURIComponent(profile.whatsappMessage))
+    expect(buildWhatsAppUrl('landing')).toContain(
+      encodeURIComponent(services.find((service) => service.id === 'landing')!.whatsappMessage)
+    )
   })
 })
 

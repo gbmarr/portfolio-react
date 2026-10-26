@@ -28,7 +28,7 @@ export const services: Service[] = [
     ],
     timeline: '1 a 2 semanas',
     whatsappMessage:
-      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio de una página.',
+      'Hola Gabriel, vi tu web y quiero un presupuesto para un sitio de una página. ¿Me contás cómo seguimos?',
   },
   {
     id: 'institucional',
@@ -50,7 +50,7 @@ export const services: Service[] = [
     ],
     timeline: '2 a 4 semanas',
     whatsappMessage:
-      'Hola Gabriel, vi tu web y me gustaría pedir un presupuesto para un sitio profesional completo.',
+      'Hola Gabriel, vi tu web y quiero un presupuesto para un sitio profesional completo. ¿Me contás cómo seguimos?',
   },
 ]
 
