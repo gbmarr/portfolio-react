@@ -142,9 +142,23 @@ export function validateQuoteFields(fields: QuoteFields): QuoteValidation {
     !email ||
     email.length > QUOTE_LIMITS.emailMax ||
     hasControlChars(email) ||
-    !EMAIL_PATTERN.test(email)
+    !EMAIL_PATTERN.test(email) ||
+    email.includes('..')
   ) {
     return { ok: false, reason: 'email' }
+  }
+  const emailParts = email.split('@')
+  if (emailParts.length !== 2) return { ok: false, reason: 'email' }
+  const [quoteLocal, quoteDomain] = emailParts
+  if (quoteLocal.length === 0 || quoteLocal.startsWith('.') || quoteLocal.endsWith('.'))
+    return { ok: false, reason: 'email' }
+  const quoteDomainParts = quoteDomain.split('.')
+  if (quoteDomainParts.length < 2) return { ok: false, reason: 'email' }
+  const quoteTld = quoteDomainParts[quoteDomainParts.length - 1]
+  if (!/^[A-Za-z]{2,63}$/.test(quoteTld) || /^\d+$/.test(quoteTld)) return { ok: false, reason: 'email' }
+  for (const part of quoteDomainParts) {
+    if (part.length === 0 || part.startsWith('-') || part.endsWith('-')) return { ok: false, reason: 'email' }
+    if (!/^[A-Za-z0-9-]+$/.test(part)) return { ok: false, reason: 'email' }
   }
   if (!isQuoteTierId(fields.tier)) return { ok: false, reason: 'tier' }
 

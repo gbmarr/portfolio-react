@@ -34,11 +34,34 @@ export function hasControlChars(value: string): boolean {
  * caracteres de control ni delimitadores de header (`?`, `&`, `%`, `,`, `:`).
  * Sin flag `g`, por lo que compartir una única instancia es seguro.
  */
-export const EMAIL_PATTERN = /^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+export const EMAIL_PATTERN = /^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/
 
 /** true si el valor (recortado) es un email apto para `mailto:`/`reply_to`. */
+export function isValidEmailStrict(value: string): boolean {
+  const email = value.trim()
+  if (email.length === 0 || email.length > CONTACT_LIMITS.emailMax) return false
+  if (hasControlChars(email)) return false
+  if (!EMAIL_PATTERN.test(email)) return false
+  if (email.includes('..')) return false
+  const parts = email.split('@')
+  if (parts.length !== 2) return false
+  const [localPart, domain] = parts
+  if (localPart.length === 0 || localPart.startsWith('.') || localPart.endsWith('.')) return false
+  const domainParts = domain.split('.')
+  if (domainParts.length < 2) return false
+  const tld = domainParts[domainParts.length - 1]
+  if (!/^[A-Za-z]{2,63}$/.test(tld)) return false
+  if (/^\d+$/.test(tld)) return false
+  for (const part of domainParts) {
+    if (part.length === 0) return false
+    if (part.startsWith('-') || part.endsWith('-')) return false
+    if (!/^[A-Za-z0-9-]+$/.test(part)) return false
+  }
+  return true
+}
+
 export function isSafeEmail(value: string): boolean {
-  return EMAIL_PATTERN.test(value.trim())
+  return isValidEmailStrict(value)
 }
 
 /** SEC-006: acción esperada en el token de Turnstile (widget y `siteverify`). */
