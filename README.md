@@ -90,6 +90,18 @@ Prerrequisitos: Node.js y `npm`, cuenta de [Supabase](https://supabase.com), [Cl
 - **Vercel** (primario): `vercel.json` ya define el rewrite SPA para todas las rutas y los headers de seguridad (CSP + HSTS + noindex de superficies privadas). Variables de entorno del host: mismas de `.env.local` (públicas por diseño, prefijo `PUBLIC_*`: `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `PUBLIC_TURNSTILE_SITE_KEY`, `PUBLIC_ARS_RATE`). Las secrets de producción (`TURNSTILE_SECRET`, `MAIL_PROVIDER_API_KEY`) viven solo en Supabase.
 - **Netlify**: `netlify.toml` es alternativo equivalente (rewrite + headers).
 
+### Producción vs. preview (Vercel)
+
+La rama de producción se configura **por proyecto** en **Vercel → Project → Settings → Environments → Production → Branch Tracking** (en el dashboard actual ya no está en "Settings → Git").
+
+- **Producción (`production`):** solo los pushes/merges a esta rama actualizan `gabrielmarrero.com.ar`.
+- **Preview (cualquier otra rama, incluida `main`):** genera un *Preview Deployment* con URL propia (`portfolio-git-<rama>-<team>.vercel.app`), ideal para mostrar avances al cliente sin tocar producción.
+- **Publicar:** merge `main` → `production`, o **Promote to Production** sobre un preview aprobado.
+- **Preview manual:** `vercel deploy` (sin `--prod`) desde el working tree.
+- Definí las variables `PUBLIC_*` también en el entorno **Preview** de Vercel; si no, los previews corren sin Supabase/Turnstile.
+
+> Mismo patrón en Netlify: `Site settings → Build & deploy → Branches → Production branch`.
+
 ## Documentación de referencia
 
 - [`conductor/product.md`](conductor/product.md) — visión y estado del producto.
