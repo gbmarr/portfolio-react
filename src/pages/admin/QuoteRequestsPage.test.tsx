@@ -90,7 +90,8 @@ describe('QuoteRequestsPage', () => {
     expect(screen.getByText('Blog / CMS editable, Diseño de logo / identidad')).toBeInTheDocument()
     expect(screen.getByText('Quiero sumar un blog y el logo.')).toBeInTheDocument()
     expect(screen.getByText(/v2026-10-24/)).toBeInTheDocument()
-    expect(screen.queryByText(/USD|ARS|\$/)).not.toBeInTheDocument()
+    expect(screen.getByText(/Estimado \(referencia\)/)).toBeInTheDocument()
+    expect(screen.getAllByText(/USD/).length).toBeGreaterThan(0)
 
     const reply = screen.getByRole('link', { name: 'Contactar por email' })
     expect(reply).toHaveAttribute('href', expect.stringContaining('mailto:ana@example.com'))

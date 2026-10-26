@@ -3,9 +3,12 @@ export type EstimateTierId = 'landing' | 'institucional' | 'medida'
 export interface EstimateTier {
   id: EstimateTierId
   name: string
+  baseUsd: number
   /** Semanas mínimas y máximas del plazo base. */
   timeline: { minWeeks: number; maxWeeks: number }
 }
+
+type ExtraKind = 'fixed' | 'percent'
 
 /** Campos comunes a todo extra del estimador. */
 export interface EstimateExtra {
@@ -15,64 +18,73 @@ export interface EstimateExtra {
   tiers: EstimateTierId[]
   /** Tiers donde el extra viene incluido (no seleccionable; se muestra deshabilitado). */
   includedFor?: EstimateTierId[]
+  kind: ExtraKind
+  amountUsd?: number
+  percent?: number
 }
 
 const allTiers: EstimateTierId[] = ['landing', 'institucional', 'medida']
 
-/** Tiers del estimador (el tier "medida" solo existe acá, no como card pública). */
+/** Tiers del estimador (uso interno para referencia en panel admin). */
 export const estimateTiers: EstimateTier[] = [
   {
     id: 'landing',
     name: 'Sitio de una página',
+    baseUsd: 350,
     timeline: { minWeeks: 1, maxWeeks: 2 },
   },
   {
     id: 'institucional',
     name: 'Sitio completo',
+    baseUsd: 600,
     timeline: { minWeeks: 2, maxWeeks: 4 },
   },
   {
     id: 'medida',
     name: 'E-commerce o a medida',
+    baseUsd: 1200,
     timeline: { minWeeks: 4, maxWeeks: 8 },
   },
 ]
 
 /**
- * Extras del estimador (checkboxes).
- *
- * `tiers` define dónde el extra es seleccionable; `includedFor` dónde viene
- * incluido en el plan (no seleccionable). Esto evita combinaciones incoherentes
- * (p. ej. una tienda online dentro de una landing de una sola página).
- *
- * Este catálogo NO contiene precios: el presupuesto se arma y se envía por
- * email después de revisar la solicitud.
+ * Extras del estimador (uso interno para referencia en panel admin).
  */
 export const estimateExtras: EstimateExtra[] = [
   {
     id: 'blog',
     label: 'Blog / CMS editable',
     tiers: ['institucional', 'medida'],
+    kind: 'fixed',
+    amountUsd: 150,
   },
   {
     id: 'integraciones',
     label: 'Formularios e integraciones (APIs, Mercado Pago, CRM)',
     tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 120,
   },
   {
     id: 'multidioma',
     label: 'Sitio en 2 idiomas',
     tiers: allTiers,
+    kind: 'percent',
+    percent: 40,
   },
   {
     id: 'logo',
     label: 'Diseño de logo / identidad',
     tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 200,
   },
   {
     id: 'copy',
     label: 'Redacción de textos',
     tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 150,
   },
   {
     // La tienda solo tiene sentido en el tier de e-commerce/proyecto a medida.
@@ -80,11 +92,15 @@ export const estimateExtras: EstimateExtra[] = [
     label: 'Módulo de tienda online',
     tiers: [],
     includedFor: ['medida'],
+    kind: 'fixed',
+    amountUsd: 600,
   },
   {
     id: 'seo',
     label: 'SEO técnico avanzado + analytics',
     tiers: allTiers,
+    kind: 'fixed',
+    amountUsd: 100,
   },
 ]
 

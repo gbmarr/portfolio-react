@@ -1,10 +1,30 @@
-import { estimateTiers, isExtraAllowed, type EstimateTierId } from '../data/estimate'
+import {
+  estimateExtras,
+  estimateTiers,
+  isExtraAllowed,
+  type EstimateTierId,
+} from '../data/estimate'
 import { QUOTE_SECTIONS } from '../shared/quote-contract'
 
 export interface EstimateInput {
   tier: EstimateTierId
   sections: number
   extras: string[]
+}
+
+export interface EstimateBreakdownItem {
+  id: string
+  label: string
+  amountUsd: number
+}
+
+export interface EstimateResult {
+  baseUsd: number
+  extrasUsd: number
+  totalUsd: number
+  minUsd: number
+  maxUsd: number
+  breakdown: EstimateBreakdownItem[]
 }
 
 export const MIN_SECTIONS = QUOTE_SECTIONS.min
@@ -47,4 +67,50 @@ export function buildEstimateTimeline(input: EstimateInput): string {
   }
 
   return `${minWeeks} a ${maxWeeks} semanas`
+}
+
+/**
+ * Cálculo de referencia (solo lectura, uso interno en panel admin).
+ * No expone precios al público.
+ */
+export function computeEstimate(input: EstimateInput): EstimateResult {
+  const tier = findTier(input.tier)
+  const baseUsd = tier.baseUsd
+
+  const validExtras = input.extras.filter((extraId) => isExtraAllowed(input.tier, extraId))
+  let extrasUsd = 0
+  const breakdown: EstimateBreakdownItem[] = []
+
+  for (const extraId of validExtras) {
+    const extra = estimateExtras.find((item) => item.id === extraId)
+    if (!extra) continue
+
+    let amountUsd = 0
+    if (extra.kind === 'fixed' && typeof extra.amountUsd === 'number') {
+      amountUsd = extra.amountUsd
+    } else if (extra.kind === 'percent' && typeof extra.percent === 'number') {
+      amountUsd = Math.round(baseUsd * (extra.percent / 100))
+    }
+
+    if (amountUsd <= 0) continue
+    extrasUsd += amountUsd
+    breakdown.push({
+      id: extra.id,
+      label: extra.label,
+      amountUsd,
+    })
+  }
+
+  const totalUsd = baseUsd + extrasUsd
+  const minUsd = Math.round(totalUsd * 0.9)
+  const maxUsd = Math.round(totalUsd * 1.1)
+
+  return {
+    baseUsd,
+    extrasUsd,
+    totalUsd,
+    minUsd,
+    maxUsd,
+    breakdown,
+  }
 }

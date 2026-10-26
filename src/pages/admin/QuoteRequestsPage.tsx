@@ -6,6 +6,7 @@ import { panelCopy } from '../../data/panel'
 import { estimateExtras, estimateTiers } from '../../data/estimate'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { formatDateTime } from '../../lib/format'
+import { computeEstimate } from '../../lib/estimate'
 import {
   deleteQuoteRequest,
   listQuoteRequests,
@@ -148,10 +149,40 @@ export function QuoteRequestsPage() {
                         <div>
                           <dt className="text-text-muted">{panelCopy.quotesPage.consent}</dt>
                           <dd className="text-text">
-                            v{request.consent_version} · {formatDateTime(request.consent_at)}
+                            v{request.consent_version} — {formatDateTime(request.consent_at)}
                           </dd>
                         </div>
                       </dl>
+
+                      {(() => {
+                        const estimate = computeEstimate({
+                          tier: request.tier,
+                          sections: request.sections,
+                          extras: request.extras,
+                        })
+                        const arsApprox = estimate.maxUsd * 1200
+                        return (
+                          <div className="rounded-lg border border-border/70 bg-background/40 p-3">
+                            <p className="text-sm font-medium text-text">Estimado (referencia)</p>
+                            <p className="mt-1 text-sm text-text-muted">
+                              USD {estimate.minUsd} – {estimate.maxUsd} (aprox. ARS {arsApprox.toLocaleString('es-AR')})
+                            </p>
+                            {estimate.breakdown.length > 0 && (
+                              <ul className="mt-2 space-y-1 text-xs text-text-muted">
+                                {estimate.breakdown.map((item) => (
+                                  <li key={item.id} className="flex items-center justify-between gap-3">
+                                    <span>{item.label}</span>
+                                    <span>+USD {item.amountUsd}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            <p className="mt-2 text-xs text-text-muted">
+                              Solo lectura, orientativo y no vinculante.
+                            </p>
+                          </div>
+                        )
+                      })()}
 
                       <div>
                         <p className="text-sm text-text-muted">{panelCopy.quotesPage.notes}</p>
