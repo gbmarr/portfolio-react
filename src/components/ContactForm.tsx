@@ -169,13 +169,9 @@ export function ContactForm({ onSubmit }: ContactFormProps) {
         />
       </div>
 
-      <LegalConsent
-        id="contact-consent"
-        checked={consentAccepted}
-        onChange={setConsentAccepted}
-      />
+      <LegalConsent id="contact-consent" checked={consentAccepted} onChange={setConsentAccepted} />
 
-      {siteKey ? <TurnstileWidget siteKey={siteKey} onChange={setTurnstileToken} /> : null}
+      {siteKey ? <TurnstileWidget siteKey={siteKey} onChange={setTurnstileToken} lazy /> : null}
 
       <Button type="submit" className="w-full" disabled={status === 'sending'}>
         {status === 'sending' ? copy.contact.form.sending : copy.contact.form.submit}

@@ -86,6 +86,36 @@ describe('TurnstileWidget', () => {
     expect(typeof options.callback).toBe('function')
   })
 
+  it('no carga el script hasta que el formulario recibe foco cuando lazy está activo', async () => {
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        observe() {}
+        disconnect() {}
+        unobserve() {}
+        takeRecords() {
+          return []
+        }
+      }
+    )
+
+    const Widget = await loadFreshWidget()
+    const { container } = render(
+      <form>
+        <Widget siteKey="site-key-1" onChange={vi.fn()} lazy />
+      </form>
+    )
+
+    expect(document.querySelector(`script[src="${TURNSTILE_SRC}"]`)).toBeNull()
+
+    act(() => {
+      container.querySelector('form')?.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    })
+    triggerScriptLoad()
+
+    await waitFor(() => expect(turnstile.render).toHaveBeenCalledTimes(1))
+  })
+
   it('usa la acción personalizada cuando se especifica', async () => {
     const Widget = await loadFreshWidget()
     const onChange = vi.fn()

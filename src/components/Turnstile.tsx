@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TURNSTILE_ACTION } from '../shared/contact-contract'
 
 declare global {
@@ -49,6 +49,8 @@ interface TurnstileWidgetProps {
   /** Acción esperada por la Edge Function (`contact` por defecto, `quote` para presupuestos). */
   action?: string
   onChange: (token: string) => void
+  /** Evita descargar el script hasta que el widget se acerque al viewport o el formulario reciba foco. */
+  lazy?: boolean
 }
 
 /**
@@ -59,11 +61,48 @@ export function TurnstileWidget({
   siteKey,
   action = TURNSTILE_ACTION,
   onChange,
+  lazy = false,
 }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
+  const [shouldLoad, setShouldLoad] = useState(!lazy)
 
   useEffect(() => {
+    if (!lazy || shouldLoad) return
+
+    const node = containerRef.current
+    if (!node) return
+
+    const form = node.closest('form')
+    const activate = () => setShouldLoad(true)
+
+    if (typeof IntersectionObserver === 'undefined') {
+      activate()
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          activate()
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(node)
+    form?.addEventListener('focusin', activate)
+
+    return () => {
+      observer.disconnect()
+      form?.removeEventListener('focusin', activate)
+    }
+  }, [lazy, shouldLoad])
+
+  useEffect(() => {
+    if (!shouldLoad) return
+
     let cancelled = false
 
     async function mount() {
@@ -93,7 +132,7 @@ export function TurnstileWidget({
     }
     // siteKey/action no cambian en la práctica; onChange se recomienda estable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [siteKey, action])
+  }, [shouldLoad, siteKey, action])
 
   return <div ref={containerRef} className="mt-1" />
 }

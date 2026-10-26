@@ -15,11 +15,7 @@ import {
   type EstimateTierId,
 } from '../data/estimate'
 import { buildEstimateTimeline, MAX_SECTIONS, MIN_SECTIONS } from '../lib/estimate'
-import {
-  QUOTE_LIMITS,
-  TURNSTILE_ACTION_QUOTE,
-  type QuoteTierId,
-} from '../shared/quote-contract'
+import { QUOTE_LIMITS, TURNSTILE_ACTION_QUOTE, type QuoteTierId } from '../shared/quote-contract'
 import {
   buildQuoteFormPayload,
   contactFunctionUrl,
@@ -49,6 +45,7 @@ export function Estimator() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const lastSubmitAt = useRef(0)
+  const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
 
   const visibleExtras = useMemo(() => getVisibleExtras(tier), [tier])
   const timeline = useMemo(
@@ -295,11 +292,14 @@ export function Estimator() {
             onChange={setConsentAccepted}
           />
 
-          <TurnstileWidget
-            siteKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''}
-            action={TURNSTILE_ACTION_QUOTE}
-            onChange={setTurnstileToken}
-          />
+          {turnstileSiteKey ? (
+            <TurnstileWidget
+              siteKey={turnstileSiteKey}
+              action={TURNSTILE_ACTION_QUOTE}
+              onChange={setTurnstileToken}
+              lazy
+            />
+          ) : null}
 
           <Button type="submit" disabled={status === 'sending'} className="w-full sm:w-auto">
             {status === 'sending' ? copy.estimator.form.sending : copy.estimator.form.submit}

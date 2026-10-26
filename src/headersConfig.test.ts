@@ -81,3 +81,25 @@ describe('CSP de producción (vercel.json y netlify.toml)', () => {
     expect(netlifyRaw).toContain('Strict-Transport-Security = "max-age=63072000"')
   })
 })
+
+describe('cache de assets en producción', () => {
+  it('cachea los assets con hash de forma inmutable', () => {
+    expect(vercelRaw).toMatch(
+      /"source": "\/assets\/\(\.\*\)"[\s\S]*?"value": "public, max-age=31536000, immutable"/
+    )
+    expect(netlifyRaw).toMatch(
+      /for = "\/assets\/\*"[\s\S]*?Cache-Control = "public, max-age=31536000, immutable"/
+    )
+  })
+
+  it('cachea fuentes e imágenes sin revalidar en cada visita', () => {
+    for (const value of ['public, max-age=604800, stale-while-revalidate=86400']) {
+      expect(vercelRaw).toContain(`"value": "${value}"`)
+      expect(netlifyRaw).toContain(`Cache-Control = "${value}"`)
+    }
+    expect(vercelRaw).toContain('"source": "/fonts/(.*)"')
+    expect(vercelRaw).toContain('"source": "/images/(.*)"')
+    expect(netlifyRaw).toContain('for = "/fonts/*"')
+    expect(netlifyRaw).toContain('for = "/images/*"')
+  })
+})
