@@ -20,6 +20,30 @@ export const industries: IndustryGroup[] = [
         name: 'Escribanos',
         benefit: 'Requisitos, turnos y ubicación claros para que la consulta llegue a una cita.',
       },
+      {
+        name: 'Arquitectos',
+        benefit: 'Diseño, planos y permisos en una página.',
+      },
+      {
+        name: 'Ingenieros',
+        benefit: 'Consultoría técnica y proyectos.',
+      },
+      {
+        name: 'Médicos',
+        benefit: 'Especialidades, horarios y contacto.',
+      },
+      {
+        name: 'Consultores',
+        benefit: 'Servicio, metodología y primera reunión.',
+      },
+      {
+        name: 'Diseñadores',
+        benefit: 'Portafolio, presupuestos y contacto.',
+      },
+      {
+        name: 'Psicólogos',
+        benefit: 'Atención, disponibilidad y consulta.',
+      },
     ],
   },
   {
@@ -38,6 +62,30 @@ export const industries: IndustryGroup[] = [
       {
         name: 'Gasistas',
         benefit: 'Matrícula, servicios y urgencias a la vista para que confíen antes de escribir.',
+      },
+      {
+        name: 'Pintores',
+        benefit: 'Cobertura, tipo de trabajo y llamado.',
+      },
+      {
+        name: 'Mudanzas',
+        benefit: 'Distancia, disponibilidad y presupuesto.',
+      },
+      {
+        name: 'Cerrajeros',
+        benefit: 'Zona, urgencias y servicio.',
+      },
+      {
+        name: 'Tecnología',
+        benefit: 'Reparación, domicilio y horario.',
+      },
+      {
+        name: 'Jardinería',
+        benefit: 'Servicios, zona y presupuesto.',
+      },
+      {
+        name: 'Limpieza',
+        benefit: 'Tipo de servicio, frecuencia y contacto.',
       },
     ],
   },
