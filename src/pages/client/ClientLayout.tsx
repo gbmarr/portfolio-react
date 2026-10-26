@@ -2,7 +2,10 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../lib/auth-context'
 import { panelCopy } from '../../data/panel'
 
-const navItems = [{ to: '/panel', label: panelCopy.nav.myProjects, end: true }]
+const navItems = [
+  { to: '/panel', label: panelCopy.nav.myProjects, end: true },
+  { to: '/panel/guia', label: panelCopy.nav.guide, end: true },
+]
 
 const linkClasses = ({ isActive }: { isActive: boolean }) =>
   `text-sm font-medium transition-colors ${isActive ? 'text-accent' : 'text-text-muted hover:text-accent'}`

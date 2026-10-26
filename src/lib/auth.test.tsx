@@ -109,6 +109,24 @@ describe('AuthProvider', () => {
     })
   })
 
+  it('reenvía el token de CAPTCHA en el magic link', async () => {
+    mocks.signInWithOtp.mockResolvedValue({ error: null })
+    const { result } = renderHook(() => useAuth(), { wrapper })
+
+    await act(async () => {
+      await result.current.signInWithMagicLink('cliente@test.com', 'captcha-token')
+    })
+
+    expect(mocks.signInWithOtp).toHaveBeenCalledWith({
+      email: 'cliente@test.com',
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        shouldCreateUser: false,
+        captchaToken: 'captcha-token',
+      },
+    })
+  })
+
   it('inviteByMagicLink envía con shouldCreateUser true (invitación del admin)', async () => {
     mocks.signInWithOtp.mockResolvedValue({ error: null })
     const { result } = renderHook(() => useAuth(), { wrapper })
@@ -122,6 +140,24 @@ describe('AuthProvider', () => {
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
         shouldCreateUser: true,
+      },
+    })
+  })
+
+  it('reenvía el token de CAPTCHA al invitar', async () => {
+    mocks.signInWithOtp.mockResolvedValue({ error: null })
+    const { result } = renderHook(() => useAuth(), { wrapper })
+
+    await act(async () => {
+      await result.current.inviteByMagicLink('nuevo@test.com', 'captcha-token')
+    })
+
+    expect(mocks.signInWithOtp).toHaveBeenCalledWith({
+      email: 'nuevo@test.com',
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+        shouldCreateUser: true,
+        captchaToken: 'captcha-token',
       },
     })
   })
@@ -158,6 +194,21 @@ describe('AuthProvider', () => {
       'invalid_credentials'
     )
     expect(mocks.signInWithPassword).toHaveBeenCalledWith({ email: 'a@b.com', password: 'x' })
+  })
+
+  it('reenvía el token de CAPTCHA al iniciar sesión con contraseña', async () => {
+    mocks.signInWithPassword.mockResolvedValue({ error: null })
+    const { result } = renderHook(() => useAuth(), { wrapper })
+
+    await act(async () => {
+      await result.current.signInWithPassword('a@b.com', 'x', 'captcha-token')
+    })
+
+    expect(mocks.signInWithPassword).toHaveBeenCalledWith({
+      email: 'a@b.com',
+      password: 'x',
+      options: { captchaToken: 'captcha-token' },
+    })
   })
 
   it('signOut invoca auth.signOut', async () => {

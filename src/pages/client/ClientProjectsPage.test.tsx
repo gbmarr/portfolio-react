@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { ClientProjectsPage } from './ClientProjectsPage'
@@ -8,12 +8,17 @@ import type { Project, ProjectStage } from '../../lib/types'
 const h = vi.hoisted(() => ({
   listProjects: vi.fn(),
   listStagesForProjects: vi.fn(),
+  loadProjectDetail: vi.fn(),
+  useAuth: vi.fn(),
 }))
+
+vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
 vi.mock('../../lib/projects', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../lib/projects')>()),
   listProjects: h.listProjects,
   listStagesForProjects: h.listStagesForProjects,
+  loadProjectDetail: h.loadProjectDetail,
 }))
 
 const project = (over: Partial<Project> = {}): Project => ({
@@ -61,7 +66,19 @@ function renderPage() {
   )
 }
 
+const detail = (over: Partial<Project> = {}) => ({
+  project: project(over),
+  stages: [stage()],
+  approvals: [],
+  brief: null,
+  previews: [],
+})
+
 describe('ClientProjectsPage', () => {
+  beforeEach(() => {
+    h.useAuth.mockReturnValue({ session: { user: { id: 'client-1' } } })
+  })
+
   it('muestra loading mientras carga', () => {
     const d = deferred<Project[]>()
     h.listProjects.mockReturnValue(d.promise)
@@ -81,6 +98,19 @@ describe('ClientProjectsPage', () => {
     h.listProjects.mockResolvedValue([])
     renderPage()
     expect(await screen.findByText(/Todavía no tenés proyectos/)).toBeInTheDocument()
+  })
+
+  it('muestra el detalle directamente cuando hay un solo proyecto', async () => {
+    h.listProjects.mockResolvedValue([project()])
+    h.loadProjectDetail.mockResolvedValue(detail())
+
+    renderPage()
+
+    expect(await screen.findByRole('heading', { name: 'Sitio web para Estudio' })).toBeVisible()
+    expect(screen.getByText('Avances')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Mis proyectos' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Sitio web para Estudio' })).not.toBeInTheDocument()
+    expect(h.listStagesForProjects).not.toHaveBeenCalled()
   })
 
   it('lista proyectos con barra de progreso y link al detalle', async () => {

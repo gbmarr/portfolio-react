@@ -40,6 +40,9 @@ const ClientProjectDetailPage = lazy(() =>
     default: m.ClientProjectDetailPage,
   }))
 )
+const ClientGuidePage = lazy(() =>
+  import('../pages/client/ClientGuidePage').then((m) => ({ default: m.ClientGuidePage }))
+)
 
 /** Fallback propio para no arrastrar el de AppRouter en cada chunk. */
 function PrivateFallback() {
@@ -161,6 +164,14 @@ export default function PrivateRoutes() {
                 element={
                   <Suspended>
                     <ClientProjectsPage />
+                  </Suspended>
+                }
+              />
+              <Route
+                path="guia"
+                element={
+                  <Suspended>
+                    <ClientGuidePage />
                   </Suspended>
                 }
               />

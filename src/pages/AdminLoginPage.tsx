@@ -3,8 +3,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth-context'
 import { Button } from '../components/Button'
 import { Container } from '../components/Container'
+import { TurnstileWidget } from '../components/Turnstile'
 import { FormField } from '../components/ui/FormField'
 import { panelCopy } from '../data/panel'
+import { TURNSTILE_ACTION_ADMIN_LOGIN } from '../shared/auth-contract'
+import { isValidEmail, normalizeEmail } from '../utils/email'
 
 type Status = 'idle' | 'submitting'
 
@@ -21,6 +24,10 @@ export function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaKey, setCaptchaKey] = useState(0)
+
+  const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
 
   const from = (location.state as { from?: string } | null)?.from
 
@@ -56,14 +63,39 @@ export function AdminLoginPage() {
     )
   }
 
+  function resetCaptcha() {
+    setCaptchaToken('')
+    setCaptchaKey((key) => key + 1)
+  }
+
   async function handlePasswordSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const normalized = normalizeEmail(email)
+    if (!isValidEmail(normalized)) {
+      setError(panelCopy.adminLogin.emailInvalid)
+      return
+    }
+    if (!password) {
+      setError(panelCopy.adminLogin.passwordRequired)
+      return
+    }
+    if (siteKey && !captchaToken) {
+      setError(panelCopy.adminLogin.captchaRequired)
+      return
+    }
+
     setStatus('submitting')
     setError(null)
     try {
-      await signInWithPassword(email.trim(), password)
-    } catch {
-      setError(panelCopy.adminLogin.invalidCredentials)
+      await signInWithPassword(normalized, password, captchaToken || undefined)
+    } catch (err) {
+      const authError = err as { code?: string; message?: string } | null
+      if (/captcha/i.test(authError?.code ?? '') || /captcha/i.test(authError?.message ?? '')) {
+        setError(panelCopy.adminLogin.captchaError)
+      } else {
+        setError(panelCopy.adminLogin.invalidCredentials)
+      }
+      resetCaptcha()
       setStatus('idle')
     }
   }
@@ -99,7 +131,19 @@ export function AdminLoginPage() {
               value={password}
               onValueChange={setPassword}
             />
-            <Button type="submit" className="w-full" disabled={sending}>
+            {siteKey && (
+              <TurnstileWidget
+                key={captchaKey}
+                siteKey={siteKey}
+                action={TURNSTILE_ACTION_ADMIN_LOGIN}
+                onChange={setCaptchaToken}
+              />
+            )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={sending || Boolean(siteKey && !captchaToken)}
+            >
               {sending ? panelCopy.adminLogin.sending : panelCopy.adminLogin.submit}
             </Button>
           </form>

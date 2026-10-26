@@ -1,31 +1,20 @@
 import { useState } from 'react'
 import { listClients } from '../../lib/clients'
-import { useAuth } from '../../lib/auth-context'
 import { Badge } from '../../components/ui/Badge'
 import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { panelCopy } from '../../data/panel'
+import { InviteClientDialog } from './InviteClientDialog'
 
 /** Clientes detectados (proyectos + perfiles) con invitación por magic link. */
 export function ClientsPage() {
-  const { inviteByMagicLink } = useAuth()
   const { data: clients, error, loading } = useAsyncData(() => listClients(), [])
   const [invited, setInvited] = useState<Set<string>>(new Set())
-  const [sending, setSending] = useState<string | null>(null)
-  const [actionError, setActionError] = useState<string | null>(null)
+  const [inviteEmail, setInviteEmail] = useState<string | null>(null)
 
-  async function handleInvite(email: string) {
-    setSending(email)
-    setActionError(null)
-    try {
-      await inviteByMagicLink(email)
-      setInvited((current) => new Set(current).add(email))
-    } catch {
-      setActionError(`No se pudo enviar la invitación a ${email}.`)
-    } finally {
-      setSending(null)
-    }
+  function handleInvite(email: string) {
+    setInviteEmail(email)
   }
 
   return (
@@ -83,15 +72,10 @@ export function ClientsPage() {
                     ) : (
                       <button
                         type="button"
-                        disabled={sending === client.email}
                         onClick={() => handleInvite(client.email)}
-                        className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
+                        className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-text-muted transition-colors hover:border-accent hover:text-accent"
                       >
-                        {sending === client.email
-                          ? 'Enviando…'
-                          : client.active
-                            ? 'Reenviar enlace'
-                            : 'Invitar'}
+                        {client.active ? 'Reenviar enlace' : 'Invitar'}
                       </button>
                     )}
                   </td>
@@ -102,7 +86,13 @@ export function ClientsPage() {
         </div>
       )}
 
-      {actionError && <ErrorAlert>{actionError}</ErrorAlert>}
+      {inviteEmail && (
+        <InviteClientDialog
+          email={inviteEmail}
+          onClose={() => setInviteEmail(null)}
+          onSent={(email) => setInvited((current) => new Set(current).add(email))}
+        />
+      )}
     </div>
   )
 }

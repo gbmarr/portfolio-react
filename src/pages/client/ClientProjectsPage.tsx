@@ -3,10 +3,18 @@ import { Badge } from '../../components/ui/Badge'
 import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { useAsyncData } from '../../hooks/useAsyncData'
+import { useAuth } from '../../lib/auth-context'
 import { panelCopy, statusLabels, statusTones } from '../../data/panel'
 import { formatDate } from '../../lib/format'
-import { listProjects, listStagesForProjects, computeProgress } from '../../lib/projects'
+import {
+  listProjects,
+  listStagesForProjects,
+  computeProgress,
+  loadProjectDetail,
+  type ProjectDetail,
+} from '../../lib/projects'
 import type { Project, ProjectStage } from '../../lib/types'
+import { ClientProjectDetailView } from './ClientProjectDetailView'
 
 export type ClientProjectRow = {
   project: Project
@@ -15,15 +23,32 @@ export type ClientProjectRow = {
   total: number
 }
 
-/** Lista de proyectos del cliente con su barra de progreso (RLS filtra). */
+type PanelData =
+  | { kind: 'empty' }
+  | { kind: 'single'; detail: ProjectDetail }
+  | { kind: 'list'; rows: ClientProjectRow[] }
+
+/** Lista de proyectos del cliente o detalle directo si solo tiene uno (RLS filtra). */
 export function ClientProjectsPage() {
-  const { data, error, loading } = useAsyncData(async () => {
+  const { session } = useAuth()
+  const { data, error, loading, reload } = useAsyncData<PanelData>(async () => {
     const projects = await listProjects()
-    const stagesByProject = await listStagesForProjects(projects.map((p) => p.id))
-    return projects.map((project) => {
+
+    if (projects.length === 0) {
+      return { kind: 'empty' }
+    }
+
+    if (projects.length === 1) {
+      return { kind: 'single', detail: await loadProjectDetail(projects[0].id) }
+    }
+
+    const stagesByProject = await listStagesForProjects(projects.map((project) => project.id))
+    const rows = projects.map((project) => {
       const stages = stagesByProject[project.id] ?? []
       return { project, stages, ...computeProgress(stages) }
     })
+
+    return { kind: 'list', rows }
   }, [])
 
   if (loading) {
@@ -34,7 +59,18 @@ export function ClientProjectsPage() {
     return <ErrorAlert>{error}</ErrorAlert>
   }
 
-  const rows = data ?? []
+  if (data?.kind === 'single') {
+    return (
+      <ClientProjectDetailView
+        detail={data.detail}
+        clientId={session?.user.id ?? ''}
+        onReload={reload}
+        showBackLink={false}
+      />
+    )
+  }
+
+  const rows = data?.kind === 'list' ? data.rows : []
 
   return (
     <section className="space-y-6">

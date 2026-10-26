@@ -3,8 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth-context'
 import { Button } from '../components/Button'
 import { Container } from '../components/Container'
+import { TurnstileWidget } from '../components/Turnstile'
 import { FormField } from '../components/ui/FormField'
 import { panelCopy } from '../data/panel'
+import { useEmailCooldown } from '../hooks/useEmailCooldown'
+import { TURNSTILE_ACTION_LOGIN } from '../shared/auth-contract'
+import { isValidEmail, normalizeEmail } from '../utils/email'
 
 type Status = 'idle' | 'submitting' | 'magic-sent'
 
@@ -20,6 +24,11 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaKey, setCaptchaKey] = useState(0)
+  const { remaining, start, coolingDown } = useEmailCooldown(email)
+
+  const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? ''
 
   const from = (location.state as { from?: string } | null)?.from
 
@@ -55,26 +64,65 @@ export function LoginPage() {
     )
   }
 
+  function resetCaptcha() {
+    setCaptchaToken('')
+    setCaptchaKey((key) => key + 1)
+  }
+
   async function handleMagicLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const trimmed = email.trim()
-    if (!trimmed) {
+    const normalized = normalizeEmail(email)
+    if (!normalized) {
       setError(panelCopy.login.emailRequired)
       return
     }
+    if (!isValidEmail(normalized)) {
+      setError(panelCopy.login.emailInvalid)
+      return
+    }
+    if (coolingDown) {
+      setError(panelCopy.login.rateLimited)
+      return
+    }
+    if (siteKey && !captchaToken) {
+      setError(panelCopy.login.captchaRequired)
+      return
+    }
+
     setStatus('submitting')
     setError(null)
     try {
-      await signInWithMagicLink(trimmed)
+      await signInWithMagicLink(normalized, captchaToken || undefined)
+      setEmail(normalized)
       setStatus('magic-sent')
+      start(normalized)
+      resetCaptcha()
     } catch (err) {
+      const authError = err as { code?: string; status?: number; message?: string } | null
       // SEC-005: no revelar si el email tiene cuenta. Un email no autorizado
       // (user_not_found) responde igual que un envío exitoso: misma confirmación.
-      if ((err as { code?: string } | null)?.code === 'user_not_found') {
+      if (authError?.code === 'user_not_found') {
         setStatus('magic-sent')
+        start(normalized)
+        resetCaptcha()
         return
       }
-      setError(panelCopy.error.generic)
+      if (
+        authError?.status === 429 ||
+        /rate.?limit/i.test(authError?.code ?? '') ||
+        /rate.?limit/i.test(authError?.message ?? '')
+      ) {
+        setError(panelCopy.login.rateLimited)
+        start(normalized)
+      } else if (
+        /captcha/i.test(authError?.code ?? '') ||
+        /captcha/i.test(authError?.message ?? '')
+      ) {
+        setError(panelCopy.login.captchaError)
+      } else {
+        setError(panelCopy.error.generic)
+      }
+      resetCaptcha()
       setStatus('idle')
     }
   }
@@ -99,11 +147,28 @@ export function LoginPage() {
               value={email}
               onValueChange={setEmail}
             />
-            <Button type="submit" className="w-full" disabled={status === 'submitting'}>
+            {siteKey && (
+              <TurnstileWidget
+                key={captchaKey}
+                siteKey={siteKey}
+                action={TURNSTILE_ACTION_LOGIN}
+                onChange={setCaptchaToken}
+              />
+            )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={status === 'submitting' || coolingDown || Boolean(siteKey && !captchaToken)}
+            >
               {status === 'submitting' ? panelCopy.login.sending : panelCopy.login.magicLink}
             </Button>
           </form>
 
+          {coolingDown && (
+            <p className="mt-4 text-sm text-text-muted" aria-live="polite">
+              {panelCopy.login.cooldown(remaining)}
+            </p>
+          )}
           {status === 'magic-sent' && (
             <p
               role="status"

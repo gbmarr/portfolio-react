@@ -1,35 +1,12 @@
-import { useCallback, useState, type FormEvent } from 'react'
+import { useCallback } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Button } from '../../components/Button'
-import { baseButtonClasses, buttonSizeClasses } from '../../components/buttonClasses'
-import { Badge } from '../../components/ui/Badge'
-import { TextAreaField } from '../../components/ui/TextAreaField'
 import { Loading } from '../../components/ui/Loading'
 import { ErrorAlert } from '../../components/ui/ErrorAlert'
-import { ClientBrief } from './ClientBrief'
-import { ProjectPreviewGallery } from './ProjectPreviewGallery'
 import { useAuth } from '../../lib/auth-context'
-import { formatDate } from '../../lib/format'
 import { useAsyncData } from '../../hooks/useAsyncData'
-import { decideMilestone, loadProjectDetail, ProjectNotFoundError } from '../../lib/projects'
-import { panelCopy, statusLabels, statusTones } from '../../data/panel'
-import type {
-  ApprovalDecision,
-  MilestoneApproval,
-  ProjectBrief,
-  ProjectStage,
-} from '../../lib/types'
-
-function approvalFor(approvals: MilestoneApproval[], stageId: string) {
-  return approvals.find((approval) => approval.stage_id === stageId)
-}
-
-const dotClass = (status: ProjectStage['status']) => {
-  if (status === 'completada') return 'bg-emerald-300'
-  if (status === 'revision') return 'bg-amber-300'
-  if (status === 'en_progreso') return 'bg-accent'
-  return 'border-border bg-background'
-}
+import { loadProjectDetail, ProjectNotFoundError } from '../../lib/projects'
+import { panelCopy } from '../../data/panel'
+import { ClientProjectDetailView } from './ClientProjectDetailView'
 
 /** Detalle de proyecto para el cliente: timeline + aprobaciones. */
 export function ClientProjectDetailPage() {
@@ -43,51 +20,10 @@ export function ClientProjectDetailPage() {
     error,
     loading,
     reload,
-    setData,
   } = useAsyncData(load, [load], {
     mapError: (caught) =>
       caught instanceof ProjectNotFoundError ? panelCopy.client.notFound : panelCopy.error.generic,
   })
-
-  const [pending, setPending] = useState<{ stageId: string; decision: ApprovalDecision } | null>(
-    null
-  )
-  const [comment, setComment] = useState('')
-  const [sendingStage, setSendingStage] = useState<string | null>(null)
-  const [actionMessage, setActionMessage] = useState<string | null>(null)
-  const [actionError, setActionError] = useState<string | null>(null)
-  const [editingBrief, setEditingBrief] = useState(false)
-
-  function handleBriefSaved(updated: ProjectBrief) {
-    setData((prev) => (prev ? { ...prev, brief: updated } : prev))
-    setEditingBrief(false)
-  }
-
-  async function handleSubmitDecision(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (!pending || !session) return
-    const { stageId, decision } = pending
-    setSendingStage(stageId)
-    setActionError(null)
-    setActionMessage(null)
-    try {
-      await decideMilestone({
-        stage_id: stageId,
-        project_id: detail?.project.id ?? '',
-        client_id: session.user.id,
-        decision,
-        comment: comment.trim() || null,
-      })
-      setPending(null)
-      setComment('')
-      setActionMessage(panelCopy.client.decisionSent)
-      await reload()
-    } catch {
-      setActionError(panelCopy.client.decisionError)
-    } finally {
-      setSendingStage(null)
-    }
-  }
 
   if (loading) {
     return <Loading />
@@ -104,206 +40,7 @@ export function ClientProjectDetailPage() {
     )
   }
 
-  const { project, stages, approvals, brief, previews: rawPreviews } = detail
-  const previews = rawPreviews ?? []
-  const visibleStages = stages.filter((stage) => stage.client_visible)
-
   return (
-    <section className="space-y-10">
-      <header className="space-y-3">
-        <Link to="/panel" className="text-sm text-text-muted hover:text-accent">
-          {panelCopy.client.backLink}
-        </Link>
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-2xl font-semibold text-text">{project.title}</h1>
-          <Badge tone={statusTones.project[project.status]}>
-            {statusLabels.project[project.status]}
-          </Badge>
-          <span className="text-xs text-text-muted">{statusLabels.type[project.type]}</span>
-        </div>
-        {project.description && (
-          <p className="whitespace-pre-wrap text-sm text-text-muted">{project.description}</p>
-        )}
-      </header>
-
-      {project.status === 'completado' && (
-        <section
-          aria-label={panelCopy.client.completedCard.title}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-6 text-center"
-        >
-          <span
-            aria-hidden="true"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-400/20 text-emerald-300"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-          </span>
-          <h2 className="font-display text-xl font-semibold text-emerald-300">
-            {panelCopy.client.completedCard.title}
-          </h2>
-          <p className="text-sm text-text-muted">{panelCopy.client.completedCard.message}</p>
-          {project.completed_at && (
-            <p className="text-xs text-text-muted">
-              {panelCopy.client.completedCard.dateLabel} {formatDate(project.completed_at)}
-            </p>
-          )}
-        </section>
-      )}
-
-      {brief &&
-        (brief.status === 'completado' && !editingBrief ? (
-          <section
-            aria-label={panelCopy.client.brief.completedTitle}
-            className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10 p-5"
-          >
-            <div className="space-y-1">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-300">
-                {panelCopy.client.brief.completedTitle}
-              </h2>
-              <p className="text-sm text-text-muted">{panelCopy.client.brief.completedHint}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setEditingBrief(true)}
-              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:text-accent"
-            >
-              {panelCopy.client.brief.editAgain}
-            </button>
-          </section>
-        ) : (
-          <ClientBrief brief={brief} onSaved={handleBriefSaved} />
-        ))}
-
-      <ProjectPreviewGallery project={project} stages={stages} previews={previews} />
-
-      {actionMessage && (
-        <p
-          role="status"
-          className="rounded-lg border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300"
-        >
-          {actionMessage}
-        </p>
-      )}
-      {actionError && <ErrorAlert>{actionError}</ErrorAlert>}
-
-      <section aria-label={panelCopy.client.timeline} className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-text-muted">
-          {panelCopy.client.timeline}
-        </h2>
-        {visibleStages.length === 0 ? (
-          <p className="text-text-muted">{panelCopy.client.timelineEmpty}</p>
-        ) : (
-          <ol className="relative space-y-6 border-l border-border pl-6">
-            {visibleStages.map((stage) => {
-              const approval = approvalFor(approvals, stage.id)
-              const reviewing = stage.status === 'revision' && !approval
-              return (
-                <li key={stage.id} className="relative">
-                  <span
-                    className={`absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-background ${dotClass(stage.status)}`}
-                  />
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-medium text-text">{stage.name}</h3>
-                    <Badge tone={statusTones.stage[stage.status]}>
-                      {statusLabels.stage[stage.status]}
-                    </Badge>
-                    {approval && (
-                      <Badge tone={approval.decision === 'aprobado' ? 'done' : 'danger'}>
-                        {approval.decision === 'aprobado'
-                          ? panelCopy.client.youApproved
-                          : panelCopy.client.youRejected}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {stage.description && (
-                    <p className="mt-1 whitespace-pre-wrap text-sm text-text-muted">
-                      {stage.description}
-                    </p>
-                  )}
-
-                  {(stage.started_at || stage.completed_at) && (
-                    <p className="mt-1 text-xs text-text-muted">
-                      {stage.started_at && <>Inicio: {formatDate(stage.started_at)}</>}
-                      {stage.started_at && stage.completed_at && ' · '}
-                      {stage.completed_at && <>Fin: {formatDate(stage.completed_at)}</>}
-                    </p>
-                  )}
-
-                  {approval?.comment && (
-                    <blockquote className="mt-2 rounded-lg border border-border bg-background/60 px-3 py-2 text-sm text-text-muted">
-                      “{approval.comment}”
-                    </blockquote>
-                  )}
-
-                  {reviewing && (
-                    <div className="mt-3 space-y-3">
-                      <p className="text-sm text-text-muted">{panelCopy.client.stageReview}</p>
-                      {pending?.stageId === stage.id ? (
-                        <form onSubmit={handleSubmitDecision} className="space-y-3">
-                          <TextAreaField
-                            id={`comment-${stage.id}`}
-                            label="Comentario"
-                            hideLabel
-                            rows={3}
-                            maxLength={1000}
-                            placeholder={panelCopy.client.commentPlaceholder}
-                            value={comment}
-                            onValueChange={setComment}
-                          />
-                          <div className="flex gap-3">
-                            <Button type="submit" size="sm" disabled={sendingStage === stage.id}>
-                              {sendingStage === stage.id
-                                ? panelCopy.client.deciding
-                                : panelCopy.client.sendDecision}
-                            </Button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPending(null)
-                                setComment('')
-                              }}
-                              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted hover:text-accent"
-                            >
-                              {panelCopy.client.cancel}
-                            </button>
-                          </div>
-                        </form>
-                      ) : (
-                        <div className="flex gap-3">
-                          <button
-                            type="button"
-                            onClick={() => setPending({ stageId: stage.id, decision: 'aprobado' })}
-                            className={`${baseButtonClasses} ${buttonSizeClasses.sm} bg-emerald-300 text-background hover-fine:bg-emerald-200`}
-                          >
-                            {panelCopy.client.approve}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPending({ stageId: stage.id, decision: 'rechazado' })}
-                            className={`${baseButtonClasses} ${buttonSizeClasses.sm} bg-red-300 text-background hover-fine:bg-red-200`}
-                          >
-                            {panelCopy.client.reject}
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </li>
-              )
-            })}
-          </ol>
-        )}
-      </section>
-    </section>
+    <ClientProjectDetailView detail={detail} clientId={session?.user.id ?? ''} onReload={reload} />
   )
 }

@@ -20,13 +20,13 @@ export type AuthContextValue = {
    * (`shouldCreateUser: false`): si el email no tiene cuenta, el error tiene
    * `code === 'user_not_found'` (la UI lo trata como envío genérico).
    */
-  signInWithMagicLink: (email: string) => Promise<void>
+  signInWithMagicLink: (email: string, captchaToken?: string) => Promise<void>
   /**
    * Invitación del admin: envía un enlace mágico y, si el cliente todavía no
    * tiene cuenta, la crea (`shouldCreateUser: true`). Uso exclusivo del panel.
    */
-  inviteByMagicLink: (email: string) => Promise<void>
-  signInWithPassword: (email: string, password: string) => Promise<void>
+  inviteByMagicLink: (email: string, captchaToken?: string) => Promise<void>
+  signInWithPassword: (email: string, password: string, captchaToken?: string) => Promise<void>
   signOut: () => Promise<void>
   /** IDs de los factores TOTP enrolados por el usuario actual. */
   listMfaFactors: () => Promise<string[]>

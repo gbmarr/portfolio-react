@@ -1,13 +1,21 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
 const mocks = vi.hoisted(() => ({
   useAuth: vi.fn(),
+  turnstileOnChange: null as ((token: string) => void) | null,
 }))
 
 vi.mock('../lib/auth-context', () => ({ useAuth: mocks.useAuth }))
+
+vi.mock('../components/Turnstile', () => ({
+  TurnstileWidget: ({ onChange }: { onChange: (token: string) => void }) => {
+    mocks.turnstileOnChange = onChange
+    return <div data-testid="turnstile-mock" />
+  },
+}))
 
 import { AdminLoginPage } from './AdminLoginPage'
 import { panelCopy } from '../data/panel'
@@ -37,8 +45,17 @@ function authOverrides(overrides: Record<string, unknown> = {}) {
   })
 }
 
+function emitCaptcha(token = 'captcha-token') {
+  act(() => mocks.turnstileOnChange?.(token))
+}
+
+beforeEach(() => {
+  vi.stubEnv('PUBLIC_TURNSTILE_SITE_KEY', 'test-site-key')
+  mocks.turnstileOnChange = null
+})
+
 afterEach(() => {
-  vi.unstubAllGlobals()
+  vi.unstubAllEnvs()
 })
 
 describe('AdminLoginPage (acceso de gestión)', () => {
@@ -69,16 +86,17 @@ describe('AdminLoginPage (acceso de gestión)', () => {
     expect(await screen.findByText('panel-page')).toBeInTheDocument()
   })
 
-  it('envía email y contraseña al submit', async () => {
+  it('envía email, contraseña y CAPTCHA al submit', async () => {
     const signInWithPassword = vi.fn().mockResolvedValue(undefined)
     authOverrides({ signInWithPassword })
     renderAdminLogin()
+    emitCaptcha()
 
     await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'yo@test.com')
     await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.password), 'secreta')
     await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.submit }))
 
-    expect(signInWithPassword).toHaveBeenCalledWith('yo@test.com', 'secreta')
+    expect(signInWithPassword).toHaveBeenCalledWith('yo@test.com', 'secreta', 'captcha-token')
   })
 
   it('muestra error con credenciales inválidas', async () => {
@@ -86,6 +104,7 @@ describe('AdminLoginPage (acceso de gestión)', () => {
       signInWithPassword: vi.fn().mockRejectedValue(new Error('bad')),
     })
     renderAdminLogin()
+    emitCaptcha()
 
     await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'yo@test.com')
     await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.password), 'mala')
@@ -94,6 +113,55 @@ describe('AdminLoginPage (acceso de gestión)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       panelCopy.adminLogin.invalidCredentials
     )
+  })
+
+  it('muestra un error específico cuando falla el CAPTCHA', async () => {
+    authOverrides({
+      signInWithPassword: vi
+        .fn()
+        .mockRejectedValue(Object.assign(new Error('captcha'), { code: 'captcha_failed' })),
+    })
+    renderAdminLogin()
+    emitCaptcha()
+
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'yo@test.com')
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.password), 'secreta')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.submit }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(panelCopy.adminLogin.captchaError)
+  })
+
+  it('rechaza email inválido y contraseña vacía sin llamar al backend', async () => {
+    const signInWithPassword = vi.fn()
+    authOverrides({ signInWithPassword })
+    renderAdminLogin()
+    emitCaptcha()
+
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'no-es-email')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.submit }))
+    expect(screen.getByRole('alert')).toHaveTextContent(panelCopy.adminLogin.emailInvalid)
+
+    await userEvent.clear(screen.getByLabelText(panelCopy.adminLogin.email))
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'yo@test.com')
+    await userEvent.click(screen.getByRole('button', { name: panelCopy.adminLogin.submit }))
+    expect(screen.getByRole('alert')).toHaveTextContent(panelCopy.adminLogin.passwordRequired)
+    expect(signInWithPassword).not.toHaveBeenCalled()
+  })
+
+  it('mantiene el botón deshabilitado hasta completar el CAPTCHA', async () => {
+    const signInWithPassword = vi.fn()
+    authOverrides({ signInWithPassword })
+    renderAdminLogin()
+
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.email), 'yo@test.com')
+    await userEvent.type(screen.getByLabelText(panelCopy.adminLogin.password), 'secreta')
+
+    expect(screen.getByTestId('turnstile-mock')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: panelCopy.adminLogin.submit })).toBeDisabled()
+    expect(signInWithPassword).not.toHaveBeenCalled()
+
+    emitCaptcha()
+    expect(screen.getByRole('button', { name: panelCopy.adminLogin.submit })).toBeEnabled()
   })
 
   it('oculta el botón de passkey porque el feature está desactivado', () => {

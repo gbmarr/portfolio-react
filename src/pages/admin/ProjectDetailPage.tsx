@@ -9,7 +9,6 @@ import {
   updateStage,
   updateProject,
 } from '../../lib/projects'
-import { useAuth } from '../../lib/auth-context'
 import { formatDate } from '../../lib/format'
 import { Badge } from '../../components/ui/Badge'
 import { Loading } from '../../components/ui/Loading'
@@ -17,6 +16,7 @@ import { ErrorAlert } from '../../components/ui/ErrorAlert'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { StageEditor } from './StageEditor'
 import { ProjectPreviewManager } from './ProjectPreviewManager'
+import { InviteClientDialog } from './InviteClientDialog'
 import { statusLabels, statusTones, panelCopy } from '../../data/panel'
 import { estimateTiers, estimateExtras } from '../../data/estimate'
 import { getBriefTemplate, getExtraSections } from '../../data/briefTemplates'
@@ -26,13 +26,13 @@ import { getStageTemplate } from '../../data/stageTemplates'
 export function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { inviteByMagicLink } = useAuth()
 
   const load = useCallback(async () => (id ? loadProjectDetail(id) : null), [id])
 
   const { data: detail, error, loading, reload } = useAsyncData(load, [load])
 
-  const [inviteStatus, setInviteStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [inviteEmail, setInviteEmail] = useState<string | null>(null)
+  const [inviteStatus, setInviteStatus] = useState<'idle' | 'sent'>('idle')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [stageMessage, setStageMessage] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -50,15 +50,9 @@ export function ProjectDetailPage() {
     }
   }
 
-  async function handleInvite() {
+  function handleInvite() {
     if (!detail) return
-    setInviteStatus('sending')
-    try {
-      await inviteByMagicLink(detail.project.client_email)
-      setInviteStatus('sent')
-    } catch {
-      setInviteStatus('error')
-    }
+    setInviteEmail(detail.project.client_email)
   }
 
   async function handleDeleteProject() {
@@ -176,8 +170,7 @@ export function ProjectDetailPage() {
             <button
               type="button"
               onClick={handleInvite}
-              disabled={inviteStatus === 'sending'}
-              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
+              className="rounded-full border border-border px-4 py-2 text-sm text-text-muted transition-colors hover:border-accent hover:text-accent"
             >
               {inviteStatus === 'sent' ? 'Invitación enviada ✓' : 'Enviar invitación'}
             </button>
@@ -206,7 +199,13 @@ export function ProjectDetailPage() {
             activa.
           </p>
         )}
-        {inviteStatus === 'error' && <ErrorAlert>No se pudo enviar la invitación.</ErrorAlert>}
+        {inviteEmail && (
+          <InviteClientDialog
+            email={inviteEmail}
+            onClose={() => setInviteEmail(null)}
+            onSent={() => setInviteStatus('sent')}
+          />
+        )}
 
         {confirmDelete && (
           <div

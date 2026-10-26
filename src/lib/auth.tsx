@@ -12,10 +12,11 @@ function assertConfigured(): void {
   }
 }
 
-/** Error de auth que conserva el `code` de GoTrue (p. ej. `user_not_found`). */
-function toAuthError(error: { message: string; code?: string }): Error {
-  const err = new Error(error.message) as Error & { code?: string }
+/** Error de auth que conserva el `code` y el `status` de GoTrue. */
+function toAuthError(error: { message: string; code?: string; status?: number }): Error {
+  const err = new Error(error.message) as Error & { code?: string; status?: number }
   err.code = error.code
+  err.status = error.status
   return err
 }
 
@@ -121,7 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [session])
 
-  const signInWithMagicLink = useCallback(async (email: string) => {
+  const signInWithMagicLink = useCallback(async (email: string, captchaToken?: string) => {
     assertConfigured()
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -132,12 +133,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // SEC-005: el login NO crea cuentas. Solo pueden entrar clients
         // preexistentes (cargados por el admin a través de `inviteByMagicLink`).
         shouldCreateUser: false,
+        ...(captchaToken ? { captchaToken } : {}),
       },
     })
     if (error) throw toAuthError(error)
   }, [])
 
-  const inviteByMagicLink = useCallback(async (email: string) => {
+  const inviteByMagicLink = useCallback(async (email: string, captchaToken?: string) => {
     assertConfigured()
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -145,16 +147,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         emailRedirectTo: `${window.location.origin}/login`,
         // Invitación del admin: si el cliente no tiene cuenta todavía, la crea.
         shouldCreateUser: true,
+        ...(captchaToken ? { captchaToken } : {}),
       },
     })
-    if (error) throw new Error(error.message)
+    if (error) throw toAuthError(error)
   }, [])
 
-  const signInWithPassword = useCallback(async (email: string, password: string) => {
-    assertConfigured()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw new Error(error.message)
-  }, [])
+  const signInWithPassword = useCallback(
+    async (email: string, password: string, captchaToken?: string) => {
+      assertConfigured()
+      const { error } = await supabase.auth.signInWithPassword(
+        captchaToken ? { email, password, options: { captchaToken } } : { email, password }
+      )
+      if (error) throw toAuthError(error)
+    },
+    []
+  )
 
   const signOut = useCallback(async () => {
     assertConfigured()

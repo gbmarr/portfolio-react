@@ -30,6 +30,7 @@ describe('ClientLayout', () => {
 
     expect(screen.getByText('Mi proyecto')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Mis proyectos' })).toHaveAttribute('href', '/panel')
+    expect(screen.getByRole('link', { name: 'Guía' })).toHaveAttribute('href', '/panel/guia')
     expect(screen.getByRole('link', { name: 'Ver sitio' })).toHaveAttribute('href', '/')
     expect(screen.getByText('Contenido cliente')).toBeInTheDocument()
   })

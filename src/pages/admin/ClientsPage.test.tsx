@@ -1,22 +1,39 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ClientsPage } from './ClientsPage'
 import type { ClientRow } from '../../lib/clients'
 
 const h = vi.hoisted(() => ({
   listClients: vi.fn(),
-  useAuth: vi.fn(),
 }))
 
 vi.mock('../../lib/clients', () => ({ listClients: h.listClients }))
-vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
-beforeEach(() => {
-  h.useAuth.mockReturnValue({
-    inviteByMagicLink: vi.fn<() => Promise<void>>(async () => {}),
-  })
-})
+vi.mock('./InviteClientDialog', () => ({
+  InviteClientDialog: ({
+    email,
+    onSent,
+    onClose,
+  }: {
+    email: string
+    onSent: (email: string) => void
+    onClose: () => void
+  }) => (
+    <div>
+      <p>invite-dialog:{email}</p>
+      <button
+        type="button"
+        onClick={() => {
+          onSent(email)
+          onClose()
+        }}
+      >
+        Confirmar invitación
+      </button>
+    </div>
+  ),
+}))
 
 const client = (over: Partial<ClientRow> = {}): ClientRow => ({
   email: 'c@example.com',
@@ -72,50 +89,32 @@ describe('ClientsPage', () => {
     expect(screen.getByRole('button', { name: 'Reenviar enlace' })).toBeInTheDocument()
   })
 
-  it('envía la invitación por magic link', async () => {
+  it('abre el diálogo de invitación y marca el envío', async () => {
     const user = userEvent.setup()
-    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
-    h.useAuth.mockReturnValue({ inviteByMagicLink })
     h.listClients.mockResolvedValue([client({ email: 'nuevo@example.com' })])
 
     renderPage()
 
-    const inviteButton = await screen.findByRole('button', { name: 'Invitar' })
-    await user.click(inviteButton)
+    await user.click(await screen.findByRole('button', { name: 'Invitar' }))
+    expect(screen.getByText('invite-dialog:nuevo@example.com')).toBeInTheDocument()
 
-    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('nuevo@example.com'))
+    await user.click(screen.getByRole('button', { name: 'Confirmar invitación' }))
+
     expect(await screen.findByText('Invitación enviada ✓')).toBeInTheDocument()
+    expect(screen.queryByText('invite-dialog:nuevo@example.com')).not.toBeInTheDocument()
   })
 
   it('permite reenviar la invitación a clientes ya activos', async () => {
     const user = userEvent.setup()
-    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
-    h.useAuth.mockReturnValue({ inviteByMagicLink })
     h.listClients.mockResolvedValue([client({ email: 'a@example.com', active: true })])
 
     renderPage()
 
-    const resendButton = await screen.findByRole('button', { name: 'Reenviar enlace' })
-    await user.click(resendButton)
+    await user.click(await screen.findByRole('button', { name: 'Reenviar enlace' }))
+    expect(screen.getByText('invite-dialog:a@example.com')).toBeInTheDocument()
 
-    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('a@example.com'))
+    await user.click(screen.getByRole('button', { name: 'Confirmar invitación' }))
+
     expect(await screen.findByText('Invitación enviada ✓')).toBeInTheDocument()
-  })
-
-  it('avisa si falla la invitación', async () => {
-    const user = userEvent.setup()
-    h.useAuth.mockReturnValue({
-      inviteByMagicLink: vi.fn(async () => {
-        throw new Error('boom')
-      }),
-    })
-    h.listClients.mockResolvedValue([client({ email: 'falla@example.com' })])
-
-    renderPage()
-
-    await user.click(await screen.findByRole('button', { name: 'Invitar' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'No se pudo enviar la invitación a falla@example.com.'
-    )
   })
 })

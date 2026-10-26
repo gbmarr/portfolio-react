@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -16,7 +16,6 @@ const h = vi.hoisted(() => ({
   deleteProject: vi.fn(),
   updateProject: vi.fn(),
   getBrief: vi.fn(),
-  useAuth: vi.fn(),
 }))
 
 vi.mock('../../lib/projects', () => ({
@@ -36,13 +35,31 @@ vi.mock('../../lib/projects', () => ({
   updateProject: h.updateProject,
 }))
 vi.mock('../../lib/briefs', () => ({ getBrief: h.getBrief }))
-vi.mock('../../lib/auth-context', () => ({ useAuth: h.useAuth }))
 
-beforeEach(() => {
-  h.useAuth.mockReturnValue({
-    inviteByMagicLink: vi.fn<() => Promise<void>>(async () => {}),
-  })
-})
+vi.mock('./InviteClientDialog', () => ({
+  InviteClientDialog: ({
+    email,
+    onSent,
+    onClose,
+  }: {
+    email: string
+    onSent: (email: string) => void
+    onClose: () => void
+  }) => (
+    <div>
+      <p>invite-dialog:{email}</p>
+      <button
+        type="button"
+        onClick={() => {
+          onSent(email)
+          onClose()
+        }}
+      >
+        Confirmar invitación
+      </button>
+    </div>
+  ),
+}))
 
 const project = (over: Partial<Project> = {}): Project => ({
   id: 'p1',
@@ -186,31 +203,18 @@ describe('ProjectDetailPage', () => {
     expect(screen.getByText(/todavía no definiste el brief/i)).toBeInTheDocument()
   })
 
-  it('envía invitación por magic link al cliente', async () => {
+  it('abre el diálogo de invitación y muestra la confirmación al enviar', async () => {
     const user = userEvent.setup()
-    const inviteByMagicLink = vi.fn<() => Promise<void>>(async () => {})
-    h.useAuth.mockReturnValue({ inviteByMagicLink })
     mockDetailData()
     renderDetail()
 
     await user.click(await screen.findByRole('button', { name: 'Enviar invitación' }))
+    expect(screen.getByText('invite-dialog:cliente@example.com')).toBeInTheDocument()
 
-    await waitFor(() => expect(inviteByMagicLink).toHaveBeenCalledWith('cliente@example.com'))
-    expect(screen.getByText(/Se envió un enlace mágico/)).toBeInTheDocument()
-  })
+    await user.click(screen.getByRole('button', { name: 'Confirmar invitación' }))
 
-  it('avisa si falla la invitación', async () => {
-    const user = userEvent.setup()
-    h.useAuth.mockReturnValue({
-      inviteByMagicLink: vi.fn(async () => {
-        throw new Error('boom')
-      }),
-    })
-    mockDetailData()
-    renderDetail()
-
-    await user.click(await screen.findByRole('button', { name: 'Enviar invitación' }))
-    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo enviar la invitación.')
+    expect(await screen.findByText(/Se envió un enlace mágico/)).toBeInTheDocument()
+    expect(screen.queryByText('invite-dialog:cliente@example.com')).not.toBeInTheDocument()
   })
 
   it('finaliza el proyecto y muestra la fecha de cierre', async () => {
