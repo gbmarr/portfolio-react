@@ -29,10 +29,6 @@ export const industries: IndustryGroup[] = [
         benefit: 'Consultoría técnica y proyectos.',
       },
       {
-        name: 'Médicos',
-        benefit: 'Especialidades, horarios y contacto.',
-      },
-      {
         name: 'Consultores',
         benefit: 'Servicio, metodología y primera reunión.',
       },
