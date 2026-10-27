@@ -1,9 +1,10 @@
 import { Container } from './Container'
 import { copy } from '../data/copy'
 import { profile } from '../data/profile'
+import { argentinaYear } from '../lib/format'
 
 export function Footer() {
-  const year = new Date().getFullYear()
+  const year = argentinaYear()
 
   return (
     <footer className="border-t border-border py-8">

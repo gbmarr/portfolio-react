@@ -1,19 +1,26 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { Footer } from './Footer'
 import { profile } from '../data/profile'
 import { copy } from '../data/copy'
+import { argentinaYear } from '../lib/format'
 
 describe('Footer', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('renders the tagline', () => {
     render(<Footer />)
     expect(screen.getByText(copy.footer.tagline)).toBeInTheDocument()
   })
 
-  it('renders the copyright notice with the current year and name', () => {
+  it('renders the copyright notice with the Argentina year and name', () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2027-01-01T02:00:00Z'))
     render(<Footer />)
-    const year = new Date().getFullYear()
-    expect(screen.getByText(`© ${year} ${profile.name}. ${copy.footer.rights}`)).toBeInTheDocument()
+    expect(argentinaYear()).toBe(2026)
+    expect(screen.getByText(`© 2026 ${profile.name}. ${copy.footer.rights}`)).toBeInTheDocument()
   })
 
   it('renders a footer landmark', () => {

@@ -32,7 +32,7 @@ function message(overrides: Partial<ContactMessage> = {}): ContactMessage {
   }
 }
 
-const today = new Date('2026-10-05T12:00:00')
+const today = new Date('2026-10-05T12:00:00Z')
 
 describe('computeKpis', () => {
   it('cuenta proyectos activos y mensajes sin leer', () => {
@@ -65,5 +65,28 @@ describe('computeKpis', () => {
     )
     expect(kpis.upcomingDeadlines).toBe(2)
     expect(kpis.overdueDeadlines).toBe(1)
+  })
+
+  it('compara deadlines por día calendario de Argentina', () => {
+    const kpis = computeKpis(
+      [
+        project({ deadline: '2026-10-05' }), // hoy en Argentina (UTC ya es 06/10)
+        project({ deadline: '2026-10-04' }), // vencida en Argentina
+      ],
+      [],
+      new Date('2026-10-06T02:00:00Z')
+    )
+    expect(kpis.upcomingDeadlines).toBe(1)
+    expect(kpis.overdueDeadlines).toBe(1)
+  })
+
+  it('no marca como vencida una entrega que vence hoy', () => {
+    const kpis = computeKpis(
+      [project({ deadline: '2026-10-05' })],
+      [],
+      new Date('2026-10-05T12:00:00Z')
+    )
+    expect(kpis.upcomingDeadlines).toBe(1)
+    expect(kpis.overdueDeadlines).toBe(0)
   })
 })
